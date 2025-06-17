@@ -48,7 +48,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.17'
+version = 'v5.18'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -317,7 +317,7 @@ def load_WorkSheet(fileName):
                 else:
                     Color = generate_color()
 
-                serieDict = {
+                aDict = {
                     'Id': 'Id-' + sheetName.split('Serie Id-')[1],
                     'Type': df['Type'][0],
                     'Name': df['Name'][0],
@@ -331,7 +331,7 @@ def load_WorkSheet(fileName):
                 }
 
                 if 'InterpolationMode' in df.columns:
-                    serieDict = serieDict | {
+                    aDict = aDict | {
                         'InterpolationMode': df['InterpolationMode'][0],
                         'X1Coords': cleanSpaceList(df['X1Coords']),
                         'X2Coords': cleanSpaceList(df['X2Coords']),
@@ -339,7 +339,7 @@ def load_WorkSheet(fileName):
                         'XOriginalValues': addNanList(df.iloc[:,11])
                     }
 
-                itemDict_list.append(serieDict)
+                itemDict_list.append(aDict)
 
             except:
                 msg = f"The file '{fileName}' contains a serie that is wrongly formatted in {sheetName} sheet."
@@ -352,7 +352,7 @@ def load_WorkSheet(fileName):
             
             try:
                 df = pd.read_excel(fileName, sheet_name=sheetName, na_filter=False)
-                filterDict = {
+                aDict = {
                         'Id': 'Id-' + sheetName.split('Id-')[1],
                         'Type': df['Type'][0],
                         'Name': df['Name'][0],
@@ -362,11 +362,11 @@ def load_WorkSheet(fileName):
                 }
 
                 if 'XCoords' in df.columns:                 # for SAMPLE
-                    filterDict = filterDict | {
-                        'XCoords': addNanList(df['X2Coords'])
+                    aDict = aDict | {
+                        'XCoords': addNanList(df['XCoords'])
                     }
 
-                itemDict_list.append(filterDict)
+                itemDict_list.append(aDict)
 
             except:
                 msg = f"The file '{fileName}' contains a FILTER/SAMPLE that is wrongly formatted in {sheetName} sheet."
@@ -379,7 +379,7 @@ def load_WorkSheet(fileName):
 
             try:
                 df = pd.read_excel(fileName, sheet_name=sheetName, na_filter=False)
-                interpolationDict = {
+                aDict = {
                         'Id': 'Id-' + sheetName.split('INTERPOLATION Id-')[1],
                         'Type': df['Type'][0],
                         'Name': df['Name'][0],
@@ -390,7 +390,7 @@ def load_WorkSheet(fileName):
                         'History': df['History'][0]
                 }
 
-                itemDict_list.append(interpolationDict)
+                itemDict_list.append(aDict)
 
             except:
                 msg = f"The file '{fileName}' contains an INTERPOLATION that is wrongly formatted in {sheetName} sheet."
@@ -537,6 +537,11 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=2, column=4, value=itemDict['Comment'])
                 ws.cell(row=2, column=5, value=itemDict['History'])
                 
+                if 'XCoords' in itemDict:
+                    ws.cell(row=1, column=6, value='XCoords')
+                    for i, value in enumerate(itemDict['XCoords'], start=2):
+                        ws.cell(row=i, column=6, value=value)
+
             #-----------------------
             elif itemDict["Type"] == 'INTERPOLATION':
                 sheetName = f'{itemDict["Type"]} {itemDict["Id"]}'
@@ -1068,36 +1073,42 @@ def apply_sample():
         serie = serieDict['Serie']
         serie = serie.groupby(serie.index).mean()
 
-        if 'XCoords' in sampleDict.keys():
-            param1_str, param2_str = sampleDict['Parameters'].split(';')
-            sample_kind = param2_str.strip()
-            sample_integrated = bool(param3_str.strip())
-            sample_index =  sampleDict['XCoords']
-            textHistory = f'using x values and {sample_kind} interpolation with integration at {sample_integrated}'
-        else:
-            param1_str, param2_str, param3_str = sampleDict['Parameters'].split(';')
-            sample_step = float(param1_str.strip())
-            sample_kind = param2_str.strip()
-            sample_integrated = bool(param3_str.strip())
-            index_min = serie.index.min()
-            index_max = serie.index.max()
-            index_min = np.ceil(index_min / sample_step) * sample_step
-            index_max = np.floor(index_max / sample_step) * sample_step
-            sample_index = np.arange(index_min, index_max + sample_step, sample_step)
-            textHistory = f'every {sample_step} and {sample_kind} interpolation with integration at {sample_integrated}'
+        try:
+            if 'XCoords' in sampleDict.keys():
+                param1_str, param2_str = sampleDict['Parameters'].split(';')
+                sample_kind = param1_str.strip()
+                sample_integrated = bool(param2_str.strip())
+                sample_index =  sampleDict['XCoords']
+                textHistory = f'using x values and {sample_kind} interpolation with integration at {sample_integrated}'
+            else:
+                param1_str, param2_str, param3_str = sampleDict['Parameters'].split(';')
+                sample_step = float(param1_str.strip())
+                sample_kind = param2_str.strip()
+                sample_integrated = bool(param3_str.strip())
+                index_min = serie.index.min()
+                index_max = serie.index.max()
+                index_min = np.ceil(index_min / sample_step) * sample_step
+                index_max = np.floor(index_max / sample_step) * sample_step
+                sample_index = np.arange(index_min, index_max + sample_step, sample_step)
+                textHistory = f'every {sample_step} and {sample_kind} interpolation with integration at {sample_integrated}'
 
-        sampled_Id = generate_Id()
-        sampled_serieDict = serieDict | {'Id': sampled_Id,
-            'Type': 'Serie sampled',
-            'Serie': defineSampleWindow.sample(serie, sample_index, kind=sample_kind, integrated=sample_integrated),
-            'Color': generate_color(exclude_color=serieDict['Color']),
-            'History': append_to_htmlText(serieDict['History'], 
-                f'<BR>Serie <i><b>{serieDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sampleDict["Id"]}</i></b><BR>---> serie <i><b>{sampled_Id}</b></i>'),
-            'Comment': ''
-        }
-        ws_item = item.parent()
-        position = ws_item.indexOfChild(item)
-        add_item_tree_widget(ws_item, sampled_serieDict, position+1)
+            sampled_Id = generate_Id()
+            sampled_serieDict = serieDict | {'Id': sampled_Id,
+                'Type': 'Serie sampled',
+                'Serie': defineSampleWindow.sample(serie, sample_index, kind=sample_kind, integrated=sample_integrated),
+                'Color': generate_color(exclude_color=serieDict['Color']),
+                'History': append_to_htmlText(serieDict['History'], 
+                    f'<BR>Serie <i><b>{serieDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sampleDict["Id"]}</i></b><BR>---> serie <i><b>{sampled_Id}</b></i>'),
+                'Comment': ''
+            }
+            ws_item = item.parent()
+            position = ws_item.indexOfChild(item)
+            add_item_tree_widget(ws_item, sampled_serieDict, position+1)
+
+        except:
+            msg = f"Problem when applying Sampling. Delete the uncorrect SAMPLING and redefine a new one."
+            main_window.statusBar().showMessage(msg, 5000)
+            QApplication.processEvents()
 
     #-------------------------------------------------------------
     main_window.setFocus()                  # replace selection

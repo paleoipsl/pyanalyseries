@@ -294,6 +294,7 @@ class defineSampleWindow(QWidget):
     
         # Restrict to range of data
         x_min, x_max = serie.index.min(), serie.index.max()
+        sample_index = np.array(sample_index)                           # convert list to numpy array
         valid_sample_index = sample_index[(sample_index >= x_min) & (sample_index <= x_max)]
     
         if not integrated:

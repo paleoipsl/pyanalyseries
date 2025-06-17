@@ -1,3 +1,5 @@
+ * 5.18
+   * Fix in sampling when x values are used (XCoords were not saved)
  * 5.17
    * Force sorting on serie index when import, display data and save
  * 5.16
