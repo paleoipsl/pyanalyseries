@@ -570,7 +570,7 @@ class defineInsolationAstroSerieWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def import_serie(self):
 
-        if self.plotType in ["Eccentricity", "Obliquity", "Precession angle"]:
+        if self.plotType in ["Eccentricity", "Obliquity", "Precession angle", "Precession parameter"]:
             history = f'Astronomical serie "{self.plotType}"' 
             shortName = f"{self.plotType} [degrees]"
             

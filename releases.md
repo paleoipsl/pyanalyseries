@@ -1,3 +1,5 @@
+ * 5.19
+   * Fix omission of Precession parameter when Import serie
  * 5.18
    * Fix in sampling when x values are used (XCoords were not saved)
  * 5.17
