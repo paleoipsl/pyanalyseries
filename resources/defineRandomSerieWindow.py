@@ -109,17 +109,21 @@ class defineRandomSerieWindow(QWidget):
         button_layout = QHBoxLayout()
 
         style = "padding: 4px 12px;"
+        self.shuffle_button = QPushButton("Shuffle", self)
+        self.shuffle_button.setStyleSheet(style)
         self.import_button = QPushButton("Import serie", self)
         self.import_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
         button_layout.addStretch()
 
+        button_layout.addWidget(self.shuffle_button)
         button_layout.addWidget(self.import_button)
         button_layout.addSpacing(50)
         button_layout.addWidget(self.close_button)
         main_layout.addLayout(button_layout)
 
+        self.shuffle_button.clicked.connect(self.myplot)
         self.import_button.clicked.connect(self.import_serie)
         self.close_button.clicked.connect(self.close)
 

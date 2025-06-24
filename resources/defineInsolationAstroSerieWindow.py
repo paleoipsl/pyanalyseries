@@ -14,8 +14,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from .misc import *
 from .interactivePlot import interactivePlot
 
-from .insolation import inso
-from .insolation import astro
+from inso import astro
+from inso import inso
 
 #=========================================================================================
 for key in plt.rcParams.keys():

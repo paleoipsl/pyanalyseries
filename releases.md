@@ -1,3 +1,6 @@
+ * 5.20
+   * inso as standalone module to be installed by a `pip install inso`
+   * Add a Shuffle button in defineRandomSerieWindow
  * 5.19
    * Fix omission of Precession parameter when Import serie
  * 5.18
