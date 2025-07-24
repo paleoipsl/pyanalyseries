@@ -1,3 +1,8 @@
+ * 5.21
+   * Issue #10 change to handle the order in the choosen series in Define Samping
+   * Issue #9 fix on zoom behaviour
+   * Issue #8 fix on keeping zoom position in Define Interpolation
+   * Issue #7 add on Wiki a paragraph to detail exporting plots and possible use of Inkscape
  * 5.20
    * inso as standalone module to be installed by a `pip install inso`
    * Add a Shuffle button in defineRandomSerieWindow

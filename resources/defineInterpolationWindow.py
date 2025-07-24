@@ -252,6 +252,7 @@ class defineInterpolationWindow(QWidget):
     def selectSerie_change(self):
 
         xlim0 = self.axs[0].get_xlim()      # keep axs[0] range 
+        xlim1 = self.axs[1].get_xlim()      # keep axs[1] range 
 
         self.deleteConnections()
         self.axs[0].clear()
@@ -262,6 +263,7 @@ class defineInterpolationWindow(QWidget):
         self.myplot()
 
         self.axs[0].set_xlim(xlim0)
+        self.axs[1].set_xlim(xlim1)
 
         self.updateConnections()
 

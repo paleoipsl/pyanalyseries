@@ -134,7 +134,7 @@ class interactivePlot:
 
             distance_left = mouse.distance(spine_left)
             distance_bottom = mouse.distance(spine_bottom)
-            #print(f"Distance : {distance_left}, {distance_bottom}")
+            # print(f"Distance : {distance_left}, {distance_bottom}")
             
             if min(distance_left, distance_bottom) < distance_min:
                 distance_min = min(distance_left, distance_bottom)
@@ -161,7 +161,11 @@ class interactivePlot:
         if isinstance(artist, XAxis):
             # Zoom on the X axis
             cur_xlim = ax.get_xlim()
-            xdata = event.xdata if event.xdata is not None else (cur_xlim[0] + cur_xlim[1]) / 2
+
+            #xdata = event.xdata if event.xdata is not None else (cur_xlim[0] + cur_xlim[1]) / 2
+            inv = ax.transData.inverted()
+            xdata, _ = inv.transform((event.x, event.y))
+
             new_xlim = [xdata - (xdata - cur_xlim[0]) * scale_factor,
                         xdata + (cur_xlim[1] - xdata) * scale_factor]
             ax.set_xlim(new_xlim)
@@ -171,7 +175,11 @@ class interactivePlot:
         elif isinstance(artist, YAxis):
             # Zoom on the Y axis
             cur_ylim = ax.get_ylim()
-            ydata = event.ydata if event.ydata is not None else (cur_ylim[0] + cur_ylim[1]) / 2
+
+            #ydata = event.ydata if event.ydata is not None else (cur_ylim[0] + cur_ylim[1]) / 2
+            inv = ax.transData.inverted()
+            _, ydata = inv.transform((event.x, event.y))
+
             new_ylim = [ydata - (ydata - cur_ylim[0]) * scale_factor,
                         ydata + (cur_ylim[1] - ydata) * scale_factor]
             ax.set_ylim(new_ylim)

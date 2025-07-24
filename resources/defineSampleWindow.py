@@ -33,9 +33,9 @@ class defineSampleWindow(QWidget):
         self.items = items
         self.add_item_tree_widget = add_item_tree_widget
 
-        self.item = items[0]
+        self.item = self.items[0]
         if len(self.items) == 2:
-            self.itemRef = items[1]
+            self.itemRef = self.items[1]
         else: 
             self.itemRef = None
         self.serieWidth = 0.8
@@ -53,11 +53,33 @@ class defineSampleWindow(QWidget):
         #----------------------------------------------
         groupbox1 = QGroupBox('Parameters')
         groupbox1_layout = QVBoxLayout()
-        groupbox1.setFixedHeight(150)
+        groupbox1.setFixedHeight(180)
+
+        rightMargin = 40
 
         # ===== 
-        self.group = QButtonGroup(self)
+        serie_layout = QHBoxLayout()
 
+        self.series_combo_label = QLabel("Sample serie:")
+        self.series_combo_label.setFixedWidth(120)
+        self.series_combo = QComboBox()
+        font = QFont("Courier New", 12)
+        self.series_combo.setFont(font)
+        for n,item in enumerate(self.items):
+            serieDict = item.data(0, Qt.UserRole)
+            XName = serieDict['X']
+            YName = serieDict['Y']
+            Id = serieDict['Id']
+            self.series_combo.addItem(f'{n+1} with {Id}: {XName} / {YName}')
+        self.series_combo.setCurrentIndex(0)
+
+        serie_layout.addWidget(self.series_combo_label)
+        serie_layout.addWidget(self.series_combo)
+        serie_layout.addStretch()
+
+        groupbox1_layout.addLayout(serie_layout)
+
+        # =====
         self.step_radio = QRadioButton("Sampling with step :")
         self.step_spinbox = QDoubleSpinBox()
         self.step_spinbox.setRange(0, 1000)
@@ -70,8 +92,9 @@ class defineSampleWindow(QWidget):
         step_layout.addWidget(self.step_radio)
         step_layout.addWidget(self.step_spinbox)
         step_layout.addStretch()
+        step_layout.setContentsMargins(rightMargin, 0, 0, 0)
 
-        self.xvalues_radio = QRadioButton("Sampling using x values of")
+        self.xvalues_radio = QRadioButton("Sampling using x values of serie:")
         self.xvalues_label = QLabel('None')
         font = QFont("Courier New", 12)
         self.xvalues_label.setFont(font)
@@ -80,7 +103,9 @@ class defineSampleWindow(QWidget):
         xvalues_layout.addWidget(self.xvalues_radio)
         xvalues_layout.addWidget(self.xvalues_label)
         xvalues_layout.addStretch()
+        xvalues_layout.setContentsMargins(rightMargin, 0, 0, 0)
 
+        self.group = QButtonGroup(self)
         self.group.addButton(self.step_radio)
         self.group.addButton(self.xvalues_radio)
 
@@ -93,7 +118,7 @@ class defineSampleWindow(QWidget):
             self.serieRef_XName = self.serieRefDict['X']
             self.serieRef_YName = self.serieRefDict['Y']
             self.serieRef_Id = self.serieRefDict['Id']
-            self.xvalues_label.setText(f'{self.serieRef_Id}: {self.serieRef_XName} / {self.serieRef_YName}')
+            self.xvalues_label.setText(f'2 with {self.serieRef_Id}: {self.serieRef_XName} / {self.serieRef_YName}')
             self.sample_from_xvalues = True 
         else:
             self.step_radio.setChecked(True)
@@ -113,6 +138,7 @@ class defineSampleWindow(QWidget):
         kind_layout.addWidget(label_s2)
         kind_layout.addWidget(self.kind_dropdown)
         kind_layout.addStretch()
+        kind_layout.setContentsMargins(rightMargin, 0, 0, 0)
 
         integrated_layout = QHBoxLayout()
         label_s3 = QLabel('Integration :')
@@ -121,6 +147,7 @@ class defineSampleWindow(QWidget):
         integrated_layout.addWidget(label_s3)
         integrated_layout.addWidget(self.integrated_checkbox)
         integrated_layout.addStretch()
+        integrated_layout.setContentsMargins(rightMargin, 0, 0, 0)
 
         groupbox1_layout.addLayout(kind_layout)
         groupbox1_layout.addLayout(integrated_layout)
@@ -140,6 +167,8 @@ class defineSampleWindow(QWidget):
         self.xvalues_radio.toggled.connect(self.delayed_update)
         self.kind_dropdown.currentIndexChanged.connect(self.delayed_update)
         self.integrated_checkbox.stateChanged.connect(self.delayed_update)
+
+        self.series_combo.currentIndexChanged.connect(self.series_change)
 
         #----------------------------------------------
         self.interactive_plot = interactivePlot()
@@ -201,8 +230,25 @@ class defineSampleWindow(QWidget):
 
         xlim = self.interactive_plot.axs[0].get_xlim()
         ylim = self.interactive_plot.axs[0].get_ylim()
+
         self.interactive_plot.axs[0].clear()
         self.myplot(limits=[xlim,ylim])
+
+    #---------------------------------------------------------------------------------------------
+    def series_change(self):
+
+        n = self.series_combo.currentIndex()
+        self.item = self.items[n]
+        self.itemRef = self.items[n^1]
+         
+        self.serieRefDict = self.itemRef.data(0, Qt.UserRole)
+        self.serieRef_XName = self.serieRefDict['X']
+        self.serieRef_YName = self.serieRefDict['Y']
+        self.serieRef_Id = self.serieRefDict['Id']
+        self.xvalues_label.setText(f'{(n^1)+1} with {self.serieRef_Id}: {self.serieRef_XName} / {self.serieRef_YName}')
+
+        self.interactive_plot.axs[0].clear()
+        self.myplot()
 
     #---------------------------------------------------------------------------------------------
     def myplot(self, limits=None):
