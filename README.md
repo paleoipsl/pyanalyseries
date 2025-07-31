@@ -23,6 +23,9 @@ This project is distributed under the **CeCILL v2.1** license.
 
 <hr style="border:2px solid gray">
 
+#### Usage 
+The use of the application is detailed in the following [Wiki page](https://github.com/PaleoIPSL/PyAnalySeries/wiki).
+
 #### Installation
 
 ##### Get the application

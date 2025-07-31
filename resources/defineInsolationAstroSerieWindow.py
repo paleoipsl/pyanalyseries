@@ -571,12 +571,16 @@ class defineInsolationAstroSerieWindow(QWidget):
     def import_serie(self):
 
         if self.plotType in ["Eccentricity", "Obliquity", "Precession angle", "Precession parameter"]:
-            history = f'Astronomical serie "{self.plotType}"' 
+            history = f'Astronomical serie "{self.plotType}"' + \
+                        '<ul>' + \
+                        f'<li>Astronomical solution: {self.solutionAstro}' + \
+                        '</ul>'
             shortName = f"{self.plotType} [degrees]"
             
         elif self.plotType == "Daily insolation":
             history = f'Insolation serie "{self.plotType}" with parameters :' + \
                         '<ul>' + \
+                        f'<li>Astronomical solution: {self.solutionAstro}' + \
                         f'<li>Solar constant [W/m2]: {self.solar_constant_input.value()}' + \
                         f'<li>Latitude [°]: {self.latitude_input.value()}' + \
                         f'<li>True longitude [°]: {self.trueLongitude1_input.value()}' + \
@@ -586,6 +590,7 @@ class defineInsolationAstroSerieWindow(QWidget):
         elif self.plotType == "Integrated insolation between 2 true longitudes":
             history = f'Insolation serie "{self.plotType}" with parameters :' + \
                         '<ul>' + \
+                        f'<li>Astronomical solution: {self.solutionAstro}' + \
                         f'<li>Solar constant [W/m2]: {self.solar_constant_input.value()}' + \
                         f'<li>Latitude [°]: {self.latitude_input.value()}' + \
                         f'<li>True longitude #1 [°]: {self.trueLongitude1_input.value()}' + \
@@ -597,6 +602,7 @@ class defineInsolationAstroSerieWindow(QWidget):
              self.plotType == "Caloric winter insolation":
             history = f'Insolation serie "{self.plotType}" with parameters :' + \
                         '<ul>' + \
+                        f'<li>Astronomical solution: {self.solutionAstro}' + \
                         f'<li>Solar constant [W/m2]: {self.solar_constant_input.value()}' + \
                         f'<li>Latitude [°]: {self.latitude_input.value()}' + \
                         '</ul>'

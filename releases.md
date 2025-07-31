@@ -1,3 +1,5 @@
+ * 5.22
+   * Add 'Astronomical solution' in History in defineInsolationAstroSerieWindow 
  * 5.21
    * Issue #10 change to handle the order in the choosen series in Define Samping
    * Issue #9 fix on zoom behaviour
