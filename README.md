@@ -22,10 +22,18 @@ This project is distributed under the **CeCILL v2.1** license.
 <img src="QRCode.png" alt="QRCode" width="200" />
 
 <hr style="border:2px solid gray">
-
-#### Usage 
+#### Documentation 
 The use of the application is detailed in the following [Wiki page](https://github.com/PaleoIPSL/PyAnalySeries/wiki).
 
+<hr style="border:2px solid gray">
+#### Tutorials
+ 
+Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnalySeries/wiki)
+
+ * [Tutorial 01](https://github.com/PaleoIPSL/PyAnalySeries/wiki/Tutorial-01)
+ * ...
+
+<hr style="border:2px solid gray">
 #### Installation
 
 ##### Get the application
@@ -64,6 +72,7 @@ The use of the application is detailed in the following [Wiki page](https://gith
 
 <hr style="border:2px solid gray">
 
+<hr style="border:2px solid gray">
 #### Captures
 
 ![ScreenShot1](misc/capture_01.png) 
@@ -71,6 +80,7 @@ The use of the application is detailed in the following [Wiki page](https://gith
 
 ![ScreenShot2](misc/capture_02.png) 
 
+<hr style="border:2px solid gray">
 #### Releases
 
 See [releases.md](./releases.md) for release details.
