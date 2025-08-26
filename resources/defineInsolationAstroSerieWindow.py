@@ -31,7 +31,7 @@ class defineInsolationAstroSerieWindow(QWidget):
         self.open_insolationAstroSerieWindow = open_insolationAstroSerieWindow
         self.add_item_tree_widget = add_item_tree_widget
 
-        title = 'Define insolation / astromical serie'
+        title = 'Define Insolation / Astromical serie'
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)

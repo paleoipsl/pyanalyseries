@@ -28,7 +28,7 @@ class defineRandomSerieWindow(QWidget):
         self.open_randomSerieWindow = open_randomSerieWindow
         self.add_item_tree_widget = add_item_tree_widget
 
-        title = 'Define random serie'
+        title = 'Define Random serie'
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)
