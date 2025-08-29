@@ -1,3 +1,6 @@
+ * 5.23
+   * Fix save WS when paste an item. 
+   * Fix multiple drop items. Not allowed.
  * 5.22
    * Add 'Astronomical solution' in History in defineInsolationAstroSerieWindow 
  * 5.21

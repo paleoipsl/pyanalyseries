@@ -48,7 +48,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.22'
+version = 'v5.23'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -726,6 +726,13 @@ class CustomTreeWidget(QTreeWidget):
 
     #-----------------------------------
     def dropEvent(self, event):
+
+        selected = self.selectedItems()
+        if len(selected) > 1:
+            main_window.statusBar().showMessage('You can only drop one item at a time.', 5000)
+            event.ignore()
+            return
+
         dragged_item = self.currentItem()
         target_item = self.itemAt(event.pos())
 
@@ -1378,7 +1385,7 @@ def paste_items():
             main_window.statusBar().showMessage('Item(s) already in', 5000)
             continue
         itemDict = item.data(0, Qt.UserRole)
-        add_item_tree_widget(ws_item, itemDict, position+1, mark=False)
+        add_item_tree_widget(ws_item, itemDict, position+1, mark=True)
 
     tree_widget.blockSignals(False)
 
