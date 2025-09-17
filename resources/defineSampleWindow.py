@@ -39,7 +39,7 @@ class defineSampleWindow(QWidget):
         else: 
             self.itemRef = None
         self.serieWidth = 0.8
-        self.step = 25
+        self.step = 25.0
         self.kind = 'linear' 
         self.integrated = False
 
@@ -181,17 +181,27 @@ class defineSampleWindow(QWidget):
         button_layout = QHBoxLayout()
 
         style = "padding: 4px 12px;"
-        self.save_button = QPushButton("Save sample and serie sampled", self)
-        self.save_button.setStyleSheet(style)
+        self.saveSample_button = QPushButton("Save sample", self)
+        self.saveSample_button.setStyleSheet(style)
+        self.saveSample_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.saveSampleAndSerieSampled_button = QPushButton("Save sample and serie sampled", self)
+        self.saveSampleAndSerieSampled_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
         button_layout.addStretch()
 
-        button_layout.addWidget(self.save_button)
-        button_layout.addWidget(self.close_button)
+        saveClose_layout = QVBoxLayout()
+        saveClose_layout.addWidget(self.saveSample_button)
+        saveCloseLine_layout = QHBoxLayout()
+        saveCloseLine_layout.addWidget(self.saveSampleAndSerieSampled_button)
+        saveCloseLine_layout.addWidget(self.close_button)
+        saveClose_layout.addLayout(saveCloseLine_layout)
+        button_layout.addLayout(saveClose_layout)
+
         main_layout.addLayout(button_layout)
 
-        self.save_button.clicked.connect(self.save_serie)
+        self.saveSample_button.clicked.connect(self.saveSample)
+        self.saveSampleAndSerieSampled_button.clicked.connect(self.saveSampleAndSerieSampled)
         self.close_button.clicked.connect(self.close)
 
         self.status_bar = QStatusBar()
@@ -391,13 +401,13 @@ class defineSampleWindow(QWidget):
             return pd.Series(data=integrated_values, index=filtered_index)
 
     #---------------------------------------------------------------------------------------------
-    def save_serie(self):
+    def saveSample(self):
         sample_Id = generate_Id()
         if not self.sample_from_xvalues:
             sampleDict = {
                 'Id': sample_Id,
                 'Type': 'SAMPLE', 
-                'Name': f'Sample every {self.step}', 
+                'Name': f'Sample every {self.step}' if not self.integrated else f'Sample every {self.step} with integration',
                 'Parameters': f'{self.step} ; {self.kind}; {self.integrated}',
                 'Comment': '',
                 'History': f'<BR>Sample with parameters :' + \
@@ -422,13 +432,28 @@ class defineSampleWindow(QWidget):
                         '</ul>',
                 'XCoords': self.sample_index
             }
-        self.add_item_tree_widget(self.item.parent(), sampleDict)
+        try:
+            self.add_item_tree_widget(self.item.parent(), sampleDict)
+        except:
+            pass 
+
+        return sample_Id
+
+    #---------------------------------------------------------------------------------------------
+    def saveSampleAndSerieSampled(self):
+        sample_Id = self.saveSample()
 
         sampled_Id = generate_Id()
         if not self.sample_from_xvalues:
-            textHistory = f'every {self.step} and {self.kind} interpolation with integration at {self.integrated}'
+            if self.integrated:
+                textHistory = f'every {self.step} and {self.kind} interpolation with integration'
+            else:
+                textHistory = f'every {self.step} and {self.kind} interpolation'
         else:
-            textHistory = f'using x values from {self.serieRef_YName} and {self.kind} interpolation with integration at {self.integrated}'
+            if self.integrated:
+                textHistory = f'using x values from {self.serieRef_YName} and {self.kind} interpolation with integration'
+            else:
+                textHistory = f'using x values from {self.serieRef_YName} and {self.kind} interpolation'
 
         sampled_serieDict = self.serieDict | {'Id': sampled_Id, 
             'Type': 'Serie sampled', 

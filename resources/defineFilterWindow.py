@@ -76,17 +76,27 @@ class defineFilterWindow(QWidget):
         button_layout = QHBoxLayout()
 
         style = "padding: 4px 12px;"
-        self.save_button = QPushButton("Save filter and serie filtered", self)
-        self.save_button.setStyleSheet(style)
+        self.saveFilter_button = QPushButton("Save filter", self)
+        self.saveFilter_button.setStyleSheet(style)
+        self.saveFilter_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.saveFilterAndSerieFiltered_button = QPushButton("Save filter and serie filtered", self)
+        self.saveFilterAndSerieFiltered_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
         button_layout.addStretch()
 
-        button_layout.addWidget(self.save_button)
-        button_layout.addWidget(self.close_button)
+        saveClose_layout = QVBoxLayout()
+        saveClose_layout.addWidget(self.saveFilter_button)
+        saveCloseLine_layout = QHBoxLayout()
+        saveCloseLine_layout.addWidget(self.saveFilterAndSerieFiltered_button)
+        saveCloseLine_layout.addWidget(self.close_button)
+        saveClose_layout.addLayout(saveCloseLine_layout)
+        button_layout.addLayout(saveClose_layout)
+        
         main_layout.addLayout(button_layout)
 
-        self.save_button.clicked.connect(self.save_serie)
+        self.saveFilter_button.clicked.connect(self.saveFilter)
+        self.saveFilterAndSerieFiltered_button.clicked.connect(self.saveFilterAndSerieFiltered)
         self.close_button.clicked.connect(self.close)
 
         self.status_bar = QStatusBar()
@@ -101,7 +111,7 @@ class defineFilterWindow(QWidget):
 
         self.interactive_plot.fig.canvas.setFocus()
 
-        #self.status_bar.showMessage('Ready', 5000)
+        self.status_bar.showMessage('Ready', 5000)
 
     #---------------------------------------------------------------------------------------------
     def update_value(self):
@@ -180,7 +190,7 @@ class defineFilterWindow(QWidget):
         return result_serie
 
     #---------------------------------------------------------------------------------------------
-    def save_serie(self):
+    def saveFilter(self):
         filter_Id = generate_Id()
         filterDict = {
             'Id': filter_Id,
@@ -193,10 +203,19 @@ class defineFilterWindow(QWidget):
                     f'<li>Moving average size : {self.window_size}' + \
                     '</ul>'
         }
-        self.add_item_tree_widget(self.item.parent(), filterDict)
+        try:
+            self.add_item_tree_widget(self.item.parent(), filterDict)
+        except:
+            pass
+
+        return filter_Id
+
+    #---------------------------------------------------------------------------------------------
+    def saveFilterAndSerieFiltered(self):
+        filter_Id = self.saveFilter() 
 
         filtered_Id = generate_Id()
-        filtered_serieDict = self.serieDict | {'Id': filtered_Id, 
+        filtered_serieDict = self.serieDict | {'Id': filtered_Id,
             'Type': 'Serie filtered', 
             'Serie': self.moving_average(self.serie, self.window_size),
             'Color': generate_color(exclude_color=self.serieDict['Color']),

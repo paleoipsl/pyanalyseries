@@ -205,7 +205,10 @@ class defineRandomSerieWindow(QWidget):
             'Serie': pd.Series(self.values, index=self.index),
             }
 
-        self.add_item_tree_widget(None, serieDict)          # will be added on parent from current index
+        try:
+            self.add_item_tree_widget(None, serieDict)          # will be added on parent from current index
+        except:
+            pass
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):

@@ -48,7 +48,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.23'
+version = 'v5.24'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -272,9 +272,14 @@ def update_items_from_data(ref_item):
 def sync_window_with_item(item):
     itemDict = item.data(0, Qt.UserRole)
     Id_window = itemDict['Id']
+    #print(open_displayWindows);
     for key in open_displayWindows.keys():
         displayWindow = open_displayWindows[key]
-        displayWindow.sync_with_item(item)
+        try:
+            displayWindow.sync_with_item(item)
+        except:
+            # Some open_displayWindows do not need to be updated (no sync_with_item function)
+            pass
     for key in open_filterWindows.keys():
         filterWindow = open_filterWindows[key]
         filterWindow.sync_with_item(item)
@@ -666,6 +671,7 @@ def create_tree_widget():
     tree_widget.setColumnWidth(4, 250)
     tree_widget.setColumnWidth(5, 50)
     tree_widget.setColumnWidth(6, 50)
+    tree_widget.setAlternatingRowColors(True)
     tree_widget.setTextElideMode(Qt.ElideRight)
     tree_widget.setSelectionMode(QTreeWidget.ExtendedSelection)
     tree_widget.setIconSize(QSize(16, 16))
@@ -1086,7 +1092,10 @@ def apply_sample():
                 sample_kind = param1_str.strip()
                 sample_integrated = bool(param2_str.strip())
                 sample_index =  sampleDict['XCoords']
-                textHistory = f'using x values and {sample_kind} interpolation with integration at {sample_integrated}'
+                if sample_integrated: 
+                    textHistory = f'using x values and {sample_kind} interpolation with integration'
+                else:
+                    textHistory = f'using x values and {sample_kind} interpolation'
             else:
                 param1_str, param2_str, param3_str = sampleDict['Parameters'].split(';')
                 sample_step = float(param1_str.strip())
@@ -1097,7 +1106,10 @@ def apply_sample():
                 index_min = np.ceil(index_min / sample_step) * sample_step
                 index_max = np.floor(index_max / sample_step) * sample_step
                 sample_index = np.arange(index_min, index_max + sample_step, sample_step)
-                textHistory = f'every {sample_step} and {sample_kind} interpolation with integration at {sample_integrated}'
+                if sample_integrated: 
+                    textHistory = f'every {sample_step} and {sample_kind} interpolation with integration'
+                else:
+                    textHistory = f'every {sample_step} and {sample_kind} interpolation'
 
             sampled_Id = generate_Id()
             sampled_serieDict = serieDict | {'Id': sampled_Id,

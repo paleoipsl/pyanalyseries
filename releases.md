@@ -1,3 +1,8 @@
+ * 5.24
+   * Alternating row colors in main window
+   * Fix when no WS exist and display windows ask to update item
+   * Issue #15 add 'Save ...' in addition to 'Save and ...'  
+   * Issue #14 change removing connection keeps pointers
  * 5.23
    * Fix save WS when paste an item. 
    * Fix multiple drop items. Not allowed.

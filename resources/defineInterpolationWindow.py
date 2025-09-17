@@ -169,11 +169,11 @@ class defineInterpolationWindow(QWidget):
         self.showInterp.setShortcut("z")
         self.showInterp.setToolTip("Type key 'z' as shortcut")
 
-        self.removeAddLastPointer_button = QPushButton()
-        self.removeAddLastPointer_button.setFixedWidth(180)
-        self.removeAddLastPointer_button.setText("Remove last pointer")
-        self.removeAddLastPointer_button.setShortcut("u")
-        self.removeAddLastPointer_button.setEnabled(False)
+        self.removeAddLastConnect_button = QPushButton()
+        self.removeAddLastConnect_button.setFixedWidth(210)
+        self.removeAddLastConnect_button.setText("Remove last connection")
+        self.removeAddLastConnect_button.setShortcut("u")
+        self.removeAddLastConnect_button.setEnabled(False)
 
         self.interp_combo_label = QLabel("Interpolation Method:")
         self.interp_combo_label.setToolTip("Choose between Linear or PCHIP (Piecewise Cubic Hermite Interpolating Polynomial) interpolation")
@@ -181,26 +181,40 @@ class defineInterpolationWindow(QWidget):
         self.interp_combo.addItem("Linear")
         self.interp_combo.addItem("PCHIP")
 
-        style = "padding: 4px 12px;"
-        self.save_button = QPushButton("Save interpolation and serie interpolated", self)
-        self.save_button.setStyleSheet(style)
+        style = "padding: 4px 12px; text-align: left;"
+        self.saveInterpolation_button = QPushButton("Save interpolation", self)
+        self.saveInterpolation_button.setStyleSheet(style)
+        self.saveInterpolation_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.saveInterpolationAndSerieInterpolated_button = QPushButton("Save interpolation and serie interpolated", self)
+        self.saveInterpolationAndSerieInterpolated_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
 
-        control_layout3.addWidget(self.interp_combo_label)
-        control_layout3.addWidget(self.interp_combo)
-        control_layout3.addWidget(self.showInterp)
-        control_layout3.addWidget(self.removeAddLastPointer_button)
-        control_layout3.addStretch()
-        control_layout3.addWidget(self.save_button)
-        control_layout3.addWidget(self.close_button)
+        buttonsGroup1_layout = QHBoxLayout()
+        buttonsGroup1_layout.addWidget(self.interp_combo_label)
+        buttonsGroup1_layout.addWidget(self.interp_combo)
+        buttonsGroup1_layout.addWidget(self.showInterp)
+        buttonsGroup1_layout.addWidget(self.removeAddLastConnect_button)
+        buttonsGroup1_layout.addStretch()
+        control_layout3.addLayout(buttonsGroup1_layout)
+        
+        saveClose_layout = QVBoxLayout()
+        saveClose_layout.addWidget(self.saveInterpolation_button)
+        saveCloseLine_layout = QHBoxLayout()
+        saveCloseLine_layout.addWidget(self.saveInterpolationAndSerieInterpolated_button)
+        saveCloseLine_layout.addWidget(self.close_button)
+        saveClose_layout.addLayout(saveCloseLine_layout)
+        control_layout3.addLayout(saveClose_layout)
+        control_layout3.setAlignment(buttonsGroup1_layout, Qt.AlignBottom)
+        #control_layout3.setAlignment(saveClose_layout, Qt.AlignBottom)
 
         main_layout.addLayout(control_layout3)
 
         self.showInterp.stateChanged.connect(self.showInterp_change)
-        self.removeAddLastPointer_button.clicked.connect(self.removeAddLastPointer)
+        self.removeAddLastConnect_button.clicked.connect(self.removeAddLastConnect)
         self.interp_combo.currentIndexChanged.connect(self.interpMode_change)
-        self.save_button.clicked.connect(self.save_serie)
+        self.saveInterpolation_button.clicked.connect(self.saveInterpolation)
+        self.saveInterpolationAndSerieInterpolated_button.clicked.connect(self.saveInterpolationAndSerieInterpolated)
         self.close_button.clicked.connect(self.close)
 
         #----------------------------------------------
@@ -221,7 +235,7 @@ class defineInterpolationWindow(QWidget):
         self.interactive_plot.fig.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
-    def removeAddLastPointer(self):
+    def removeAddLastConnect(self):
 
         if not self.artistsList_LastId: return
 
@@ -233,8 +247,8 @@ class defineInterpolationWindow(QWidget):
             del self.artistsList_Dict[self.artistsList_LastId]
             self.vline1List.remove(vline1)
             self.vline2List.remove(vline2)
-            self.removeAddLastPointer_button.setText("Reposition last pointer")
-            self.removeAddLastPointer_button.setShortcut("u")
+            self.removeAddLastConnect_button.setText("Reposition last connection")
+            self.removeAddLastConnect_button.setShortcut("u")
         else:
             self.artistsList_Dict[self.artistsList_LastId] = self.artistsList_LastValues
             self.interactive_plot.fig.add_artist(connect)
@@ -242,8 +256,8 @@ class defineInterpolationWindow(QWidget):
             self.interactive_plot.axs[1].add_artist(vline2)
             self.vline1List.append(vline1)
             self.vline2List.append(vline2)
-            self.removeAddLastPointer_button.setText("Remove last pointer")
-            self.removeAddLastPointer_button.setShortcut("u")
+            self.removeAddLastConnect_button.setText("Remove last connection")
+            self.removeAddLastConnect_button.setShortcut("u")
 
         self.updatePointers()
         self.updateInterpPlot()
@@ -500,7 +514,7 @@ class defineInterpolationWindow(QWidget):
                 if (vline1.get_xdata() == vline1_Last.get_xdata()) and (vline2.get_xdata() == vline2_Last.get_xdata()):
                     self.artistsList_LastId = id(connect)
                     self.artistsList_LastValues = [connect, vline1, vline2]
-                    self.removeAddLastPointer_button.setEnabled(True)
+                    self.removeAddLastConnect_button.setEnabled(True)
 
         self.interactive_plot.fig.canvas.draw()
         self.interactive_plot.fig.canvas.setFocus()
@@ -531,6 +545,10 @@ class defineInterpolationWindow(QWidget):
             for artist in self.artistsList_Dict[objectId]:
                 artist.remove()
         self.artistsList_Dict = {}
+
+        if self.vline1 != None: self.vline1.remove();
+        if self.vline2 != None: self.vline2.remove();
+
         self.vline1List = []
         self.vline2List = []
         self.vline1 = None
@@ -569,9 +587,9 @@ class defineInterpolationWindow(QWidget):
                 self.artistsList_Dict[id(connect)] = [connect, self.vline1, self.vline2]
                 self.artistsList_LastId = id(connect)
                 self.artistsList_LastValues = [connect, self.vline1, self.vline2]
-                self.removeAddLastPointer_button.setEnabled(True)
-                self.removeAddLastPointer_button.setText("Remove last pointer")
-                self.removeAddLastPointer_button.setShortcut("u")
+                self.removeAddLastConnect_button.setEnabled(True)
+                self.removeAddLastConnect_button.setText("Remove last connection")
+                self.removeAddLastConnect_button.setShortcut("u")
                 self.vline1List.append(self.vline1)
                 self.vline2List.append(self.vline2)
                 self.vline1 = None
@@ -602,9 +620,9 @@ class defineInterpolationWindow(QWidget):
 
             if reply == QMessageBox.Yes:
                 self.artistsList_LastId = None
-                self.removeAddLastPointer_button.setEnabled(False)
-                self.removeAddLastPointer_button.setText("Remove last pointer")
-                self.removeAddLastPointer_button.setShortcut("u")
+                self.removeAddLastConnect_button.setEnabled(False)
+                self.removeAddLastConnect_button.setText("Remove last connection")
+                self.removeAddLastConnect_button.setShortcut("u")
                 self.deleteConnections()
                 self.deleteCoords()
                 self.updatePointers()
@@ -666,18 +684,20 @@ class defineInterpolationWindow(QWidget):
         #-----------------------------------------------
         if artistLabel == 'connection':
             if self.key_x:
+
+                if self.vline1 != None: self.vline1.remove();
+                if self.vline2 != None: self.vline2.remove();
+
                 objectId = id(event.artist)
-                for artist in self.artistsList_Dict[objectId]:
-                    self.artistsList_LastId = objectId
-                    self.artistsList_LastValues = self.artistsList_Dict[objectId] 
-                    self.removeAddLastPointer_button.setEnabled(True)
-                    self.removeAddLastPointer_button.setText("Reposition last pointer")
-                    self.removeAddLastPointer_button.setShortcut("u")
-                    artist.remove()
-                    if artist in self.vline1List:
-                        self.vline1List.remove(artist)
-                    if artist in self.vline2List:
-                        self.vline2List.remove(artist)
+                self.removeAddLastConnect_button.setEnabled(False)
+
+                connect, vline1, vline2  = self.artistsList_Dict[objectId];
+                connect.remove()
+                self.vline1List.remove(vline1)
+                self.vline2List.remove(vline2)
+                self.vline1 = vline1
+                self.vline2 = vline2
+
                 del self.artistsList_Dict[objectId]
 
                 self.updatePointers()
@@ -790,12 +810,12 @@ class defineInterpolationWindow(QWidget):
         return (f_1to2, f_2to1)
 
     #---------------------------------------------------------------------------------------------
-    def save_serie(self):
+    def saveInterpolation(self):
 
         if len(self.X1Coords) < 2: 
             msg = 'Error: interpolation function not defined (not enough pointers)'
             self.status_bar.showMessage(msg, 5000)
-            return
+            return None
 
         interpolation_Id = generate_Id()
         interpolationDict = {
@@ -808,7 +828,19 @@ class defineInterpolationWindow(QWidget):
             'Comment': '',
             'History': '',
         }
-        self.add_item_tree_widget(self.itemRef.parent(), interpolationDict)
+        try:
+            self.add_item_tree_widget(self.itemRef.parent(), interpolationDict)
+        except:
+            pass
+
+        return interpolation_Id
+
+    #---------------------------------------------------------------------------------------------
+    def saveInterpolationAndSerieInterpolated(self):
+
+        interpolation_Id = self.saveInterpolation()
+        if interpolation_Id is None:
+            return
 
         f_1to2, f_2to1 = self.defineInterpolationFunctions(self.X1Coords, self.X2Coords, interpolationMode=self.interpolationMode)
 

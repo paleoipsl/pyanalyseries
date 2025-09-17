@@ -257,7 +257,10 @@ class importDataWindow(QWidget):
                 'Comment': '',
                 'Serie': pd.Series(values, index=index).sort_index(),           # sort_index
             }
-            self.add_item_tree_widget(None, serieDict)
+            try:
+                self.add_item_tree_widget(None, serieDict)
+            except:
+                pass
     
             msg = f'{X} / {Y} imported as serie {serie_Id}'
             self.status_bar.showMessage(msg, 2000)
@@ -299,8 +302,11 @@ class importDataWindow(QWidget):
             'Name': '', 
             'Comment': '',
             }
-        self.add_item_tree_widget(None, itemDict)          # will be added on parent from current index
-        #print(f"{X} / {Y}")
+        try:
+            self.add_item_tree_widget(None, itemDict)          # will be added on parent from current index
+            #print(f"{X} / {Y}")
+        except:
+            pass
 
         msg = f'Interpolation pointers with {X1Name} for reference imported as INTERPOLATION {item_Id}'
         self.status_bar.showMessage(msg, 2000)

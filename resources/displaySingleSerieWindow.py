@@ -260,7 +260,12 @@ class displaySingleSerieWindow(QWidget):
     def closeEvent(self, event):
         plt.close()
         self.serieDict['Comment'] = self.textComment.toPlainText()
-        self.item.setData(0, Qt.UserRole, self.serieDict)
+        # if WS has been removed while a Display is active 
+        try:
+            self.item.setData(0, Qt.UserRole, self.serieDict)
+        except:
+            #print("item not available to be updated")
+            pass 
         self.open_displayWindows.pop(self.Id, None)
         event.accept()
 

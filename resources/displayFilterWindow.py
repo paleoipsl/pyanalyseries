@@ -98,16 +98,18 @@ class displayFilterWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
         self.filterDict['Comment'] = self.textComment.toPlainText()
-        self.item.setData(0, Qt.UserRole, self.filterDict)
+        # if WS has been removed while a Display is active 
+        try:
+            self.item.setData(0, Qt.UserRole, self.filterDict)
+        except:
+            #print("item not available to be updated")
+            pass 
         self.open_displayWindows.pop(self.Id, None)
         event.accept()
 
 #=========================================================================================
 # Example usage
 if __name__ == "__main__":
-
-    def handle_item(item):
-        print('handle', item)
 
     app = QApplication([])
 
