@@ -33,7 +33,7 @@ The use of the application is detailed in the following [Wiki page](https://gith
 Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnalySeries/wiki)
 
  * [Tutorial 01](https://github.com/PaleoIPSL/PyAnalySeries/wiki/Tutorial-01)
- * ...
+ * [Tutorial 02](https://github.com/PaleoIPSL/PyAnalySeries/wiki/Tutorial-02)
 
 <hr style="border:2px solid gray">
 
