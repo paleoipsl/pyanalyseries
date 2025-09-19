@@ -53,7 +53,7 @@ class defineSampleWindow(QWidget):
         #----------------------------------------------
         groupbox1 = QGroupBox('Parameters')
         groupbox1_layout = QVBoxLayout()
-        groupbox1.setFixedHeight(180)
+        groupbox1.setFixedHeight(200)
 
         rightMargin = 40
 

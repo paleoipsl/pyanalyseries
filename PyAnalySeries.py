@@ -48,7 +48,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.24'
+version = 'v5.25'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -60,13 +60,40 @@ open_randomSerieWindow= {}
 open_insolationAstroSerieWindow= {}
 
 #========================================================================================
-def colorize_item(item, color_name):
+def colorize_item1(item, color_name):
     tree_widget.blockSignals(True)
-    color = QColor(color_name)
-    brush = QBrush(color)
+    if not color_name:
+        brush = QBrush()
+    else:
+        brush = QBrush(QColor(color_name))
     for col in range(tree_widget.columnCount()):
         item.setBackground(col, brush)
     tree_widget.blockSignals(False)
+
+#========================================================================================
+def colorize_item(item, color_name, alpha=100):
+    tree = item.treeWidget()
+    tree.blockSignals(True)
+
+    if not color_name:
+        brush = QBrush()
+    else:
+        row = tree.indexOfTopLevelItem(item)
+        if row == -1 and item.parent() is not None:
+            row = item.parent().indexOfChild(item)
+
+        base_color = QColor("#ffffff") if row % 2 == 0 else QColor("#f0f0f0")
+        overlay = QColor(color_name)
+        overlay.setAlpha(alpha)
+        r = (overlay.red()   * alpha + base_color.red()   * (255 - alpha)) // 255
+        g = (overlay.green() * alpha + base_color.green() * (255 - alpha)) // 255
+        b = (overlay.blue()  * alpha + base_color.blue()  * (255 - alpha)) // 255
+        final_color = QColor(r, g, b)
+        brush = QBrush(final_color)
+
+    for col in range(tree.columnCount()):
+        item.setBackground(col, brush)
+    tree.blockSignals(False)
 
 #========================================================================================
 def populate_tree_widget(fileName, itemDict_list):
@@ -416,12 +443,22 @@ def load_WorkSheet(fileName):
     populate_tree_widget(fileName, itemDict_list)
 
     #--------------------------------------------------------------------
+    settings = QSettings("MyPythonApps", "PyAnalySeries")
+    last_used_dir = QFileInfo(fileName).absolutePath()
+    settings.setValue("lastDir", last_used_dir)
+
+    #--------------------------------------------------------------------
     main_window.statusBar().showMessage(fileName + ' loaded', 5000)
 
 #========================================================================================
 def new_WorkSheet():
+    settings = QSettings("MyPythonApps", "PyAnalySeries")
+    last_dir = settings.value("lastDir", os.getcwd(), type=str)
 
-    fileNameTemplate = 'new_{:02d}.xlsx'
+    base_dir = os.getcwd()
+    rel_dir = os.path.relpath(last_dir, base_dir)          # get relative path
+
+    fileNameTemplate = os.path.join(rel_dir, 'new_{:02d}.xlsx')
     counterFilename = 1
     while (os.path.exists(fileNameTemplate.format(counterFilename))) or \
           (fileNameTemplate.format(counterFilename) in open_ws.values()):
@@ -436,8 +473,8 @@ def new_WorkSheet():
 #========================================================================================
 def open_WorkSheet():
     settings = QSettings("MyPythonApps", "PyAnalySeries")
-
-    last_dir = settings.value("lastDir", "", type=str)
+    last_dir = settings.value("lastDir", os.getcwd(), type=str)
+    #last_dir = settings.value("lastDir", "", type=str)
 
     filesName, _ = QFileDialog.getOpenFileNames(
         main_window, "Open Excel File", last_dir, "Excel Files (*.xlsx)"
@@ -676,9 +713,9 @@ def create_tree_widget():
     tree_widget.setSelectionMode(QTreeWidget.ExtendedSelection)
     tree_widget.setIconSize(QSize(16, 16))
     tree_widget.setStyleSheet("""
-        QTreeView:selected {
-            background-color: lightsteelblue;
-            color: black;
+        QTreeView {
+            selection-background-color: rgba(0, 120, 215, 80);
+            selection-color: black;
         }
     """)
     tree_widget.setFocusPolicy(Qt.ClickFocus)
@@ -702,6 +739,17 @@ def create_tree_widget():
 
     return tree_widget
 
+#========================================================================================
+class FullRowDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        brush = index.data(Qt.BackgroundRole)
+
+        if isinstance(brush, QBrush) and index.column() == 0 and option.widget:
+            r = option.rect
+            full_row = QRect(0, r.y(), option.widget.width(), r.height())
+            painter.fillRect(full_row, brush)
+
+        super().paint(painter, option, index)
 
 #========================================================================================
 class CustomTreeWidget(QTreeWidget):
@@ -713,6 +761,8 @@ class CustomTreeWidget(QTreeWidget):
         self.setMouseTracking(True)
         self.viewport().setAttribute(Qt.WA_Hover, True)
         self.viewport().installEventFilter(self)
+
+        self.setItemDelegate(FullRowDelegate(self))
 
         # 🔹 Custom QLabel as tooltip replacement
         self.custom_tooltip = QLabel(self)
@@ -975,7 +1025,7 @@ def apply_filter():
     
     if reply == QMessageBox.No:
         for item in items:
-            colorize_item(item, 'white')
+            colorize_item(item, None)
         tree_widget.clearSelection()
         return
 
@@ -1005,7 +1055,7 @@ def apply_filter():
     main_window.setFocus()                  # replace selection
     tree_widget.clearSelection()
     for item in itemSeries_selected + itemFilters_selected:
-        colorize_item(item, 'white')
+        colorize_item(item, None)
         item.setSelected(True)
 
 #========================================================================================
@@ -1074,7 +1124,7 @@ def apply_sample():
     
     if reply == QMessageBox.No:
         for item in items:
-            colorize_item(item, 'white')
+            colorize_item(item, None)
         tree_widget.clearSelection()
         return
 
@@ -1133,7 +1183,7 @@ def apply_sample():
     main_window.setFocus()                  # replace selection
     tree_widget.clearSelection()
     for item in itemSeries_selected + itemSamples_selected:
-        colorize_item(item, 'white')
+        colorize_item(item, None)
         item.setSelected(True)
 
 #========================================================================================
@@ -1178,7 +1228,7 @@ def define_interpolation():
     main_window.setFocus()                  # replace selection
     tree_widget.clearSelection()
     for item in itemSeries_selected + itemInterpolations_selected:
-        colorize_item(item, 'white')
+        colorize_item(item, None)
         item.setSelected(True)
 
 #========================================================================================
@@ -1215,7 +1265,7 @@ def apply_interpolation(interpolationMode):
     
     if reply == QMessageBox.No:
         for item in items:
-            colorize_item(item, 'white')
+            colorize_item(item, None)
         tree_widget.clearSelection()
         return
 
@@ -1254,7 +1304,7 @@ def apply_interpolation(interpolationMode):
     main_window.setFocus()                  # replace selection
     tree_widget.clearSelection()
     for item in itemSeries_selected + itemInterpolations_selected:
-        colorize_item(item, 'white')
+        colorize_item(item, None)
         item.setSelected(True)
 
 #========================================================================================

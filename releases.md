@@ -1,3 +1,7 @@
+ * 5.25
+   * Fix alternating row colors and selections
+   * Use last dir when creating new worksheet
+   * Fix height of parameters in defineSampleWindow
  * 5.24
    * Alternating row colors in main window
    * Fix when no WS exist and display windows ask to update item
