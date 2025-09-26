@@ -166,8 +166,8 @@ class defineInterpolationWindow(QWidget):
 
         self.showInterp = QCheckBox("Show interpolated curve")
         self.showInterp.setChecked(True)
-        self.showInterp.setShortcut("z")
-        self.showInterp.setToolTip("Type key 'z' as shortcut")
+        #self.showInterp.setShortcut("z")
+        #self.showInterp.setToolTip("Type key 'z' as shortcut")
 
         self.removeAddLastConnect_button = QPushButton()
         self.removeAddLastConnect_button.setFixedWidth(210)
@@ -283,6 +283,11 @@ class defineInterpolationWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def showInterp_change(self):
+
+        if len(self.X1Coords) < 2: 
+            msg = 'Warning: interpolation function not defined (not enough pointers)'
+            self.status_bar.showMessage(msg, 5000)
+            return None
 
         self.updateInterpPlot()
 
@@ -605,6 +610,19 @@ class defineInterpolationWindow(QWidget):
             self.updateConnections()
 
         #-------------------
+        elif event.key == 'z':
+            self.selectSerie_change()
+            self.showInterp.setChecked(not self.showInterp.isChecked())
+            self.showInterp_change()
+
+        #-------------------
+        elif event.key == 'Z':
+            self.axs[1].set_ylim(self.axs[0].get_ylim())
+            self.updateConnections()
+            self.showInterp.setChecked(not self.showInterp.isChecked())
+            self.showInterp_change()
+
+        #-------------------
         elif event.key == 'x':
             self.key_x = True 
 
@@ -813,7 +831,7 @@ class defineInterpolationWindow(QWidget):
     def saveInterpolation(self):
 
         if len(self.X1Coords) < 2: 
-            msg = 'Error: interpolation function not defined (not enough pointers)'
+            msg = 'Warning: interpolation function not defined (not enough pointers)'
             self.status_bar.showMessage(msg, 5000)
             return None
 

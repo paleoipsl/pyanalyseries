@@ -1,3 +1,7 @@
+ * 5.26
+   * Issue #18 Control saving WorkSheet individually
+   * Issue #17 Exit sequence with control of unsaved worksheets
+   * Issue #16 Align vertical axis in defineInterpolationWindown with Z
  * 5.25
    * Fix alternating row colors and selections
    * Use last dir when creating new worksheet
@@ -5,8 +9,8 @@
  * 5.24
    * Alternating row colors in main window
    * Fix when no WS exist and display windows ask to update item
-   * Issue #15 add 'Save ...' in addition to 'Save and ...'  
-   * Issue #14 change removing connection keeps pointers
+   * Issue #15 Add 'Save ...' in addition to 'Save and ...'  
+   * Issue #14 Change removing connection keeps pointers
  * 5.23
    * Fix save WS when paste an item. 
    * Fix multiple drop items. Not allowed.
@@ -14,9 +18,9 @@
    * Add 'Astronomical solution' in History in defineInsolationAstroSerieWindow 
  * 5.21
    * Issue #10 change to handle the order in the choosen series in Define Samping
-   * Issue #9 fix on zoom behaviour
-   * Issue #8 fix on keeping zoom position in Define Interpolation
-   * Issue #7 add on Wiki a paragraph to detail exporting plots and possible use of Inkscape
+   * Issue #9 Fix on zoom behaviour
+   * Issue #8 Fix on keeping zoom position in Define Interpolation
+   * Issue #7 Add on Wiki a paragraph to detail exporting plots and possible use of Inkscape
  * 5.20
    * inso as standalone module to be installed by a `pip install inso`
    * Add a Shuffle button in defineRandomSerieWindow

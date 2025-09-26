@@ -48,7 +48,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.25'
+version = 'v5.26'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -60,25 +60,14 @@ open_randomSerieWindow= {}
 open_insolationAstroSerieWindow= {}
 
 #========================================================================================
-def colorize_item1(item, color_name):
-    tree_widget.blockSignals(True)
-    if not color_name:
-        brush = QBrush()
-    else:
-        brush = QBrush(QColor(color_name))
-    for col in range(tree_widget.columnCount()):
-        item.setBackground(col, brush)
-    tree_widget.blockSignals(False)
-
-#========================================================================================
 def colorize_item(item, color_name, alpha=100):
-    tree = item.treeWidget()
-    tree.blockSignals(True)
+
+    tree_widget.blockSignals(True)
 
     if not color_name:
         brush = QBrush()
     else:
-        row = tree.indexOfTopLevelItem(item)
+        row = tree_widget.indexOfTopLevelItem(item)
         if row == -1 and item.parent() is not None:
             row = item.parent().indexOfChild(item)
 
@@ -91,9 +80,10 @@ def colorize_item(item, color_name, alpha=100):
         final_color = QColor(r, g, b)
         brush = QBrush(final_color)
 
-    for col in range(tree.columnCount()):
+    for col in range(tree_widget.columnCount()):
         item.setBackground(col, brush)
-    tree.blockSignals(False)
+        
+    tree_widget.blockSignals(False)
 
 #========================================================================================
 def populate_tree_widget(fileName, itemDict_list):
@@ -122,6 +112,8 @@ def populate_tree_widget(fileName, itemDict_list):
 
 #========================================================================================
 def add_item_tree_widget(ws_item, itemDict, position=None, mark=True):
+
+    tree_widget.blockSignals(True)
 
     icon_serie = QIcon(str(app_dir / 'resources' / 'icon_serie.png'))
     icon_serieDuplicated = QIcon(str(app_dir / 'resources' / 'icon_serieDuplicated.png'))
@@ -179,6 +171,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True):
         item.setFont(3, font)
 
     if not itemDict['Type'].startswith('Serie'):
+        update_items_from_data(item)
         return
 
     item.setText(3, itemDict['X'])
@@ -197,6 +190,10 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True):
     checkboxInverted.setChecked(itemDict["Y axis inverted"])
     checkboxInverted.stateChanged.connect(lambda: checkboxInverted_changed(checkboxInverted, item))
     tree_widget.setItemWidget(item, 6, checkboxInverted)
+
+    update_items_from_data(item)
+
+    tree_widget.blockSignals(False)
 
 #========================================================================================
 def on_item_changed(item, column):
@@ -246,12 +243,16 @@ def on_item_changed(item, column):
 
     #----------------------------------
     else: 
+
         itemDict = item.data(0, Qt.UserRole)
-        itemDict['Name'] = item.text(0)
-        if 'X' in itemDict.keys(): itemDict['X'] = item.text(3)
-        if 'X1Name' in itemDict.keys(): itemDict['X1Name'] = item.text(3)
-        if 'Y' in itemDict.keys(): itemDict['Y'] = item.text(4)
+        if item.text(0): itemDict['Name'] = item.text(0)
+        if item.text(3):
+            if 'X' in itemDict.keys(): itemDict['X'] = item.text(3)
+            elif 'X1Name' in itemDict.keys(): itemDict['X1Name'] = item.text(3)
+        if item.text(4):
+            if 'Y' in itemDict.keys(): itemDict['Y'] = item.text(4)
         item.setData(0, Qt.UserRole, itemDict)
+        mark_ws(item.parent())
         update_items_from_data(item)
 
 #========================================================================================
@@ -260,19 +261,27 @@ def selectColor(buttonColor, serie_item):
     starting_color = serieDict['Color']
     color = CustomQColorDialog.getColor(starting_color)
     if color:
-        serieDict = serieDict | {'Color': color.name()}
+        serieDict = serieDict | {'Color': color.name()} 
         serie_item.setData(0, Qt.UserRole, serieDict)
+        buttonColor = tree_widget.itemWidget(serie_item, 5)
+        buttonColor.setStyleSheet(f"background-color: {serieDict['Color']}; border: none; border-radius: 3px;")
         update_items_from_data(serie_item)
+        mark_ws(serie_item.parent())
 
 #========================================================================================
 def checkboxInverted_changed(checkboxInverted, serie_item):
     serieDict = serie_item.data(0, Qt.UserRole)
-    serieDict = serieDict | {'Y axis inverted': checkboxInverted.isChecked()}
+    serieDict = serieDict | {'Y axis inverted': checkboxInverted.isChecked()} 
     serie_item.setData(0, Qt.UserRole, serieDict)
+    checkboxInverted = tree_widget.itemWidget(serie_item, 6)
+    checkboxInverted.setChecked(serieDict["Y axis inverted"])
     update_items_from_data(serie_item)
+    mark_ws(serie_item.parent())
 
 #========================================================================================
 def update_items_from_data(ref_item):
+
+    tree_widget.blockSignals(True)
 
     ref_itemDict = ref_item.data(0, Qt.UserRole)
 
@@ -280,23 +289,29 @@ def update_items_from_data(ref_item):
 
     for item in allItems:
         itemDict = item.data(0, Qt.UserRole)
+
         if itemDict['Id'] == ref_itemDict['Id']:
-            if  itemDict['Type'].startswith('Serie'):
-                buttonColor = tree_widget.itemWidget(item, 5)
-                if buttonColor: buttonColor.setStyleSheet(f"background-color: {ref_itemDict['Color']}; border: none; border-radius: 3px;")
-                checkboxInverted = tree_widget.itemWidget(item, 6)
-                if checkboxInverted: checkboxInverted.setChecked(ref_itemDict["Y axis inverted"])
-                sync_window_with_item(item)
-            item.setText(0, ref_itemDict['Name'])
-            if 'X' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X'])
-            if 'X1Name' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X1Name'])
-            if 'Y' in ref_itemDict.keys(): item.setText(4, ref_itemDict['Y'])
-            item.setData(0, Qt.UserRole, ref_itemDict)
-            if ref_item.parent() == item.parent():
+            if (itemDict | {"Serie": 0}) != (ref_itemDict | {"Serie": 0}): # to compare without 'Serie'
+                #print('----update', itemDict['Id'])
+                if  itemDict['Type'].startswith('Serie'):
+                    buttonColor = tree_widget.itemWidget(item, 5)
+                    buttonColor.setStyleSheet(f"background-color: {ref_itemDict['Color']}; border: none; border-radius: 3px;")
+                    checkboxInverted = tree_widget.itemWidget(item, 6)
+                    checkboxInverted.setChecked(ref_itemDict["Y axis inverted"])
+                    sync_window_with_item(item)
+                item.setText(0, ref_itemDict['Name'])
+                if 'X' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X'])
+                if 'X1Name' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X1Name'])
+                if 'Y' in ref_itemDict.keys(): item.setText(4, ref_itemDict['Y'])
+                item.setData(0, Qt.UserRole, ref_itemDict)
+        
                 mark_ws(item.parent())
+                
+    tree_widget.blockSignals(False)
 
 #========================================================================================
 def sync_window_with_item(item):
+
     itemDict = item.data(0, Qt.UserRole)
     Id_window = itemDict['Id']
     #print(open_displayWindows);
@@ -607,6 +622,8 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=2, column=6, value=itemDict['Comment'])
                 ws.cell(row=2, column=7, value=itemDict['History'])
                 
+            #-----------------------
+
         if ws_item.childCount() > 0:
             if 'Sheet' in wb.sheetnames:
                 del wb['Sheet']
@@ -621,20 +638,41 @@ def save_WorkSheet(ws_item):
         return False 
 
 #========================================================================================
+def save_WorkSheetCurrent():
+
+    current_item = tree_widget.currentItem()
+
+    if not current_item:             # no ws present
+        return
+
+    ws_item = current_item.parent() if current_item.parent() else current_item
+    ws_name = ws_item.text(0)
+
+    if ws_item.data(0, Qt.UserRole): 
+        ws_name = ws_name.replace(" *", "")
+        if save_WorkSheet(ws_item):
+            unmark_ws(ws_item)
+            main_window.statusBar().showMessage(f'Worksheet {ws_name} saved', 3000)
+        else:
+            main_window.statusBar().showMessage(f'Error when saving {ws_name}', 3000)
+    else:
+        main_window.statusBar().showMessage(f'Worksheet {ws_name} has no unsaved changes', 3000)
+
+#========================================================================================
 def save_WorkSheets():
 
     display_error = False
     for ws_item in tree_widget.get_parents():
         if ws_item.data(0, Qt.UserRole): 
-            outFile = ws_item.text(0).replace(" *", "")
+            ws_name = ws_item.text(0).replace(" *", "")
             if save_WorkSheet(ws_item):
                 unmark_ws(ws_item)
             else:
-                main_window.statusBar().showMessage(f'Error when saving {outFile}', 5000)
+                main_window.statusBar().showMessage(f'Error when saving {ws_name}', 3000)
                 display_error = True
 
     if not display_error:
-        main_window.statusBar().showMessage('Worksheets saved', 5000)
+        main_window.statusBar().showMessage('Worksheets saved', 3000)
 
 #========================================================================================
 def import_Data():
@@ -1384,6 +1422,14 @@ def show_context_menu(point):
             move_WorkSheet(1)
 
 #========================================================================================
+def count_unsaved_ws():
+    count = 0
+    for ws_item in tree_widget.get_parents():
+        if ws_item.data(0, Qt.UserRole):
+            count += 1
+    return count
+
+#========================================================================================
 def is_item_in_ws(ws_item, child_item):
     child_itemDict = child_item.data(0, Qt.UserRole)
     for i in range(ws_item.childCount()):
@@ -1440,16 +1486,12 @@ def paste_items():
     ws_item = target_item.parent() if target_item.parent() else target_item
     position = ws_item.indexOfChild(target_item)
 
-    tree_widget.blockSignals(True)
-
     for item in tree_widget.clipboard_items:
         if is_item_in_ws(ws_item, item):
             main_window.statusBar().showMessage('Item(s) already in', 5000)
             continue
         itemDict = item.data(0, Qt.UserRole)
-        add_item_tree_widget(ws_item, itemDict, position+1, mark=True)
-
-    tree_widget.blockSignals(False)
+        add_item_tree_widget(ws_item, itemDict, position+1)
 
 #========================================================================================
 def on_item_double_clicked(item, column):
@@ -1505,16 +1547,35 @@ def show_dialog(title, fileHTML, width, height):
 #========================================================================================
 def exit_confirm():
 
-    reply = QMessageBox.question(
-        main_window, 
-        "Exit confirmation",
-        "Are you sure you want to exit the application ?",
-        QMessageBox.Yes | QMessageBox.No,
-        QMessageBox.No
-    )
-    
-    if reply == QMessageBox.Yes:
-        app.quit()
+    if count_unsaved_ws() == 0:
+        reply = QMessageBox.question(
+            main_window, "Exit",
+            "Are you sure you want to exit the application?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            app.quit()
+
+    else:
+        msg = QMessageBox()
+        msg.setWindowTitle("Exit")
+        msg.setText("There are unsaved worksheets. What do you want to do?")
+        no_save_exit = msg.addButton(QMessageBox.Discard)
+        cancel = msg.addButton(QMessageBox.Cancel)
+        save_exit = msg.addButton("Save all unsaved worksheets and Exit", QMessageBox.AcceptRole)
+        msg.exec_()
+
+        if msg.clickedButton() == save_exit:
+            #print("save_exit")
+            save_WorkSheets()
+            app.quit()
+        elif msg.clickedButton() == no_save_exit:
+            #print("no_save_exit")
+            app.quit()
+        else:
+            #print("cancel")
+            pass
 
 #========================================================================================
 def close_event(event):
@@ -1558,20 +1619,24 @@ menu_bar = main_window.menuBar()
 file_menu = menu_bar.addMenu("File")
 
 newWS_action = QAction("New worksheet", main_window)
-newWS_action.setShortcut('Ctrl+n')
+newWS_action.setShortcut('Ctrl+N')
 newWS_action.triggered.connect(new_WorkSheet)
 openWS_action = QAction("Open worksheet(s)", main_window)
-openWS_action.setShortcut('Ctrl+o')
+openWS_action.setShortcut('Ctrl+O')
 openWS_action.triggered.connect(open_WorkSheet)
-saveWSs_action = QAction("Save worksheets", main_window)
-saveWSs_action.setShortcut('Ctrl+s')
+saveWS_action = QAction("Save current worksheet", main_window)
+saveWS_action.setShortcut('Ctrl+S')
+saveWS_action.triggered.connect(save_WorkSheetCurrent)
+saveWSs_action = QAction("Save all worksheets", main_window)
+saveWSs_action.setShortcut('Ctrl+Shift+S')
 saveWSs_action.triggered.connect(save_WorkSheets)
 exit_action = QAction('Exit', main_window)
-exit_action.setShortcut('q')
+exit_action.setShortcut('Q')
 exit_action.triggered.connect(exit_confirm)
 
 file_menu.addAction(newWS_action)
 file_menu.addAction(openWS_action)
+file_menu.addAction(saveWS_action)
 file_menu.addAction(saveWSs_action)
 file_menu.addSeparator()
 file_menu.addAction(exit_action)
