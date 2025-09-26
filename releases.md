@@ -2,6 +2,7 @@
    * Issue #18 Control saving WorkSheet individually
    * Issue #17 Exit sequence with control of unsaved worksheets
    * Issue #16 Align vertical axis in defineInterpolationWindown with Z
+   * Fix saved status when items are pasted
  * 5.25
    * Fix alternating row colors and selections
    * Use last dir when creating new worksheet
