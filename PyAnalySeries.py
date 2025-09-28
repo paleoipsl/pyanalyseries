@@ -6,6 +6,7 @@
 
 import sys
 import os
+import copy
 from pathlib import Path
 
 import numpy as np
@@ -48,7 +49,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.26'
+version = 'v5.27'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -111,7 +112,7 @@ def populate_tree_widget(fileName, itemDict_list):
     return ws_item
 
 #========================================================================================
-def add_item_tree_widget(ws_item, itemDict, position=None, mark=True):
+def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=True):
 
     tree_widget.blockSignals(True)
 
@@ -156,6 +157,8 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True):
     if mark:
         mark_ws(ws_item)            # Mark as to be saved
 
+    tree_widget.blockSignals(True)
+
     item.setData(0, Qt.UserRole, itemDict)
 
     item.setText(0, itemDict['Name'])
@@ -171,7 +174,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True):
         item.setFont(3, font)
 
     if not itemDict['Type'].startswith('Serie'):
-        update_items_from_data(item)
+        if update: update_items_from_data(item)
         return
 
     item.setText(3, itemDict['X'])
@@ -191,7 +194,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True):
     checkboxInverted.stateChanged.connect(lambda: checkboxInverted_changed(checkboxInverted, item))
     tree_widget.setItemWidget(item, 6, checkboxInverted)
 
-    update_items_from_data(item)
+    if update: update_items_from_data(item)
 
     tree_widget.blockSignals(False)
 
@@ -244,16 +247,19 @@ def on_item_changed(item, column):
     #----------------------------------
     else: 
 
+        tree_widget.blockSignals(True)
+
         itemDict = item.data(0, Qt.UserRole)
-        if item.text(0): itemDict['Name'] = item.text(0)
-        if item.text(3):
-            if 'X' in itemDict.keys(): itemDict['X'] = item.text(3)
-            elif 'X1Name' in itemDict.keys(): itemDict['X1Name'] = item.text(3)
-        if item.text(4):
-            if 'Y' in itemDict.keys(): itemDict['Y'] = item.text(4)
+        itemDict['Name'] = item.text(0)
+        if 'X' in itemDict.keys(): itemDict['X'] = item.text(3)
+        elif 'X1Name' in itemDict.keys(): itemDict['X1Name'] = item.text(3)
+        if 'Y' in itemDict.keys(): itemDict['Y'] = item.text(4)
         item.setData(0, Qt.UserRole, itemDict)
+
         mark_ws(item.parent())
         update_items_from_data(item)
+
+        tree_widget.blockSignals(False)
 
 #========================================================================================
 def selectColor(buttonColor, serie_item):
@@ -287,25 +293,38 @@ def update_items_from_data(ref_item):
 
     allItems = tree_widget.get_children()
 
+    #print('---', ref_itemDict['Id'], ref_item.parent().text(0))
+    
     for item in allItems:
+
+        if item.parent() == ref_item.parent():
+            continue
+
         itemDict = item.data(0, Qt.UserRole)
 
         if itemDict['Id'] == ref_itemDict['Id']:
-            if (itemDict | {"Serie": 0}) != (ref_itemDict | {"Serie": 0}): # to compare without 'Serie'
-                #print('----update', itemDict['Id'])
-                if  itemDict['Type'].startswith('Serie'):
-                    buttonColor = tree_widget.itemWidget(item, 5)
-                    buttonColor.setStyleSheet(f"background-color: {ref_itemDict['Color']}; border: none; border-radius: 3px;")
-                    checkboxInverted = tree_widget.itemWidget(item, 6)
-                    checkboxInverted.setChecked(ref_itemDict["Y axis inverted"])
-                    sync_window_with_item(item)
-                item.setText(0, ref_itemDict['Name'])
-                if 'X' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X'])
-                if 'X1Name' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X1Name'])
-                if 'Y' in ref_itemDict.keys(): item.setText(4, ref_itemDict['Y'])
-                item.setData(0, Qt.UserRole, ref_itemDict)
-        
+            #print('----------update', itemDict['Id'], item.parent().text(0))
+
+            before = copy.deepcopy(itemDict)
+
+            if  itemDict['Type'].startswith('Serie'):
+                buttonColor = tree_widget.itemWidget(item, 5)
+                buttonColor.setStyleSheet(f"background-color: {ref_itemDict['Color']}; border: none; border-radius: 3px;")
+                checkboxInverted = tree_widget.itemWidget(item, 6)
+                checkboxInverted.setChecked(ref_itemDict["Y axis inverted"])
+                sync_window_with_item(item)
+            item.setText(0, ref_itemDict['Name'])
+            if 'X' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X'])
+            if 'X1Name' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X1Name'])
+            if 'Y' in ref_itemDict.keys(): item.setText(4, ref_itemDict['Y'])
+            item.setData(0, Qt.UserRole, ref_itemDict)
+      
+            # Mark if item has changed
+            itemDict = item.data(0, Qt.UserRole)
+            if (before | {'Serie': 0}) != (itemDict | {'Serie': 0}):
                 mark_ws(item.parent())
+
+            tree_widget.blockSignals(True)
                 
     tree_widget.blockSignals(False)
 
@@ -844,7 +863,7 @@ class CustomTreeWidget(QTreeWidget):
         itemDict = dragged_item.data(0, Qt.UserRole)
         dragged_item.parent().removeChild(dragged_item)
         # Use the `add_item_tree_widget` function to add the dragged item to the target parent
-        add_item_tree_widget(target_item.parent(), itemDict, position, mark=False)
+        add_item_tree_widget(target_item.parent(), itemDict, position, mark=False, update=False)
 
         # Call the default implementation if the drop is valid
         super().dropEvent(event)
@@ -1491,7 +1510,7 @@ def paste_items():
             main_window.statusBar().showMessage('Item(s) already in', 5000)
             continue
         itemDict = item.data(0, Qt.UserRole)
-        add_item_tree_widget(ws_item, itemDict, position+1)
+        add_item_tree_widget(ws_item, itemDict, position+1, update=False)
 
 #========================================================================================
 def on_item_double_clicked(item, column):

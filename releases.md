@@ -1,3 +1,5 @@
+ * 5.27
+   * Fix saved status when items are modified
  * 5.26
    * Issue #18 Control saving WorkSheet individually
    * Issue #17 Exit sequence with control of unsaved worksheets
