@@ -47,7 +47,7 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
 ##### Update the application
 
  * `cd PyAnalySeries`
- * `git pull
+ * `git pull`
  
 ##### Create a python environment to use PyAnalySeries 
 
