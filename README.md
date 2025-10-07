@@ -44,6 +44,11 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
  * `git clone https://github.com/PaleoIPSL/PyAnalySeries`
  * `cd PyAnalySeries`
 
+##### Update the application
+
+ * `cd PyAnalySeries`
+ * `git pull
+ 
 ##### Create a python environment to use PyAnalySeries 
 
  * `conda env create --file environment.yml`
