@@ -77,32 +77,36 @@ class defineInsolationAstroSerieWindow(QWidget):
         
         #-------------------------------
         # Solar constant input
-        self.solar_constant_input = QSpinBox()
+        self.solar_constant_input = QDoubleSpinBox()
         self.solar_constant_input.setRange(1000, 1500)
         self.solar_constant_input.setValue(1365)
         self.solar_constant_input.setSingleStep(5)
+        self.solar_constant_input.setDecimals(2)
 
         #-------------------------------
         # Latitude slider
-        self.latitude_input = QSpinBox()
+        self.latitude_input = QDoubleSpinBox()
         self.latitude_input.setRange(-90, 90)
         self.latitude_input.setValue(65)
         self.latitude_input.setSingleStep(5)
+        self.latitude_input.setDecimals(2)
 
         #-------------------------------
         # True longitude #1
-        self.trueLongitude1_input = QSpinBox()
+        self.trueLongitude1_input = QDoubleSpinBox()
         self.trueLongitude1_input.setRange(0, 360)
         self.trueLongitude1_input.setValue(90)
         self.trueLongitude1_input.setSingleStep(5)
+        self.trueLongitude1_input.setDecimals(2)
         self.trueLongitude1_input.valueChanged.connect(self.updateTrueLongitude2Limit)
 
         #-------------------------------
         # True longitude #2
-        self.trueLongitude2_input = QSpinBox()
+        self.trueLongitude2_input = QDoubleSpinBox()
         self.trueLongitude2_input.setRange(1, 360)
         self.trueLongitude2_input.setValue(180)
         self.trueLongitude2_input.setSingleStep(5)
+        self.trueLongitude2_input.setDecimals(2)
 
         #-------------------------------
         # Time direction

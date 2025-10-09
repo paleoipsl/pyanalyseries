@@ -38,6 +38,7 @@ from resources.importDataWindow import importDataWindow
 
 from resources.defineRandomSerieWindow import defineRandomSerieWindow
 from resources.defineInsolationAstroSerieWindow import defineInsolationAstroSerieWindow
+from resources.defineSinusoidalSerieWindow import defineSinusoidalSerieWindow
 
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
@@ -49,7 +50,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.27'
+version = 'v5.28'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -59,6 +60,7 @@ open_interpolationWindows = {}
 open_importWindow = {}
 open_randomSerieWindow= {}
 open_insolationAstroSerieWindow= {}
+open_sinusoidalSerieWindow= {}
 
 #========================================================================================
 def colorize_item(item, color_name, alpha=100):
@@ -749,6 +751,25 @@ def define_insolationAstroSerie():
         insolationAstroSerieWindow = defineInsolationAstroSerieWindow(open_insolationAstroSerieWindow, add_item_tree_widget)
         open_insolationAstroSerieWindow[Id_insolationAstroSerieWindow] = insolationAstroSerieWindow
         insolationAstroSerieWindow.show()
+
+#========================================================================================
+def define_sinusoidalSerie():
+    global open_sinusoidalSerieWindow
+
+    current_index = tree_widget.currentItem()
+    if not current_index:
+        new_WorkSheet()
+    
+    Id_sinusoidalSerieWindow = '123456'
+
+    if open_sinusoidalSerieWindow:
+        sinusoidalSerieWindow = open_sinusoidalSerieWindow[Id_sinusoidalSerieWindow]
+        sinusoidalSerieWindow.raise_()
+        sinusoidalSerieWindow.activateWindow()
+    else:
+        sinusoidalSerieWindow = defineSinusoidalSerieWindow(open_sinusoidalSerieWindow, add_item_tree_widget)
+        open_sinusoidalSerieWindow[Id_sinusoidalSerieWindow] = sinusoidalSerieWindow
+        sinusoidalSerieWindow.show()
 
 #========================================================================================
 def create_tree_widget():
@@ -1711,12 +1732,14 @@ randomSerie_action = QAction("Random serie", main_window)
 randomSerie_action.triggered.connect(define_randomSerie)
 insolationAstroSerie_action = QAction("Insolation / Astronomical serie", main_window)
 insolationAstroSerie_action.triggered.connect(define_insolationAstroSerie)
+sinusoidalSerie_action = QAction("Sinusoidal serie", main_window)
+sinusoidalSerie_action.triggered.connect(define_sinusoidalSerie)
 
 create_menu.addAction(importData_action)
 create_menu.addSeparator()
 create_menu.addAction(randomSerie_action)
-create_menu.addSeparator()
 create_menu.addAction(insolationAstroSerie_action)
+create_menu.addAction(sinusoidalSerie_action)
 
 #----------------------------------------------
 process_menu = menu_bar.addMenu("Process")

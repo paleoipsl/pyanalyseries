@@ -48,3 +48,21 @@ def is_open(file):
             return False  # File was opened successfully → not locked
     except IOError:
         return True  # File is likely in use or inaccessible
+
+#========================================================================================
+def QLineEdit_check(widget, default: float):
+    txt = widget.text().strip()
+    # sign or empty
+    if txt in ("", "+", "-", "."):
+        widget.setText(str(default))
+        return
+    # comma → point
+    if ',' in txt:
+        txt = txt.replace(',', '.')
+        widget.setText(txt)
+    # final test
+    try:
+        float(txt)
+    except ValueError:
+        widget.setText(str(default))
+

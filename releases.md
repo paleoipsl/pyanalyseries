@@ -1,3 +1,6 @@
+ * 5.28
+   * Add 'Create / Sinusoidal Serie' with the defineSinusoidalSerieWindow class
+   * Change some parameters input as float in defineInsolationAstroSerieWindow
  * 5.27
    * Fix saved status when items are modified
  * 5.26

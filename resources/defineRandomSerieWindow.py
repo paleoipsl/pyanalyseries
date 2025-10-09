@@ -73,13 +73,13 @@ class defineRandomSerieWindow(QWidget):
         self.minVal_input = QLineEdit()
         self.minVal_input.setValidator(validator)
         self.minVal_input.setFixedWidth(100)
-        self.minVal_input.setText('0')
+        self.minVal_input.setText('0.0')
         self.minVal_input.editingFinished.connect(self.delayed_update)
 
         self.maxVal_input = QLineEdit()
         self.maxVal_input.setValidator(validator)
         self.maxVal_input.setFixedWidth(100)
-        self.maxVal_input.setText('10')
+        self.maxVal_input.setText('10.0')
         self.maxVal_input.editingFinished.connect(self.delayed_update)
 
         form_layout.addRow("Start point :", self.xstart_sb)
@@ -141,6 +141,7 @@ class defineRandomSerieWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def delayed_update(self):
+
         self.status_bar.showMessage('Waiting', 1000)
         self.update_timer.start(1000)
 
@@ -150,7 +151,10 @@ class defineRandomSerieWindow(QWidget):
         self.xstart =  self.xstart_sb.value()
         self.xend =  self.xend_sb.value()
         self.nbPts =  self.nbPts_sb.value()
+
+        QLineEdit_check(self.minVal_input, 0.0)
         self.minVal =  float(self.minVal_input.text())
+        QLineEdit_check(self.maxVal_input, 10.0)
         self.maxVal =  float(self.maxVal_input.text())
 
         x = np.linspace(self.xstart, self.xend, self.nbPts)
