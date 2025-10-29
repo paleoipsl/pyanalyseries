@@ -1,3 +1,5 @@
+ * 5.29
+   * Fix import data when number of columns is not consistent.
  * 5.28
    * Add 'Create / Sinusoidal Serie' with the defineSinusoidalSerieWindow class
    * Change some parameters input as float in defineInsolationAstroSerieWindow

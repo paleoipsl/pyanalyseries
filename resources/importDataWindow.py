@@ -98,16 +98,29 @@ class importDataWindow(QWidget):
         #print(expected_columns)
 
         data = []
-        for n, row in enumerate(clean_rows):
-            columns = row.split("\t")
-            #print('----', n, row, columns)
-            values = [""] * expected_columns
-            for i in range(len(columns)):
-                values[i] = columns[i] 
-            data.append(values)
+        try:
+            for n, row in enumerate(clean_rows):
+                columns = row.split("\t")
+                #print('----', n, row, columns)
+                values = [""] * expected_columns
+                for i in range(len(columns)):
+                    values[i] = columns[i] 
+                data.append(values)
+
+        except:
+            QMessageBox.critical(
+                self,
+                "Column mismatch",
+                f"Inconsistent number of columns in clipboard data."
+            )
+            return
 
         if not data:
-            QMessageBox.warning(self, "Invalid Data", "At least 2 columns (X,Y), (X,Y1,Y2,...) or (X Reference, X Distorded)")
+            QMessageBox.critical(
+                self, 
+                "Invalid Data", 
+                "At least 2 columns (X,Y), (X,Y1,Y2,...) or (X Reference, X Distorded)"
+            )
             return
 
         headers = data.pop(0)
