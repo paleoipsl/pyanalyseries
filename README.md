@@ -23,6 +23,11 @@ This project is distributed under the **CeCILL v2.1** license.
 
 <hr style="border:2px solid gray">
 
+#### Reference  
+Hevia-Cruz, F., Brockmann, P., Govin, A., Michel, E., and Paillard, D. (2025). Reviving AnalySeries: PyAnalySeries, a modern and collaborative open-source tool for time-series analysis. Past Global Changes Magazine, 33(2), 74–75. [https://doi.org/10.22498/pages.33.2.74](https://doi.org/10.22498/pages.33.2.74)
+
+<hr style="border:2px solid gray">
+
 #### Documentation 
 The use of the application is detailed in the following [Wiki page](https://github.com/PaleoIPSL/PyAnalySeries/wiki).
 
