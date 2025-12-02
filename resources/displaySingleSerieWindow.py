@@ -50,17 +50,17 @@ class displaySingleSerieWindow(QWidget):
         #----------------------------------------------
         data_tab = QWidget()
         data_layout = QVBoxLayout()
-        data_table = CustomQTableWidget()
-        data_table.setRowCount(len(serie))
-        data_table.setColumnCount(2)
-        data_table.setHorizontalHeaderLabels([self.xName, self.yName])
+        self.data_table = CustomQTableWidget()
+        self.data_table.setRowCount(len(serie))
+        self.data_table.setColumnCount(2)
+        self.data_table.setHorizontalHeaderLabels([self.xName, self.yName])
         duplicates = serie.index.duplicated()
         missing_values = serie.isna().to_numpy()
         serie = serie.sort_index()
 
         for i in range(len(serie)):
-            data_table.setItem(i, 0, QTableWidgetItem(str(f'{serie.index[i]:.6f}')))
-            data_table.setItem(i, 1, QTableWidgetItem(str(f'{serie.values[i]:.6f}')))
+            self.data_table.setItem(i, 0, QTableWidgetItem(str(f'{serie.index[i]:.6f}')))
+            self.data_table.setItem(i, 1, QTableWidgetItem(str(f'{serie.values[i]:.6f}')))
             if missing_values[i]:
                 base = QColor('peachpuff')
                 alt = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
@@ -71,12 +71,12 @@ class displaySingleSerieWindow(QWidget):
                 background_color = blend_colors(base, alt, ratio=0.6)
             else:
                 background_color = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
-            data_table.item(i, 0).setBackground(background_color)
-            data_table.item(i, 1).setBackground(background_color)
-        data_table.resizeColumnsToContents()
-        data_table.set_italic_headers()
+            self.data_table.item(i, 0).setBackground(background_color)
+            self.data_table.item(i, 1).setBackground(background_color)
+        self.data_table.resizeColumnsToContents()
+        self.data_table.set_italic_headers()
 
-        data_layout.addWidget(data_table)
+        data_layout.addWidget(self.data_table)
         data_tab.setLayout(data_layout)
         
         #----------------------------------------------
@@ -251,6 +251,10 @@ class displaySingleSerieWindow(QWidget):
 
         self.serieDict = self.item.data(0, Qt.UserRole)
         self.textName.setText(f"Name : <b>{self.serieDict['Name']}</b>")
+        self.xName = self.serieDict['X']
+        self.yName = self.serieDict['Y']
+        self.data_table.setHorizontalHeaderLabels([self.xName, self.yName])
+        self.data_table.resizeColumnsToContents()
         xlim = self.interactive_plot.axs[0].get_xlim()
         ylim = self.interactive_plot.axs[0].get_ylim()
         self.interactive_plot.axs[0].clear()

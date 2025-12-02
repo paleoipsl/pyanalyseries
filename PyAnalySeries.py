@@ -6,6 +6,7 @@
 
 import sys
 import os
+import datetime
 import copy
 from pathlib import Path
 
@@ -40,7 +41,7 @@ from resources.defineRandomSerieWindow import defineRandomSerieWindow
 from resources.defineInsolationAstroSerieWindow import defineInsolationAstroSerieWindow
 from resources.defineSinusoidalSerieWindow import defineSinusoidalSerieWindow
 
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
 
 #========================================================================================
@@ -50,7 +51,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.29'
+version = 'v5.30'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -85,7 +86,7 @@ def colorize_item(item, color_name, alpha=100):
 
     for col in range(tree_widget.columnCount()):
         item.setBackground(col, brush)
-        
+    
     tree_widget.blockSignals(False)
 
 #========================================================================================
@@ -269,7 +270,7 @@ def selectColor(buttonColor, serie_item):
     starting_color = serieDict['Color']
     color = CustomQColorDialog.getColor(starting_color)
     if color:
-        serieDict = serieDict | {'Color': color.name()} 
+        serieDict = serieDict | {'Color': color.name()}
         serie_item.setData(0, Qt.UserRole, serieDict)
         buttonColor = tree_widget.itemWidget(serie_item, 5)
         buttonColor.setStyleSheet(f"background-color: {serieDict['Color']}; border: none; border-radius: 3px;")
@@ -279,7 +280,7 @@ def selectColor(buttonColor, serie_item):
 #========================================================================================
 def checkboxInverted_changed(checkboxInverted, serie_item):
     serieDict = serie_item.data(0, Qt.UserRole)
-    serieDict = serieDict | {'Y axis inverted': checkboxInverted.isChecked()} 
+    serieDict = serieDict | {'Y axis inverted': checkboxInverted.isChecked()}
     serie_item.setData(0, Qt.UserRole, serieDict)
     checkboxInverted = tree_widget.itemWidget(serie_item, 6)
     checkboxInverted.setChecked(serieDict["Y axis inverted"])
@@ -299,7 +300,11 @@ def update_items_from_data(ref_item):
     
     for item in allItems:
 
+        itemDict = item.data(0, Qt.UserRole)
+
         if item.parent() == ref_item.parent():
+            if  itemDict['Type'].startswith('Serie'):
+                sync_window_with_item(item)
             continue
 
         itemDict = item.data(0, Qt.UserRole)
@@ -309,17 +314,18 @@ def update_items_from_data(ref_item):
 
             before = copy.deepcopy(itemDict)
 
+            item.setText(0, ref_itemDict['Name'])
+            if 'X' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X'])
+            if 'X1Name' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X1Name'])
+            if 'Y' in ref_itemDict.keys(): item.setText(4, ref_itemDict['Y'])
+            item.setData(0, Qt.UserRole, ref_itemDict)
+
             if  itemDict['Type'].startswith('Serie'):
                 buttonColor = tree_widget.itemWidget(item, 5)
                 buttonColor.setStyleSheet(f"background-color: {ref_itemDict['Color']}; border: none; border-radius: 3px;")
                 checkboxInverted = tree_widget.itemWidget(item, 6)
                 checkboxInverted.setChecked(ref_itemDict["Y axis inverted"])
                 sync_window_with_item(item)
-            item.setText(0, ref_itemDict['Name'])
-            if 'X' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X'])
-            if 'X1Name' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X1Name'])
-            if 'Y' in ref_itemDict.keys(): item.setText(4, ref_itemDict['Y'])
-            item.setData(0, Qt.UserRole, ref_itemDict)
       
             # Mark if item has changed
             itemDict = item.data(0, Qt.UserRole)
@@ -335,7 +341,6 @@ def sync_window_with_item(item):
 
     itemDict = item.data(0, Qt.UserRole)
     Id_window = itemDict['Id']
-    #print(open_displayWindows);
     for key in open_displayWindows.keys():
         displayWindow = open_displayWindows[key]
         try:
@@ -540,11 +545,15 @@ def save_WorkSheet(ws_item):
     outFile = ws_item.text(0).replace(" *", "")
 
     #-----------------------
-    try:
+    if os.path.exists(outFile):
+        wb = load_workbook(outFile)
+    else:
         wb = Workbook()
 
-        #----------------------------------
+    #----------------------------------
+    try:
         sheetName = f'Information'
+        if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
         ws = wb.create_sheet(title=sheetName)
 
         ws.cell(row=1, column=1, value=f'Created with PyAnalyseries {version}')
@@ -553,6 +562,8 @@ def save_WorkSheet(ws_item):
         ws.cell(row=3, column=1, value=text)
         text = "Do not modify or accordingly with documentation."
         ws.cell(row=4, column=1, value=text)
+        text = datetime.datetime.now().strftime("Saved %Y/%m/%d at %H:%M:%S")
+        ws.cell(row=6, column=1, value=text)
 
         #----------------------------------
         for n in range(ws_item.childCount()):
@@ -563,6 +574,7 @@ def save_WorkSheet(ws_item):
             #-----------------------
             if itemDict["Type"].startswith('Serie'):
                 sheetName = f'{itemDict["Type"].split(" ")[0]} {itemDict["Id"]}'
+                if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
                 ws = wb.create_sheet(title=sheetName)
 
                 ws.cell(row=1, column=1, value=itemDict['X'])
@@ -583,7 +595,7 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=2, column=6, value=itemDict['Color'])
                 ws.cell(row=2, column=7, value=itemDict['Comment'])
                 ws.cell(row=2, column=8, value=itemDict['History'])
-    
+        
                 if 'InterpolationMode' in itemDict:
                     ws.cell(row=1, column=9, value='InterpolationMode')
                     ws.cell(row=1, column=10, value='X1Coords')
@@ -601,6 +613,7 @@ def save_WorkSheet(ws_item):
             #-----------------------
             elif itemDict["Type"] in ['FILTER', 'SAMPLE']:
                 sheetName = f'{itemDict["Type"]} {itemDict["Id"]}'
+                if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
                 ws = wb.create_sheet(title=sheetName)
 
                 ws.cell(row=1, column=1, value='Type')
@@ -623,6 +636,7 @@ def save_WorkSheet(ws_item):
             #-----------------------
             elif itemDict["Type"] == 'INTERPOLATION':
                 sheetName = f'{itemDict["Type"]} {itemDict["Id"]}'
+                if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
                 ws = wb.create_sheet(title=sheetName)
 
                 ws.cell(row=1, column=1, value='X1Coords')
@@ -801,14 +815,34 @@ def create_tree_widget():
     tree_widget.headerItem().setFont(3, font)
     tree_widget.headerItem().setFont(4, font)
 
-    delegate = QStyledItemDelegate()
-    delegate.createEditor = lambda parent, option, index: (
-        QLineEdit(parent, font=font)
-    )
-    tree_widget.setItemDelegateForColumn(1, delegate)
-    tree_widget.setItemDelegateForColumn(3, delegate)
-    tree_widget.setItemDelegateForColumn(4, delegate)
+    #---------------------------------------------
+    tree_widget.edit_delegate = QStyledItemDelegate(tree_widget)
+    
+    def create_editor(parent, option, index):
+        editor = QLineEdit(parent)
+        if index.column() in (3, 4): editor.setFont(font)
+        editor.setStyleSheet("color: blue;")
+        return editor
+    
+    tree_widget.edit_delegate.createEditor = create_editor
+    tree_widget.setItemDelegateForColumn(0, tree_widget.edit_delegate)
+    tree_widget.setItemDelegateForColumn(3, tree_widget.edit_delegate)
+    tree_widget.setItemDelegateForColumn(4, tree_widget.edit_delegate)
+    
+    #---------------------------------------------
+    tree_widget.readonly_delegate = QStyledItemDelegate(tree_widget)
+    
+    def create_readonly_editor(parent, option, index):
+        editor = QLineEdit(parent)
+        editor.setFont(font)
+        editor.setReadOnly(True)
+        editor.setStyleSheet("color: red;")
+        return editor
+    
+    tree_widget.readonly_delegate.createEditor = create_readonly_editor
+    tree_widget.setItemDelegateForColumn(1, tree_widget.readonly_delegate)
 
+    #---------------------------------------------
     tree_widget.setDragEnabled(True)
     tree_widget.setAcceptDrops(True)
     tree_widget.setDropIndicatorShown(True)
@@ -1547,6 +1581,9 @@ def on_item_double_clicked(item, column):
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         if item_isWS:
             item.setText(0, item.text(0).replace(" *", ""))  # Remove visual cue
+    elif column == 1:
+        tree_widget.custom_tooltip.hide()
+        item.setFlags(item.flags() | Qt.ItemIsEditable)
     elif column == 3 and (itemDict['Type'].startswith('Serie') or
                           itemDict['Type'] == "INTERPOLATION"): 
         item.setFlags(item.flags() | Qt.ItemIsEditable)

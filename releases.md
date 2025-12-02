@@ -1,3 +1,6 @@
+ * 5.30
+   * Add timestamp when saving
+   * Fix synchronisation item lost from 5.26 
  * 5.29
    * Fix import data when number of columns is not consistent.
  * 5.28
