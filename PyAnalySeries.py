@@ -7,6 +7,7 @@
 import sys
 import os
 import datetime
+import re
 import copy
 from pathlib import Path
 
@@ -51,7 +52,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.30'
+version = 'v5.31'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -59,9 +60,10 @@ open_filterWindows = {}
 open_sampleWindows = {} 
 open_interpolationWindows = {} 
 open_importWindow = {}
-open_randomSerieWindow= {}
-open_insolationAstroSerieWindow= {}
-open_sinusoidalSerieWindow= {}
+open_randomSerieWindow = {}
+open_insolationAstroSerieWindow = {}
+open_sinusoidalSerieWindow = {}
+open_spectralAnalysisWindow = {}
 
 #========================================================================================
 def colorize_item(item, color_name, alpha=100):
@@ -398,8 +400,9 @@ def load_WorkSheet(fileName):
                     'Y':  df.columns[1],
                     'Y axis inverted': bool(df['Y axis inverted'][0]),
                     'Color': Color,
+                    'Date': df['Date'][0] if 'Date' in df.columns else '',
                     'Comment': df['Comment'][0],
-                    'History': df['History'][0],
+                    'History': re.sub(r'^(<br\s*/?>)', '', df['History'][0], flags=re.IGNORECASE),    # to correct old comments
                     'Serie': pd.Series(addNanList(df.iloc[:,1]), index=addNanList(df.iloc[:,0]))
                 }
 
@@ -421,7 +424,7 @@ def load_WorkSheet(fileName):
                 QApplication.processEvents()
 
         #-------------------------------------
-        elif sheetName.startswith('FILTER Id-') or  sheetName.startswith('SAMPLE Id-'):
+        elif sheetName.startswith('FILTER Id-') or sheetName.startswith('SAMPLE Id-'):
             
             try:
                 df = pd.read_excel(fileName, sheet_name=sheetName, na_filter=False)
@@ -430,8 +433,9 @@ def load_WorkSheet(fileName):
                         'Type': df['Type'][0],
                         'Name': df['Name'][0],
                         'Parameters': str(df['Parameters'][0]),
+                        'Date': df['Date'][0] if 'Date' in df.columns else '',
                         'Comment': df['Comment'][0],
-                        'History': df['History'][0]
+                        'History': re.sub(r'^(<br\s*/?>)', '', df['History'][0], flags=re.IGNORECASE)    # to correct old comments
                 }
 
                 if 'XCoords' in df.columns:                 # for SAMPLE
@@ -459,8 +463,9 @@ def load_WorkSheet(fileName):
                         'X1Coords': df['X1Coords'].values,
                         'X2Coords': df['X2Coords'].values,
                         'X1Name': df['X1Name'][0],
+                        'Date': df['Date'][0] if 'Date' in df.columns else '',
                         'Comment': df['Comment'][0],
-                        'History': df['History'][0]
+                        'History': re.sub(r'^(<br\s*/?>)', '', df['History'][0], flags=re.IGNORECASE)    # to correct old comments
                 }
 
                 itemDict_list.append(aDict)
@@ -583,8 +588,9 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=1, column=4, value='Name')
                 ws.cell(row=1, column=5, value='Y axis inverted')
                 ws.cell(row=1, column=6, value='Color')
-                ws.cell(row=1, column=7, value='Comment')
-                ws.cell(row=1, column=8, value='History')
+                ws.cell(row=1, column=7, value='Date')
+                ws.cell(row=1, column=8, value='Comment')
+                ws.cell(row=1, column=9, value='History')
 
                 for i, (index, value) in enumerate(itemDict['Serie'].sort_index().items(), start=2):            # force sort on index
                     ws.cell(row=i, column=1, value=index)
@@ -593,22 +599,23 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=2, column=4, value=itemDict['Name'])
                 ws.cell(row=2, column=5, value=itemDict['Y axis inverted'])
                 ws.cell(row=2, column=6, value=itemDict['Color'])
-                ws.cell(row=2, column=7, value=itemDict['Comment'])
-                ws.cell(row=2, column=8, value=itemDict['History'])
+                ws.cell(row=2, column=7, value=itemDict['Date'])
+                ws.cell(row=2, column=8, value=itemDict['Comment'])
+                ws.cell(row=2, column=9, value=itemDict['History'])
         
                 if 'InterpolationMode' in itemDict:
-                    ws.cell(row=1, column=9, value='InterpolationMode')
-                    ws.cell(row=1, column=10, value='X1Coords')
-                    ws.cell(row=1, column=11, value='X2Coords')
-                    ws.cell(row=1, column=12, value=itemDict['XOriginal'])
+                    ws.cell(row=1, column=10, value='InterpolationMode')
+                    ws.cell(row=1, column=11, value='X1Coords')
+                    ws.cell(row=1, column=12, value='X2Coords')
+                    ws.cell(row=1, column=13, value=itemDict['XOriginal'])
 
-                    ws.cell(row=2, column=9, value=itemDict['InterpolationMode'])
+                    ws.cell(row=2, column=10, value=itemDict['InterpolationMode'])
                     for i, value in enumerate(itemDict['X1Coords'], start=2):
-                        ws.cell(row=i, column=10, value=value)
-                    for i, value in enumerate(itemDict['X2Coords'], start=2):
                         ws.cell(row=i, column=11, value=value)
-                    for i, value in enumerate(itemDict['XOriginalValues'], start=2):
+                    for i, value in enumerate(itemDict['X2Coords'], start=2):
                         ws.cell(row=i, column=12, value=value)
+                    for i, value in enumerate(itemDict['XOriginalValues'], start=2):
+                        ws.cell(row=i, column=13, value=value)
 
             #-----------------------
             elif itemDict["Type"] in ['FILTER', 'SAMPLE']:
@@ -619,19 +626,21 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=1, column=1, value='Type')
                 ws.cell(row=1, column=2, value='Name')
                 ws.cell(row=1, column=3, value='Parameters')
-                ws.cell(row=1, column=4, value='Comment')
-                ws.cell(row=1, column=5, value='History')
+                ws.cell(row=1, column=4, value='Date')
+                ws.cell(row=1, column=5, value='Comment')
+                ws.cell(row=1, column=6, value='History')
                 
                 ws.cell(row=2, column=1, value=itemDict['Type'])
                 ws.cell(row=2, column=2, value=itemDict['Name'])
                 ws.cell(row=2, column=3, value=itemDict['Parameters'])
-                ws.cell(row=2, column=4, value=itemDict['Comment'])
-                ws.cell(row=2, column=5, value=itemDict['History'])
+                ws.cell(row=2, column=4, value=itemDict['Date'])
+                ws.cell(row=2, column=5, value=itemDict['Comment'])
+                ws.cell(row=2, column=6, value=itemDict['History'])
                 
                 if 'XCoords' in itemDict:
-                    ws.cell(row=1, column=6, value='XCoords')
+                    ws.cell(row=1, column=7, value='XCoords')
                     for i, value in enumerate(itemDict['XCoords'], start=2):
-                        ws.cell(row=i, column=6, value=value)
+                        ws.cell(row=i, column=7, value=value)
 
             #-----------------------
             elif itemDict["Type"] == 'INTERPOLATION':
@@ -644,8 +653,9 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=1, column=3, value='X1Name')
                 ws.cell(row=1, column=4, value='Type')
                 ws.cell(row=1, column=5, value='Name')
-                ws.cell(row=1, column=6, value='Comment')
-                ws.cell(row=1, column=7, value='History')
+                ws.cell(row=1, column=6, value='Date')
+                ws.cell(row=1, column=7, value='Comment')
+                ws.cell(row=1, column=8, value='History')
 
                 for i, value in enumerate(itemDict['X1Coords'], start=2):
                     ws.cell(row=i, column=1, value=value)
@@ -654,8 +664,9 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=2, column=3, value=itemDict['X1Name'])
                 ws.cell(row=2, column=4, value=itemDict['Type'])
                 ws.cell(row=2, column=5, value=itemDict['Name'])
-                ws.cell(row=2, column=6, value=itemDict['Comment'])
-                ws.cell(row=2, column=7, value=itemDict['History'])
+                ws.cell(row=2, column=6, value=itemDict['Date'])
+                ws.cell(row=2, column=7, value=itemDict['Comment'])
+                ws.cell(row=2, column=8, value=itemDict['History'])
                 
             #-----------------------
 
@@ -729,25 +740,6 @@ def import_Data():
         importWindow.show()
 
 #========================================================================================
-def define_randomSerie():
-    global open_randomSerieWindow
-
-    current_index = tree_widget.currentItem()
-    if not current_index:
-        new_WorkSheet()
-    
-    Id_randomSerieWindow = '123456'
-
-    if open_randomSerieWindow:
-        randomSerieWindow = open_randomSerieWindow[Id_randomSerieWindow]
-        randomSerieWindow.raise_()
-        randomSerieWindow.activateWindow()
-    else:
-        randomSerieWindow = defineRandomSerieWindow(open_randomSerieWindow, add_item_tree_widget)
-        open_randomSerieWindow[Id_randomSerieWindow] = randomSerieWindow
-        randomSerieWindow.show()
-
-#========================================================================================
 def define_insolationAstroSerie():
     global open_insolationAstroSerieWindow
 
@@ -784,6 +776,25 @@ def define_sinusoidalSerie():
         sinusoidalSerieWindow = defineSinusoidalSerieWindow(open_sinusoidalSerieWindow, add_item_tree_widget)
         open_sinusoidalSerieWindow[Id_sinusoidalSerieWindow] = sinusoidalSerieWindow
         sinusoidalSerieWindow.show()
+
+#========================================================================================
+def define_randomSerie():
+    global open_randomSerieWindow
+
+    current_index = tree_widget.currentItem()
+    if not current_index:
+        new_WorkSheet()
+    
+    Id_randomSerieWindow = '123456'
+
+    if open_randomSerieWindow:
+        randomSerieWindow = open_randomSerieWindow[Id_randomSerieWindow]
+        randomSerieWindow.raise_()
+        randomSerieWindow.activateWindow()
+    else:
+        randomSerieWindow = defineRandomSerieWindow(open_randomSerieWindow, add_item_tree_widget)
+        open_randomSerieWindow[Id_randomSerieWindow] = randomSerieWindow
+        randomSerieWindow.show()
 
 #========================================================================================
 def create_tree_widget():
@@ -881,10 +892,11 @@ class CustomTreeWidget(QTreeWidget):
         self.custom_tooltip.setStyleSheet("""
             background-color: lightyellow;
             border: 1px solid lightgray;
-            padding: 4px;
             border-radius: 4px;
+            padding: 4px;
             font-size: 12px;
             font-family: Courier New;
+            ul { margin: 0px; }
         """)
         self.custom_tooltip.setWindowFlags(Qt.ToolTip)
         self.custom_tooltip.setFixedWidth(500)
@@ -938,7 +950,13 @@ class CustomTreeWidget(QTreeWidget):
             if item and col == 1:  # Tooltip only for column 1
                 data = item.data(0, Qt.UserRole)
                 if isinstance(data, dict):
-                    tooltip_text = f"History: {data['History']}<BR><BR>Comment: {data['Comment']}"
+                    tooltip_text = '''<style> 
+                                             p,ol { margin: 0px 0px 0px 0px; }
+                                             .p1 { margin: 0px 0px 0px 20px; }
+                                      </style>''';
+                    tooltip_text += f'''<p><u>Date :</u><p class='p1'>{data['Date']}
+                                        <p><u>History :</u><ol><li>{data['History']}</ol>
+                                        <p><u>Comment :</u><p class='p1'>{data['Comment']}'''
 
                     global_pos = self.viewport().mapToGlobal(pos)
                     self.custom_tooltip.setText(tooltip_text)
@@ -1156,7 +1174,7 @@ def apply_filter():
             'Serie': defineFilterWindow.moving_average(serie, window_size=filter_window_size),
             'Color': generate_color(exclude_color=serieDict['Color']),
             'History': append_to_htmlText(serieDict['History'], 
-                f'<BR>Serie <i><b>{serieDict["Id"]}</i></b> filtered with FILTER <i><b>{filterDict["Id"]}</i></b> with a moving average of size {filter_window_size}<BR>---> serie <i><b>{filtered_Id}</b></i>'),
+                f'Serie <i><b>{serieDict["Id"]}</i></b> filtered with FILTER <i><b>{filterDict["Id"]}</i></b> with a moving average of size {filter_window_size}<BR>---> serie <i><b>{filtered_Id}</b></i>'),
             'Comment': ''
         }
         ws_item = item.parent()
@@ -1279,7 +1297,7 @@ def apply_sample():
                 'Serie': defineSampleWindow.sample(serie, sample_index, kind=sample_kind, integrated=sample_integrated),
                 'Color': generate_color(exclude_color=serieDict['Color']),
                 'History': append_to_htmlText(serieDict['History'], 
-                    f'<BR>Serie <i><b>{serieDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sampleDict["Id"]}</i></b><BR>---> serie <i><b>{sampled_Id}</b></i>'),
+                    f'Serie <i><b>{serieDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sampleDict["Id"]}</i></b><BR>---> serie <i><b>{sampled_Id}</b></i>'),
                 'Comment': ''
             }
             ws_item = item.parent()
@@ -1404,7 +1422,7 @@ def apply_interpolation(interpolationMode):
             'X2Coords': X2Coords, 
             'Color': generate_color(exclude_color=serieDict['Color']),
             'History': append_to_htmlText(serieDict['History'], 
-                f'<BR>Serie <i><b>{serieDict["Id"]}</i></b> interpolated with INTERPOLATION <i><b>{interpolationDict["Id"]}</i></b> with mode {interpolationMode}<BR>---> serie <i><b>{interpolated_Id}</b></i>'),
+                f'Serie <i><b>{serieDict["Id"]}</i></b> interpolated with INTERPOLATION <i><b>{interpolationDict["Id"]}</i></b> with mode {interpolationMode}<BR>---> serie <i><b>{interpolated_Id}</b></i>'),
             'Comment': ''
         }
 

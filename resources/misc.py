@@ -28,7 +28,7 @@ def blend_colors(color1, color2, ratio=0.5):
 #========================================================================================
 def append_to_htmlText(text, new_value):
     if text:
-        text += "<br>"
+        text += "<li>"
     text += new_value
     return text 
 
@@ -66,3 +66,18 @@ def QLineEdit_check(widget, default: float):
     except ValueError:
         widget.setText(str(default))
 
+#========================================================================================
+def is_axvline(line):
+    xdata = line.get_xdata()
+    ydata = line.get_ydata()
+
+    x_is_constant = (
+        len(xdata) == 1 or
+        (len(xdata) == 2 and xdata[0] == xdata[1])
+    )
+
+    y_covers_full_axis = (
+        len(ydata) == 2 and ydata[0] == 0 and ydata[1] == 1
+    )
+
+    return x_is_constant and y_covers_full_axis

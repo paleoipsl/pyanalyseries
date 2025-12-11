@@ -7,6 +7,7 @@ from .interactivePlot import interactivePlot
 from .CustomQTableWidget import CustomQTableWidget
 
 import sys
+import datetime
 import numpy as np
 import pandas as pd
 
@@ -166,8 +167,6 @@ class defineInterpolationWindow(QWidget):
 
         self.showInterp = QCheckBox("Show interpolated curve")
         self.showInterp.setChecked(True)
-        #self.showInterp.setShortcut("z")
-        #self.showInterp.setToolTip("Type key 'z' as shortcut")
 
         self.removeAddLastConnect_button = QPushButton()
         self.removeAddLastConnect_button.setFixedWidth(210)
@@ -843,8 +842,9 @@ class defineInterpolationWindow(QWidget):
             'X1Coords': self.X1Coords,
             'X2Coords': self.X2Coords,
             'X1Name': self.X1Name,              # interpolated to reference that is X1
-            'Comment': '',
-            'History': '',
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
+            'History': 'INTERPOLATION <i><b>{interpolation_Id}</i></b>',
+            'Comment': ''
         }
         try:
             self.add_item_tree_widget(self.itemRef.parent(), interpolationDict)
@@ -873,8 +873,9 @@ class defineInterpolationWindow(QWidget):
             'X1Coords': self.X1Coords,
             'X2Coords': self.X2Coords,
             'Color': generate_color(exclude_color=self.serie2Dict['Color']),
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': append_to_htmlText(self.serie2Dict['History'], 
-                f'<BR>Serie <i><b>{self.serie2Dict["Id"]}</i></b> interpolated with INTERPOLATION <i><b>{interpolation_Id}</i></b> with mode {self.interpolationMode}<BR>---> serie <i><b>{interpolated_Id}</b></i>'),
+                f'Serie <i><b>{self.serie2Dict["Id"]}</i></b> interpolated with INTERPOLATION <i><b>{interpolation_Id}</i></b> with mode {self.interpolationMode}<BR>---> serie <i><b>{interpolated_Id}</b></i>'),
             'Comment': ''
         }
 
@@ -895,26 +896,6 @@ class defineInterpolationWindow(QWidget):
         self.axs[1].clear()
         self.axsInterp.clear()
         self.myplot()
-
-    #---------------------------------------------------------------------------------------------
-    def contextMenuEvent(self, event):
-        current_tab_index = self.tabs.currentIndex()
-        if current_tab_index == 0 or current_tab_index == 2:                  # Plots or Pointers plot
-            context_menu = QMenu(self)
-            print_action = QAction("Save plot as PNG or PDF", self)
-            print_action.triggered.connect(self.savePlot)
-            context_menu.addAction(print_action)
-            context_menu.exec_(event.globalPos())
-
-    #---------------------------------------------------------------------------------------------
-    def savePlot(self):
-        fileName, _ = QFileDialog.getSaveFileName(self, 'Save Plots', '', 'PNG Files (*.png);;PDF Files (*.pdf)')
-        if fileName:
-            self.linecursor1.set_visible(False)
-            self.linecursor2.set_visible(False)
-            plt.savefig(fileName)
-            self.linecursor1.set_visible(True)
-            self.linecursor2.set_visible(True)
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):

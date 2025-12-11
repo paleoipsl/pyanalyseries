@@ -3,8 +3,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 import sys
+import datetime
 import pandas as pd
 import numpy as np
+
 import matplotlib
 matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
@@ -224,16 +226,22 @@ class defineSinusoidalSerieWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def import_serie(self):
+
+        serie_Id = generate_Id() 
+
         history = f'Sinusoidal serie generated with parameters displayed above.'
+        history += f'<BR>---> serie <i><b>{serie_Id}</b></i>'
+
         serieDict = {
-            'Id': generate_Id(), 
+            'Id': serie_Id, 
             'Type': 'Serie', 
             'Name': '', 
             'X': 'X', 
             'Y': 'Y',
             'Y axis inverted': False,
             'Color': generate_color(),
-            'History': '<BR>' + history,
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
+            'History': history,
             'Comment': '',
             'Serie': pd.Series(self.values, index=self.index),
         }
@@ -244,7 +252,7 @@ class defineSinusoidalSerieWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
-        self.open_sinusoidalSerieWindow.pop('sinusoidal', None)
+        self.open_sinusoidalSerieWindow.pop('123456', None)
         event.accept()
 
 

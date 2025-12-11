@@ -122,6 +122,8 @@ class displaySingleSerieWindow(QWidget):
 
         self.textName = QLabel(f"Name : <b>{self.serieDict['Name']}</b>")
 
+        self.textDate = QLabel(f"Date : {self.serieDict['Date']}")
+
         labelHistory = QLabel("History :")
         self.textHistory = QTextEdit()
         self.textHistory.setFixedHeight(self.textHistory.fontMetrics().lineSpacing() * 10)
@@ -142,6 +144,7 @@ class displaySingleSerieWindow(QWidget):
         self.textComment.setText(self.serieDict['Comment'])
 
         info_layout.addWidget(self.textName)
+        info_layout.addWidget(self.textDate)
         info_layout.addWidget(labelHistory)
         info_layout.addWidget(self.textHistory)
         info_layout.addWidget(labelComment)
@@ -183,22 +186,6 @@ class displaySingleSerieWindow(QWidget):
     #---------------------------------------------------------------------------------------------
 
         self.interactive_plot.fig.canvas.setFocus()
-
-    #---------------------------------------------------------------------------------------------
-    def contextMenuEvent(self, event):
-        current_tab_index = self.tabs.currentIndex()
-        if current_tab_index == 2:                  # Plot
-            context_menu = QMenu(self)
-            print_action = QAction("Save plot as PNG or PDF", self)
-            print_action.triggered.connect(self.savePlot)
-            context_menu.addAction(print_action)
-            context_menu.exec_(event.globalPos())
-
-    #---------------------------------------------------------------------------------------------
-    def savePlot(self):
-        fileName, _ = QFileDialog.getSaveFileName(self, 'Save Plots', '', 'PNG Files (*.png);;PDF Files (*.pdf)')
-        if fileName:
-            plt.savefig(fileName)
 
     #---------------------------------------------------------------------------------------------
     def myplot(self, limits=None):

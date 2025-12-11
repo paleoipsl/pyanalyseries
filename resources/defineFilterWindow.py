@@ -11,6 +11,7 @@ from .misc import *
 from .interactivePlot import interactivePlot
 
 import sys
+import datetime
 import numpy as np
 import pandas as pd
 
@@ -197,8 +198,9 @@ class defineFilterWindow(QWidget):
             'Type': 'FILTER', 
             'Name': f'Moving average {self.window_size} pts', 
             'Parameters': f'{self.window_size}',
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'Comment': '',
-            'History': f'<BR>Filter with parameters :' + \
+            'History': f'FILTER <i><b>{filter_Id}</i></b> with parameters :' + \
                     '<ul>' + \
                     f'<li>Moving average size : {self.window_size}' + \
                     '</ul>'
@@ -219,8 +221,9 @@ class defineFilterWindow(QWidget):
             'Type': 'Serie filtered', 
             'Serie': self.moving_average(self.serie, self.window_size),
             'Color': generate_color(exclude_color=self.serieDict['Color']),
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': append_to_htmlText(self.serieDict['History'], 
-                f'<BR>Serie <i><b>{self.serieDict["Id"]}</i></b> filtered with FILTER <i><b>{filter_Id}</i></b> with a moving average of size {self.window_size}<BR>---> serie <i><b>{filtered_Id}</b></i>'),
+                f'Serie <i><b>{self.serieDict["Id"]}</i></b> filtered with FILTER <i><b>{filter_Id}</i></b> with a moving average of size {self.window_size}<BR>---> serie <i><b>{filtered_Id}</b></i>'),
             'Comment': '',
         }
 

@@ -42,6 +42,8 @@ class displayFilterWindow(QWidget):
 
         self.textName = QLabel(f"Name : <b>{self.filterDict['Name']}</b>")
 
+        self.textDate = QLabel(f"Date : {self.filterDict['Date']}")
+
         labelHistory = QLabel("History :")
         self.textHistory = QTextEdit()
         self.textHistory.setFixedHeight(self.textHistory.fontMetrics().lineSpacing() * 10)
@@ -62,6 +64,7 @@ class displayFilterWindow(QWidget):
         self.textComment.setText(self.filterDict['Comment'])
 
         info_layout.addWidget(self.textName)
+        info_layout.addWidget(self.textDate)
         info_layout.addWidget(labelHistory)
         info_layout.addWidget(self.textHistory)
         info_layout.addWidget(labelComment)

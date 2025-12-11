@@ -1,3 +1,10 @@
+ * 5.31
+   * Add Date as field for items (save in WS, handle existing or not)
+   * Improve History texts
+   * Modify interactivePlot :  
+       - to add context menu on axis to choose invert, linear, log display
+       - to add context menu on plot to save figure
+   * Handle missing values when import serie
  * 5.30
    * Add timestamp when saving
    * Fix synchronisation item lost from 5.26 

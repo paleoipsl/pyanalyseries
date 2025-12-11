@@ -4,29 +4,21 @@ matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
 from matplotlib.axis import XAxis, YAxis
 from matplotlib.lines import Line2D
+from matplotlib.backend_bases import KeyEvent
+from matplotlib.ticker import LogLocator, FuncFormatter
+
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
 import numpy as np
+
+from .misc import *
 
 from shapely.geometry import LineString, Point
 
 #=========================================================================================
 plt.rcParams["toolbar"] = "None" 
-
-#=========================================================================================
-def is_axvline(line):
-    xdata = line.get_xdata()
-    ydata = line.get_ydata()
-
-    x_is_constant = (
-        len(xdata) == 1 or 
-        (len(xdata) == 2 and xdata[0] == xdata[1])
-    )
-
-    y_covers_full_axis = (
-        len(ydata) == 2 and ydata[0] == 0 and ydata[1] == 1
-    )
-
-    return x_is_constant and y_covers_full_axis
 
 #=========================================================================================
 class interactivePlot:
@@ -162,14 +154,21 @@ class interactivePlot:
             # Zoom on the X axis
             cur_xlim = ax.get_xlim()
 
-            #xdata = event.xdata if event.xdata is not None else (cur_xlim[0] + cur_xlim[1]) / 2
             inv = ax.transData.inverted()
             xdata, _ = inv.transform((event.x, event.y))
 
-            new_xlim = [xdata - (xdata - cur_xlim[0]) * scale_factor,
-                        xdata + (cur_xlim[1] - xdata) * scale_factor]
+            xinverted_status = ax.xaxis.get_inverted()
+            if ax.get_xscale() == 'linear':
+                new_xlim = [xdata - (xdata - cur_xlim[0]) * scale_factor,
+                            xdata + (cur_xlim[1] - xdata) * scale_factor]
+            elif ax.get_xscale() == 'log':
+                log_xmin, log_xmax = np.log(cur_xlim)
+                log_x = np.log(xdata)
+                new_log_xmin = log_x - (log_x - log_xmin) * scale_factor
+                new_log_xmax = log_x + (log_xmax - log_x) * scale_factor
+                new_xlim = [np.exp(new_log_xmin), np.exp(new_log_xmax)]
             ax.set_xlim(new_xlim)
-            #print("Zooming in on the X axis (ticks or labels)")
+            ax.xaxis.set_inverted(xinverted_status)                # set back to state
 
         #------------------------------
         elif isinstance(artist, YAxis):
@@ -180,10 +179,18 @@ class interactivePlot:
             inv = ax.transData.inverted()
             _, ydata = inv.transform((event.x, event.y))
 
-            new_ylim = [ydata - (ydata - cur_ylim[0]) * scale_factor,
-                        ydata + (cur_ylim[1] - ydata) * scale_factor]
+            yinverted_status = ax.yaxis.get_inverted()
+            if ax.get_yscale() == 'linear':
+                new_ylim = [ydata - (ydata - cur_ylim[0]) * scale_factor,
+                            ydata + (cur_ylim[1] - ydata) * scale_factor]
+            elif ax.get_yscale() == 'log':
+                log_ymin, log_ymax = np.log(cur_ylim)
+                log_y = np.log(ydata)
+                new_log_ymin = log_y - (log_y - log_ymin) * scale_factor
+                new_log_ymax = log_y + (log_ymax - log_y) * scale_factor
+                new_ylim = [np.exp(new_log_ymin), np.exp(new_log_ymax)]
             ax.set_ylim(new_ylim)
-            #print("Zooming in on the Y axis (ticks or labels)")
+            ax.yaxis.set_inverted(yinverted_status)                # set back to state
 
         #------------------------------
         elif isinstance(artist, plt.Axes):
@@ -196,13 +203,32 @@ class interactivePlot:
             if xdata is None or ydata is None:
                 return  # Prevent NoneType error
 
-            new_xlim = [xdata - (xdata - cur_xlim[0]) * scale_factor,
-                        xdata + (cur_xlim[1] - xdata) * scale_factor]
-            new_ylim = [ydata - (ydata - cur_ylim[0]) * scale_factor,
-                        ydata + (cur_ylim[1] - ydata) * scale_factor]
-
+            xinverted_status = ax.xaxis.get_inverted()
+            if ax.get_xscale() == 'linear':
+                new_xlim = [xdata - (xdata - cur_xlim[0]) * scale_factor,
+                            xdata + (cur_xlim[1] - xdata) * scale_factor]
+            elif ax.get_xscale() == 'log':
+                log_xmin, log_xmax = np.log(cur_xlim)
+                log_x = np.log(xdata)
+                new_log_xmin = log_x - (log_x - log_xmin) * scale_factor
+                new_log_xmax = log_x + (log_xmax - log_x) * scale_factor
+                new_xlim = [np.exp(new_log_xmin), np.exp(new_log_xmax)]
             ax.set_xlim(new_xlim)
+            ax.xaxis.set_inverted(xinverted_status)                # set back to state
+
+            yinverted_status = ax.yaxis.get_inverted()
+            if ax.get_yscale() == 'linear':
+                new_ylim = [ydata - (ydata - cur_ylim[0]) * scale_factor,
+                            ydata + (cur_ylim[1] - ydata) * scale_factor]
+            elif ax.get_yscale() == 'log':
+                log_ymin, log_ymax = np.log(cur_ylim)
+                log_y = np.log(ydata)
+                new_log_ymin = log_y - (log_y - log_ymin) * scale_factor
+                new_log_ymax = log_y + (log_ymax - log_y) * scale_factor
+                new_ylim = [np.exp(new_log_ymin), np.exp(new_log_ymax)]
             ax.set_ylim(new_ylim)
+            ax.yaxis.set_inverted(yinverted_status)                # set back to state
+
             #print("Zooming in on both axes (plot area)")
 
         ax.figure.canvas.draw()  # Redraw the canvas
@@ -216,7 +242,6 @@ class interactivePlot:
 
             ax, artist = self.detect_artist(event)  # Detect the Artist element under the mouse
             #print("press", ax, artist, type(artist))
-
             if artist is None: return
 
             display_coord = (event.x, event.y)
@@ -225,9 +250,103 @@ class interactivePlot:
             ax.pan_start = coordx, coordy   # Store the starting point for panning
 
         #-------------------------
-        else:                           # when context menu (right click)
+        elif event.button == 3:
 
-            self.on_key_release(event)
+            ax, artist = self.detect_artist(event)  # Detect the Artist element under the mouse
+            #print("press", ax, artist, type(artist))
+            if artist is None: return
+
+            valid_for_xlog = True
+            valid_for_ylog = True
+            for line in ax.lines:
+                if is_axvline(line):
+                    continue
+                if valid_for_xlog:
+                    xdata = line.get_xdata()
+                    if len(xdata) and (xdata <= 0).any():
+                        valid_for_xlog = False
+                if valid_for_ylog:
+                    ydata = line.get_ydata()
+                    if len(ydata) and (ydata <= 0).any():
+                        valid_for_ylog = False
+                if not valid_for_xlog and not valid_for_ylog:
+                    break
+
+            context_menu = QMenu()
+            act_xlinear = QAction("X axis → linear", context_menu)
+            act_xlog1 = QAction("X axis → log (10ⁿ)", context_menu)
+            act_xlog2 = QAction("X axis → log (1-2-5)", context_menu)
+            act_ylinear = QAction("Y axis → linear", context_menu)
+            act_ylog1 = QAction("Y axis → log (10ⁿ)", context_menu)
+            act_ylog2 = QAction("Y axis → log (1-2-5)", context_menu)
+            if not valid_for_xlog:
+                act_xlog1.setEnabled(False)
+                act_xlog2.setEnabled(False)
+            if not valid_for_ylog:
+                act_ylog1.setEnabled(False)
+                act_ylog2.setEnabled(False)
+
+            if isinstance(artist, XAxis):
+                context_menu.addAction("X axis → invert")
+                context_menu.addSeparator()
+                context_menu.addAction(act_xlinear)
+                context_menu.addAction(act_xlog1)
+                context_menu.addAction(act_xlog2)
+            elif isinstance(artist, YAxis):
+                context_menu.addAction("Y axis → invert")
+                context_menu.addSeparator()
+                context_menu.addAction(act_ylinear)
+                context_menu.addAction(act_ylog1)
+                context_menu.addAction(act_ylog2)
+            else:
+                context_menu.addAction("Save plot as PNG or PDF")
+
+            global_pos = event.guiEvent.globalPos()
+            action = context_menu.exec_(global_pos)
+            if not action: 
+                # hide points if control press while context menu (right mousse button)
+                ev = KeyEvent('key_press_release', self.fig.canvas, 'control')
+                self.fig.canvas.callbacks.process('key_release_event', ev)
+                return
+
+            if action.text() == "X axis → invert":
+                invert_status = ax.xaxis.get_inverted()
+                ax.xaxis.set_inverted(not invert_status)
+            elif action.text() == "X axis → log (10ⁿ)":
+                ax.set_xscale("log")
+            elif action.text() == "X axis → log (1-2-5)":
+                ax.set_xscale("log")
+                ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+                ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+            elif action.text() == "X axis → linear":
+                ax.set_xscale("linear")
+            elif action.text() == "Y axis → invert":
+                invert_status = ax.yaxis.get_inverted()
+                ax.yaxis.set_inverted(not invert_status)
+            elif action.text() == "Y axis → log (10ⁿ)":
+                ax.set_yscale("log")
+            elif action.text() == "Y axis → log (1-2-5)":
+                ax.set_yscale("log")
+                ax.yaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+                ax.yaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+            elif action.text() == "Y axis → linear":
+                ax.set_yscale("linear")
+            elif action.text() == "Save plot as PNG or PDF":
+                self.savePlot()
+                ev = KeyEvent('key_press_release', self.fig.canvas, 'control')
+                self.fig.canvas.callbacks.process('key_release_event', ev)
+                self.fig.canvas.draw_idle()
+                return
+
+            # hide points if control press while context menu (right mousse button)
+            ev = KeyEvent('key_press_release', self.fig.canvas, 'control')
+            self.fig.canvas.callbacks.process('key_release_event', ev)
+
+            # trigger autoscale
+            ev = KeyEvent('key_press_event', self.fig.canvas, 'a', event.x, event.y)
+            self.fig.canvas.callbacks.process('key_press_event', ev)
+    
+            self.fig.canvas.draw_idle()
 
     #---------------------------------------------------------------------------------------------
     def on_motion(self, event):
@@ -247,20 +366,48 @@ class interactivePlot:
             display_coord = (event.x, event.y)
             coordx, coordy = ax.transData.inverted().transform(display_coord)
 
-            dx = xstart - coordx
-            dy = ystart - coordy
-
             cur_xlim = ax.get_xlim()
             cur_ylim = ax.get_ylim()
 
             # Update limits for panning
             if isinstance(artist, XAxis):
-                ax.set_xlim(cur_xlim[0] + dx, cur_xlim[1] + dx)
+                if ax.get_xscale() == 'linear':
+                    dx = xstart - coordx
+                    ax.set_xlim(cur_xlim[0] + dx, cur_xlim[1] + dx)
+                elif ax.get_xscale() == 'log':
+                    log_dx = np.log(xstart) - np.log(coordx)
+                    factor = np.exp(log_dx)
+                    xmin, xmax = cur_xlim
+                    ax.set_xlim([xmin * factor, xmax * factor])
+
             elif isinstance(artist, YAxis):
-                ax.set_ylim(cur_ylim[0] + dy, cur_ylim[1] + dy)
+                if ax.get_yscale() == 'linear':
+                    dy = ystart - coordy
+                    ax.set_ylim(cur_ylim[0] + dy, cur_ylim[1] + dy)
+                elif ax.get_yscale() == 'log':
+                    log_dy = np.log(ystart) - np.log(coordy)
+                    factor = np.exp(log_dy)
+                    ymin, ymax = cur_ylim
+                    ax.set_ylim([ymin * factor, ymax * factor])
+
             else:
-                ax.set_xlim(cur_xlim[0] + dx, cur_xlim[1] + dx)
-                ax.set_ylim(cur_ylim[0] + dy, cur_ylim[1] + dy)
+                if ax.get_xscale() == 'linear':
+                    dx = xstart - coordx
+                    ax.set_xlim(cur_xlim[0] + dx, cur_xlim[1] + dx)
+                elif ax.get_xscale() == 'log':
+                    log_dx = np.log(xstart) - np.log(coordx)
+                    factor = np.exp(log_dx)
+                    xmin, xmax = cur_xlim
+                    ax.set_xlim([xmin * factor, xmax * factor])
+
+                if ax.get_yscale() == 'linear':
+                    dy = ystart - coordy
+                    ax.set_ylim(cur_ylim[0] + dy, cur_ylim[1] + dy)
+                elif ax.get_yscale() == 'log':
+                    log_dy = np.log(ystart) - np.log(coordy)
+                    factor = np.exp(log_dy)
+                    ymin, ymax = cur_ylim
+                    ax.set_ylim([ymin * factor, ymax * factor])
 
             ax.figure.canvas.draw()  # Redraw the canvas
 
@@ -316,15 +463,33 @@ class interactivePlot:
                     if visible_lines:
                         x_min = min(line.get_xdata().min() for line in visible_lines)
                         x_max = max(line.get_xdata().max() for line in visible_lines)
+
+                        xinverted_status = ax.xaxis.get_inverted()
+                        if ax.get_xscale() == 'linear':
+                            x_margin = (x_max - x_min) * 0.05
+                            ax.set_xlim(x_min - x_margin, x_max + x_margin)
+                        elif ax.get_xscale() == 'log':
+                            log_xmin, log_xmax = np.log(x_min), np.log(x_max)
+                            x_margin = (log_xmax - log_xmin) * 0.05
+                            new_xmin = np.exp(log_xmin - x_margin)
+                            new_xmax = np.exp(log_xmax + x_margin)
+                            ax.set_xlim(new_xmin, new_xmax)
+                        ax.xaxis.set_inverted(xinverted_status)                # set back to state
+
                         y_min = min(np.nanmin(line.get_ydata()) for line in visible_lines)  # np.nanmin to ignore nan
                         y_max = max(np.nanmax(line.get_ydata()) for line in visible_lines)
-                        x_margin = (x_max - x_min) * 0.05
-                        y_margin = (y_max - y_min) * 0.05
-                        is_inverted = ax.yaxis.get_inverted()             # keep inverted
 
-                        ax.set_xlim(x_min - x_margin, x_max + x_margin)
-                        ax.set_ylim(y_min - y_margin, y_max + y_margin)
-                        ax.yaxis.set_inverted(is_inverted)                # set back to state
+                        yinverted_status = ax.yaxis.get_inverted()
+                        if ax.get_yscale() == 'linear':
+                            y_margin = (y_max - y_min) * 0.05
+                            ax.set_ylim(y_min - y_margin, y_max + y_margin)
+                        elif ax.get_yscale() == 'log':
+                            log_ymin, log_ymax = np.log(y_min), np.log(y_max)
+                            y_margin = (log_ymax - log_ymin) * 0.05
+                            new_ymin = np.exp(log_ymin - y_margin)
+                            new_ymax = np.exp(log_ymax + y_margin)
+                            ax.set_ylim(new_ymin, new_ymax)
+                        ax.yaxis.set_inverted(yinverted_status)                # set back to state
 
                 #---------------------------------------
                 else:
@@ -338,18 +503,37 @@ class interactivePlot:
                             if visible_lines:
                                 y_min = min(np.nanmin(line.get_ydata()) for line in visible_lines)
                                 y_max = max(np.nanmax(line.get_ydata()) for line in visible_lines)
-                                y_margin = (y_max - y_min) * 0.05
-                                is_inverted = ax_current.yaxis.get_inverted()             # keep inverted
-                                ax_current.set_ylim(y_min - y_margin, y_max + y_margin)
-                                ax_current.yaxis.set_inverted(is_inverted)                # set back to state
+
+                                yinverted_status = ax_current.yaxis.get_inverted()
+                                if ax.get_yscale() == 'linear':
+                                    y_margin = (y_max - y_min) * 0.05
+                                    ax_current.set_ylim(y_min - y_margin, y_max + y_margin)
+                                elif ax.get_yscale() == 'log':
+                                    log_ymin, log_ymax = np.log(y_min), np.log(y_max)
+                                    y_margin = (log_ymax - log_ymin) * 0.05
+                                    new_ymin = np.exp(log_ymin - y_margin)
+                                    new_ymax = np.exp(log_ymax + y_margin)
+                                    ax_current.set_ylim(new_ymin, new_ymax)
+                                ax_current.yaxis.set_inverted(yinverted_status)                # set back to state
+
                                 all_visible_lines += visible_lines
 
                         # Set horizontal range
                         if all_visible_lines:
                             x_min = min(line.get_xdata().min() for line in all_visible_lines)
                             x_max = max(line.get_xdata().max() for line in all_visible_lines)
-                            x_margin = (x_max - x_min) * 0.05
-                            ax.set_xlim(x_min - x_margin, x_max + x_margin)
+
+                            xinverted_status = ax.xaxis.get_inverted()
+                            if ax.get_xscale() == 'linear':
+                                x_margin = (x_max - x_min) * 0.05
+                                ax.set_xlim(x_min - x_margin, x_max + x_margin)
+                            elif ax.get_xscale() == 'log':
+                                log_xmin, log_xmax = np.log(x_min), np.log(x_max)
+                                x_margin = (log_xmax - log_xmin) * 0.05
+                                new_xmin = np.exp(log_xmin - x_margin)
+                                new_xmax = np.exp(log_xmax + x_margin)
+                                ax.set_xlim(new_xmin, new_xmax)
+                            ax.xaxis.set_inverted(xinverted_status)                # set back to state
 
                     #---------------------------------------
                     elif ax.twins_orientation == 'horizontal':
@@ -360,18 +544,37 @@ class interactivePlot:
                             if visible_lines:
                                 x_min = min(line.get_xdata().min() for line in visible_lines)
                                 x_max = max(line.get_xdata().max() for line in visible_lines)
-                                x_margin = (x_max - x_min) * 0.05
-                                ax_current.set_xlim(x_min - x_margin, x_max + x_margin)
+
+                                xinverted_status = ax_current.xaxis.get_inverted()
+                                if ax.get_xscale() == 'linear':
+                                    x_margin = (x_max - x_min) * 0.05
+                                    ax_current.set_xlim(x_min - x_margin, x_max + x_margin)
+                                elif ax.get_xscale() == 'log':
+                                    log_xmin, log_xmax = np.log(x_min), np.log(x_max)
+                                    x_margin = (log_xmax - log_xmin) * 0.05
+                                    new_xmin = np.exp(log_xmin - x_margin)
+                                    new_xmax = np.exp(log_xmax + x_margin)
+                                    ax_current.set_xlim(new_xmin, new_xmax)
+                                ax_current.xaxis.set_inverted(xinverted_status)                # set back to state
+
                                 all_visible_lines += visible_lines
 
                         # Set vertical range
                         if all_visible_lines:
                             y_min = min(np.nanmin(line.get_ydata()) for line in all_visible_lines)
                             y_max = max(np.nanmax(line.get_ydata()) for line in all_visible_lines)
-                            y_margin = (y_max - y_min) * 0.05
-                            is_inverted = ax.yaxis.get_inverted()             # keep inverted
-                            ax.set_ylim(y_min - y_margin, y_max + y_margin)
-                            ax.yaxis.set_inverted(is_inverted)                # set back to state
+
+                            yinverted_status = ax.yaxis.get_inverted()
+                            if ax.get_yscale() == 'linear':
+                                y_margin = (y_max - y_min) * 0.05
+                                ax.set_ylim(y_min - y_margin, y_max + y_margin)
+                            elif ax.get_yscale() == 'log':
+                                log_ymin, log_ymax = np.log(y_min), np.log(y_max)
+                                y_margin = (log_ymax - log_ymin) * 0.05
+                                new_ymin = np.exp(log_ymin - y_margin)
+                                new_ymax = np.exp(log_ymax + y_margin)
+                                ax.set_ylim(new_ymin, new_ymax)
+                            ax.yaxis.set_inverted(yinverted_status)                # set back to state
 
                 self.fig.canvas.draw()
 
@@ -383,8 +586,19 @@ class interactivePlot:
                 if visible_lines:
                     x_min = min(line.get_xdata().min() for line in visible_lines)
                     x_max = max(line.get_xdata().max() for line in visible_lines)
-                    x_margin = (x_max - x_min) * 0.05
-                    ax.set_xlim(x_min - x_margin, x_max + x_margin)
+
+                    xinverted_status = ax.xaxis.get_inverted()
+                    if ax.get_xscale() == 'linear':
+                        x_margin = (x_max - x_min) * 0.05
+                        ax.set_xlim(x_min - x_margin, x_max + x_margin)
+                    elif ax.get_xscale() == 'log':
+                        log_xmin, log_xmax = np.log(x_min), np.log(x_max)
+                        x_margin = (log_xmax - log_xmin) * 0.05
+                        new_xmin = np.exp(log_xmin - x_margin)
+                        new_xmax = np.exp(log_xmax + x_margin)
+                        ax.set_xlim(new_xmin, new_xmax)
+                    ax.xaxis.set_inverted(xinverted_status)                # set back to state
+
                     ax.figure.canvas.draw()  # Redraw the canvas
             
         #------------------------------
@@ -395,23 +609,31 @@ class interactivePlot:
                 if visible_lines:
                     y_min = min(np.nanmin(line.get_ydata()) for line in visible_lines)
                     y_max = max(np.nanmax(line.get_ydata()) for line in visible_lines)
-                    y_margin = (y_max - y_min) * 0.05
-                    is_inverted = ax.yaxis.get_inverted()             # keep inverted
-                    ax.set_ylim(y_min - y_margin, y_max + y_margin)
-                    ax.yaxis.set_inverted(is_inverted)                # set back to state
+
+                    yinverted_status = ax.yaxis.get_inverted()
+                    if ax.get_yscale() == 'linear':
+                        y_margin = (y_max - y_min) * 0.05
+                        ax.set_ylim(y_min - y_margin, y_max + y_margin)
+                    elif ax.get_yscale() == 'log':
+                        log_ymin, log_ymax = np.log(y_min), np.log(y_max)
+                        y_margin = (log_ymax - log_ymin) * 0.05
+                        new_ymin = np.exp(log_ymin - y_margin)
+                        new_ymax = np.exp(log_ymax + y_margin)
+                        ax.set_ylim(new_ymin, new_ymax)
+                    ax.yaxis.set_inverted(yinverted_status)                # set back to state
+
                     ax.figure.canvas.draw()  # Redraw the canvas
 
     #---------------------------------------------------------------------------------------------
     def on_key_release(self, event):
 
         if event.key == 'control':
-
             if hasattr(self, "tooltip"):
                 self.tooltip.set_visible(False)
             for ax in self.axs:
                 for line, points in ax.line_points_pairs:
                     if line.get_visible():
-                     points.set_visible(False)
+                        points.set_visible(False)
             self.fig.canvas.draw()
 
     #---------------------------------------------------------------------------------------------
@@ -456,14 +678,25 @@ class interactivePlot:
 
         self.fig.canvas.draw()
 
+    #---------------------------------------------------------------------------------------------
+    def savePlot(self):
+        fileName, _ = QFileDialog.getSaveFileName(None, 'Save Plots', '', 'PNG Files (*.png);;PDF Files (*.pdf)')
+        if fileName:
+            plt.savefig(fileName)
+
 #=========================================================================================
 # Example usage
 if __name__ == "__main__":
 
-    x1 = np.linspace(0, 10, 100)
-    y1 = np.sin(x1)
-    x2 = np.linspace(5, 15, 100)
-    y2 = np.cos(x2)
+    #x1 = np.linspace(0, 10, 100)
+    #y1 = np.sin(x1)
+    #x2 = np.linspace(5, 15, 100)
+    #y2 = np.cos(x2)
+
+    x1 = np.logspace(0, 3, 300)       # 1 → 1000
+    y1 = 5 * x1**-1.2                 # pente -1.2
+    x2 = np.logspace(0, 3, 300) + 100
+    y2 = 2e2 * x2**-0.6               # pente -0.6
 
     interactive_plot = interactivePlot(rows=2, cols=1)
 

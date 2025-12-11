@@ -80,20 +80,6 @@ class displayTogetherSeriesWindow(QWidget):
         self.interactive_plot.fig.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
-    def contextMenuEvent(self, event):
-        context_menu = QMenu(self)
-        print_action = QAction("Save plot as PNG or PDF", self)
-        print_action.triggered.connect(self.savePlot)
-        context_menu.addAction(print_action)
-        context_menu.exec_(event.globalPos())
-
-    #---------------------------------------------------------------------------------------------
-    def savePlot(self):
-        fileName, _ = QFileDialog.getSaveFileName(self, 'Save Plots', '', 'PNG Files (*.png);;PDF Files (*.pdf)')
-        if fileName:
-            plt.savefig(fileName)
-
-    #---------------------------------------------------------------------------------------------
     def combo_axis_change(self):
        
         for ax in self.interactive_plot.axs[:]:

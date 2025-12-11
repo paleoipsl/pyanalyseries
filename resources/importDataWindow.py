@@ -3,6 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 import sys
+import datetime
 import pandas as pd
 import numpy as np
 
@@ -40,6 +41,10 @@ class importDataWindow(QWidget):
         #----------------------------------------------
         button_layout = QHBoxLayout()
 
+        self.dropNA= QCheckBox("Drop missing values")
+        self.dropNA.setToolTip("Only used on series import. Drops rows with missing values.")
+        self.dropNA.setChecked(True)
+
         self.importPointers_button = QPushButton("Import pointers", self)
         self.importPointers_button.setStyleSheet("padding: 4px 12px;")
         self.importPointers_button.setToolTip("(Distorded, Reference)")
@@ -47,8 +52,10 @@ class importDataWindow(QWidget):
         self.importSeries_button.setStyleSheet("padding: 4px 12px;")
         self.importSeries_button.setToolTip("(X,Y) or (X,Y1,Y2,...)")
         self.close_button = QPushButton("Close", self)
-        button_layout.addStretch()
 
+        button_layout.addStretch()
+        button_layout.addWidget(self.dropNA)
+        button_layout.addSpacing(50)
         button_layout.addWidget(self.importSeries_button)
         button_layout.addWidget(self.importPointers_button)
         button_layout.addSpacing(50)
@@ -258,6 +265,14 @@ class importDataWindow(QWidget):
             Y = self.data_table.horizontalHeaderItem(col).text()
     
             serie_Id = generate_Id()
+            history = 'Imported serie'
+            history += f'<BR>---> serie <i><b>{serie_Id}</b></i>'
+
+            if self.dropNA.isChecked():
+                serie = pd.Series(values, index=index).sort_index().dropna()           # sort_index and dropna
+            else:
+                serie = pd.Series(values, index=index).sort_index()                    # sort_index
+
             serieDict = {
                 'Id': serie_Id,
                 'Type': 'Serie',
@@ -266,9 +281,10 @@ class importDataWindow(QWidget):
                 'Y': Y,
                 'Y axis inverted': False,
                 'Color': generate_color(),
-                'History': 'Imported serie',
+                'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
+                'History': history,
                 'Comment': '',
-                'Serie': pd.Series(values, index=index).sort_index(),           # sort_index
+                'Serie': serie
             }
             try:
                 self.add_item_tree_widget(None, serieDict)
@@ -311,6 +327,7 @@ class importDataWindow(QWidget):
             'X1Coords': X1Coords,
             'X2Coords': X2Coords,
             'X1Name': X1Name,
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': 'Imported INTERPOLATION',
             'Name': '', 
             'Comment': '',

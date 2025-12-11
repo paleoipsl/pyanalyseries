@@ -11,6 +11,7 @@ from .misc import *
 from .interactivePlot import interactivePlot
 
 import sys
+import datetime
 import numpy as np
 import pandas as pd
 
@@ -302,9 +303,9 @@ class defineSampleWindow(QWidget):
         points2 = ax.scatter(serieSampled.index, serieSampled.values, s=5, marker='o', color='black', alpha=0.4, visible=False)
         ax.line_points_pairs.append((line2, points2))
 
-
         legend = ax.legend()
-        for legend_line, ax_line in zip(legend.get_lines(), ax.get_lines()[-2:]):       # [-2:] to remove ax.axvline
+        data_lines = [line for line in ax.get_lines() if not is_axvline(line)]
+        for legend_line, ax_line in zip(legend.get_lines(), data_lines):
             legend_line.set_picker(5)
             ax.map_legend_to_line[legend_line] = ax_line
 
@@ -409,8 +410,9 @@ class defineSampleWindow(QWidget):
                 'Type': 'SAMPLE', 
                 'Name': f'Sample every {self.step}' if not self.integrated else f'Sample every {self.step} with integration',
                 'Parameters': f'{self.step} ; {self.kind}; {self.integrated}',
+                'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
                 'Comment': '',
-                'History': f'<BR>Sample with parameters :' + \
+                'History': f'SAMPLE <i><b>{sample_Id}</i></b> with parameters :' + \
                         '<ul>' + \
                         f'<li>Step : {self.step}' + \
                         f'<li>Kind of interpolation : {self.kind}' + \
@@ -423,13 +425,14 @@ class defineSampleWindow(QWidget):
                 'Type': 'SAMPLE', 
                 'Name': f'Sample using x values of {self.serieRef_YName}',
                 'Parameters': f'{self.kind} ; {self.integrated}',
-                'Comment': '',
-                'History': f'<BR>Sample with parameters :' + \
+                'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
+                'History': f'SAMPLE <i><b>{sample_Id}</i></b> with parameters :' + \
                         '<ul>' + \
                         f'<li>X values from {self.serieRef_Id} : {self.serieRef_XName} / {self.serieRef_YName}' + \
                         f'<li>Kind of interpolation : {self.kind}' + \
                         f'<li>Integrated : {self.integrated}' + \
                         '</ul>',
+                'Comment': '',
                 'XCoords': self.sample_index
             }
         try:
@@ -459,8 +462,9 @@ class defineSampleWindow(QWidget):
             'Type': 'Serie sampled', 
             'Serie': self.sample(self.serie, self.sample_index, kind=self.kind, integrated=self.integrated),
             'Color': generate_color(exclude_color=self.serieDict['Color']),
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': append_to_htmlText(self.serieDict['History'], 
-                f'<BR>Serie <i><b>{self.serieDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sample_Id}</i></b><BR>---> serie <i><b>{sampled_Id}</b></i>'),
+                f'Serie <i><b>{self.serieDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sample_Id}</i></b><BR>---> serie <i><b>{sampled_Id}</b></i>'),
             'Comment': '',
         }
 
@@ -469,20 +473,6 @@ class defineSampleWindow(QWidget):
             self.add_item_tree_widget(self.item.parent(), sampled_serieDict, position+1)
         except:
             pass 
-
-    #---------------------------------------------------------------------------------------------
-    def contextMenuEvent(self, event):
-        context_menu = QMenu(self)
-        print_action = QAction("Save plot as PNG or PDF", self)
-        print_action.triggered.connect(self.savePlot)
-        context_menu.addAction(print_action)
-        context_menu.exec_(event.globalPos())
-
-    #---------------------------------------------------------------------------------------------
-    def savePlot(self):
-        fileName, _ = QFileDialog.getSaveFileName(self, 'Save Plots', '', 'PNG Files (*.png);;PDF Files (*.pdf)')
-        if fileName:
-            plt.savefig(fileName)
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):

@@ -81,20 +81,6 @@ class displayStackedSeriesWindow(QWidget):
         self.myplot()
 
     #---------------------------------------------------------------------------------------------
-    def contextMenuEvent(self, event):
-        context_menu = QMenu(self)
-        print_action = QAction("Save plot as PNG or PDF", self)
-        print_action.triggered.connect(self.savePlot)
-        context_menu.addAction(print_action)
-        context_menu.exec_(event.globalPos())
-
-    #---------------------------------------------------------------------------------------------
-    def savePlot(self):
-        fileName, _ = QFileDialog.getSaveFileName(self, 'Save Plots', '', 'PNG Files (*.png);;PDF Files (*.pdf)')
-        if fileName:
-            plt.savefig(fileName)
-
-    #---------------------------------------------------------------------------------------------
     def myplot(self):
 
         #-----------------------------------
@@ -107,6 +93,8 @@ class displayStackedSeriesWindow(QWidget):
         for n, item in enumerate(self.items):
 
             ax = self.interactive_plot.axs[n]
+            ax.twins = []                           # replace because ax.remove() has deleted those attributs 
+            ax.twins_orientation = None
 
             serieDict = item.data(0, Qt.UserRole)
 

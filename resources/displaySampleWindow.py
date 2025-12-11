@@ -67,6 +67,8 @@ class displaySampleWindow(QWidget):
 
         self.textName = QLabel(f"Name : <b>{self.sampleDict['Name']}</b>")
 
+        self.textDate = QLabel(f"Date : {self.sampleDict['Date']}")
+
         labelHistory = QLabel("History :")
         self.textHistory = QTextEdit()
         self.textHistory.setFixedHeight(self.textHistory.fontMetrics().lineSpacing() * 10)
@@ -87,6 +89,7 @@ class displaySampleWindow(QWidget):
         self.textComment.setText(self.sampleDict['Comment'])
 
         info_layout.addWidget(self.textName)
+        info_layout.addWidget(self.textDate)
         info_layout.addWidget(labelHistory)
         info_layout.addWidget(self.textHistory)
         info_layout.addWidget(labelComment)

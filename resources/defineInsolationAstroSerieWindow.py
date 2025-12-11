@@ -3,6 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 import sys
+import datetime
 import pandas as pd
 import numpy as np
 
@@ -611,16 +612,20 @@ class defineInsolationAstroSerieWindow(QWidget):
                         f'<li>Latitude [°]: {self.latitude_input.value()}' + \
                         '</ul>'
             shortName = f"{self.plotType} [W/m2]"
+ 
+        serie_Id = generate_Id()
+        history += f'---> serie <i><b>{serie_Id}</b></i>'
 
         serieDict = {
-            'Id': generate_Id(), 
+            'Id': serie_Id, 
             'Type': 'Serie', 
             'Name': '', 
             'X': 'years',
             'Y': shortName,
             'Y axis inverted': False,
             'Color': generate_color(),
-            'History': '<BR>' + history,
+            'History': history,
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'Comment': '',
             'Serie': pd.Series(self.values, index=self.index),
             }

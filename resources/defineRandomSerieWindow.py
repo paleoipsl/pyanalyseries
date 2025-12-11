@@ -3,6 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 import sys
+import datetime
 import pandas as pd
 import numpy as np
 
@@ -187,6 +188,7 @@ class defineRandomSerieWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def import_serie(self):
 
+        serie_Id = generate_Id()
         history = f'Random serie with parameters :' + \
                    '<ul>' + \
                    f'<li>Start point : {self.xstart}' + \
@@ -195,16 +197,18 @@ class defineRandomSerieWindow(QWidget):
                    f'<li>Min value : {self.maxVal}' + \
                    f'<li>Max value : {self.minVal}' + \
                    '</ul>'
+        history += f'---> serie <i><b>{serie_Id}</b></i>'
 
         serieDict = {
-            'Id': generate_Id(), 
+            'Id': serie_Id, 
             'Type': 'Serie', 
             'Name': '', 
             'X': 'X',
             'Y': 'Y',
             'Y axis inverted': False,
             'Color': generate_color(),
-            'History': '<BR>' + history,
+            'History': history,
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'Comment': '',
             'Serie': pd.Series(self.values, index=self.index),
             }
