@@ -1,3 +1,5 @@
+ * 5.31.2
+   * Fix Date missing in apply filter, sample, interpolation
  * 5.31.1
    * Fix History in define Interpolation
  * 5.31

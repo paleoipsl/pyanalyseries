@@ -52,7 +52,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.31.1'
+version = 'v5.31.2'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -1173,6 +1173,7 @@ def apply_filter():
             'Type': 'Serie filtered',
             'Serie': defineFilterWindow.moving_average(serie, window_size=filter_window_size),
             'Color': generate_color(exclude_color=serieDict['Color']),
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': append_to_htmlText(serieDict['History'], 
                 f'Serie <i><b>{serieDict["Id"]}</i></b> filtered with FILTER <i><b>{filterDict["Id"]}</i></b> with a moving average of size {filter_window_size}<BR>---> serie <i><b>{filtered_Id}</b></i>'),
             'Comment': ''
@@ -1296,6 +1297,7 @@ def apply_sample():
                 'Type': 'Serie sampled',
                 'Serie': defineSampleWindow.sample(serie, sample_index, kind=sample_kind, integrated=sample_integrated),
                 'Color': generate_color(exclude_color=serieDict['Color']),
+                'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
                 'History': append_to_htmlText(serieDict['History'], 
                     f'Serie <i><b>{serieDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sampleDict["Id"]}</i></b><BR>---> serie <i><b>{sampled_Id}</b></i>'),
                 'Comment': ''
@@ -1421,6 +1423,7 @@ def apply_interpolation(interpolationMode):
             'X1Coords': X1Coords,
             'X2Coords': X2Coords, 
             'Color': generate_color(exclude_color=serieDict['Color']),
+            'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': append_to_htmlText(serieDict['History'], 
                 f'Serie <i><b>{serieDict["Id"]}</i></b> interpolated with INTERPOLATION <i><b>{interpolationDict["Id"]}</i></b> with mode {interpolationMode}<BR>---> serie <i><b>{interpolated_Id}</b></i>'),
             'Comment': ''
