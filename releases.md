@@ -1,4 +1,5 @@
  * 5.31.2
+   * Add missing icons
    * Fix Date missing in apply filter, sample, interpolation
  * 5.31.1
    * Fix History in define Interpolation
