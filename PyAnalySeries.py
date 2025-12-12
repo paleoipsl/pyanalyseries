@@ -52,7 +52,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.31.2'
+version = 'v5.32'
 
 open_ws = {}
 open_displayWindows = {} 

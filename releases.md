@@ -1,3 +1,5 @@
+ * 5.32
+   * Tag before deep change (5.40)
  * 5.31.2
    * Add missing icons
    * Fix Date missing in apply filter, sample, interpolation
