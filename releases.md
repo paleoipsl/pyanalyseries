@@ -1,4 +1,8 @@
+ * 5.31.1
+   * Fix History in define Interpolation
  * 5.31
+   * Add Date as field for items (save in WS, handle existing or not)
+   * Improve History texts
    * Add Date as field for items (save in WS, handle existing or not)
    * Improve History texts
    * Modify interactivePlot :  

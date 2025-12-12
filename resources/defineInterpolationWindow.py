@@ -843,7 +843,7 @@ class defineInterpolationWindow(QWidget):
             'X2Coords': self.X2Coords,
             'X1Name': self.X1Name,              # interpolated to reference that is X1
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-            'History': 'INTERPOLATION <i><b>{interpolation_Id}</i></b>',
+            'History': f'INTERPOLATION <i><b>{interpolation_Id}</i></b>',
             'Comment': ''
         }
         try:
