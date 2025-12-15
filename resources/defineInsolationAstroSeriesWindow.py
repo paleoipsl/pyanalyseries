@@ -24,15 +24,15 @@ for key in plt.rcParams.keys():
         plt.rcParams[key] = []
 
 #=========================================================================================
-class defineInsolationAstroSerieWindow(QWidget):
+class defineInsolationAstroSeriesWindow(QWidget):
     #---------------------------------------------------------------------------------------------
-    def __init__(self, open_insolationAstroSerieWindow, add_item_tree_widget):
+    def __init__(self, open_insolationAstroSeriesWindow, add_item_tree_widget):
         super().__init__()
 
-        self.open_insolationAstroSerieWindow = open_insolationAstroSerieWindow
+        self.open_insolationAstroSeriesWindow = open_insolationAstroSeriesWindow
         self.add_item_tree_widget = add_item_tree_widget
 
-        title = 'Define Insolation / Astromical serie'
+        title = 'Define Insolation / Astromical series'
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)
@@ -239,7 +239,7 @@ class defineInsolationAstroSerieWindow(QWidget):
         button_layout = QHBoxLayout()
 
         style = "padding: 4px 12px;"
-        self.import_button = QPushButton("Import serie", self)
+        self.import_button = QPushButton("Import series", self)
         self.import_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
@@ -250,7 +250,7 @@ class defineInsolationAstroSerieWindow(QWidget):
         button_layout.addWidget(self.close_button)
         main_layout.addLayout(button_layout)
 
-        self.import_button.clicked.connect(self.import_serie)
+        self.import_button.clicked.connect(self.import_series)
         self.close_button.clicked.connect(self.close)
 
         self.status_bar = QStatusBar()
@@ -573,17 +573,17 @@ class defineInsolationAstroSerieWindow(QWidget):
         self.status_bar.showMessage('Updated', 1000)
 
     #---------------------------------------------------------------------------------------------
-    def import_serie(self):
+    def import_series(self):
 
         if self.plotType in ["Eccentricity", "Obliquity", "Precession angle", "Precession parameter"]:
-            history = f'Astronomical serie "{self.plotType}"' + \
+            history = f'Astronomical series "{self.plotType}"' + \
                         '<ul>' + \
                         f'<li>Astronomical solution: {self.solutionAstro}' + \
                         '</ul>'
             shortName = f"{self.plotType} [degrees]"
             
         elif self.plotType == "Daily insolation":
-            history = f'Insolation serie "{self.plotType}" with parameters :' + \
+            history = f'Insolation series "{self.plotType}" with parameters :' + \
                         '<ul>' + \
                         f'<li>Astronomical solution: {self.solutionAstro}' + \
                         f'<li>Solar constant [W/m2]: {self.solar_constant_input.value()}' + \
@@ -593,7 +593,7 @@ class defineInsolationAstroSerieWindow(QWidget):
             shortName = "Daily insolation [W/m2]"
 
         elif self.plotType == "Integrated insolation between 2 true longitudes":
-            history = f'Insolation serie "{self.plotType}" with parameters :' + \
+            history = f'Insolation series "{self.plotType}" with parameters :' + \
                         '<ul>' + \
                         f'<li>Astronomical solution: {self.solutionAstro}' + \
                         f'<li>Solar constant [W/m2]: {self.solar_constant_input.value()}' + \
@@ -605,7 +605,7 @@ class defineInsolationAstroSerieWindow(QWidget):
 
         elif self.plotType == "Caloric summer insolation" or \
              self.plotType == "Caloric winter insolation":
-            history = f'Insolation serie "{self.plotType}" with parameters :' + \
+            history = f'Insolation series "{self.plotType}" with parameters :' + \
                         '<ul>' + \
                         f'<li>Astronomical solution: {self.solutionAstro}' + \
                         f'<li>Solar constant [W/m2]: {self.solar_constant_input.value()}' + \
@@ -613,12 +613,12 @@ class defineInsolationAstroSerieWindow(QWidget):
                         '</ul>'
             shortName = f"{self.plotType} [W/m2]"
  
-        serie_Id = generate_Id()
-        history += f'---> serie <i><b>{serie_Id}</b></i>'
+        series_Id = generate_Id()
+        history += f'---> series <i><b>{series_Id}</b></i>'
 
-        serieDict = {
-            'Id': serie_Id, 
-            'Type': 'Serie', 
+        seriesDict = {
+            'Id': series_Id, 
+            'Type': 'Series', 
             'Name': '', 
             'X': 'years',
             'Y': shortName,
@@ -627,17 +627,17 @@ class defineInsolationAstroSerieWindow(QWidget):
             'History': history,
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'Comment': '',
-            'Serie': pd.Series(self.values, index=self.index),
+            'Series': pd.Series(self.values, index=self.index),
             }
 
         try:
-            self.add_item_tree_widget(None, serieDict)          # will be added on parent from current index
+            self.add_item_tree_widget(None, seriesDict)          # will be added on parent from current index
         except:
             pass
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
-        self.open_insolationAstroSerieWindow.pop('123456', None)
+        self.open_insolationAstroSeriesWindow.pop('123456', None)
         event.accept()
 
 #=========================================================================================
@@ -649,12 +649,12 @@ if __name__ == "__main__":
 
     app = QApplication([])
 
-    Id_insolationAstroSerieWindow = '1234'
-    open_insolationAstroSerieWindow = {}
+    Id_insolationAstroSeriesWindow = '1234'
+    open_insolationAstroSeriesWindow = {}
 
-    insolationAstroSerieWindow = defineInsolationAstroSerieWindow(open_insolationAstroSerieWindow, handle_item)
-    open_insolationAstroSerieWindow[Id_insolationAstroSerieWindow] = defineInsolationAstroSerieWindow
-    insolationAstroSerieWindow.show()
+    insolationAstroSeriesWindow = defineInsolationAstroSeriesWindow(open_insolationAstroSeriesWindow, handle_item)
+    open_insolationAstroSeriesWindow[Id_insolationAstroSeriesWindow] = defineInsolationAstroSeriesWindow
+    insolationAstroSeriesWindow.show()
 
     sys.exit(app.exec_())
 

@@ -1,4 +1,10 @@
+ * 5.40
+   * Change Serie to Series in interface, dialogs and code
+   * Fix read of boolean values (in define sampling)
+ * 5.32
+   * Tag before deep change (5.40)
  * 5.31.2
+   * Add missing icons
    * Fix Date missing in apply filter, sample, interpolation
  * 5.31.1
    * Fix History in define Interpolation

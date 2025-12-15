@@ -21,12 +21,12 @@ for key in plt.rcParams.keys():
         plt.rcParams[key] = []
 
 #=========================================================================================
-class defineSinusoidalSerieWindow(QWidget):
+class defineSinusoidalSeriesWindow(QWidget):
     #---------------------------------------------------------------------------------------------
-    def __init__(self, open_sinusoidalSerieWindow, add_item_tree_widget):
+    def __init__(self, open_sinusoidalSeriesWindow, add_item_tree_widget):
         super().__init__()
 
-        self.open_sinusoidalSerieWindow = open_sinusoidalSerieWindow
+        self.open_sinusoidalSeriesWindow = open_sinusoidalSeriesWindow
         self.add_item_tree_widget = add_item_tree_widget
 
         self.setWindowTitle('Define Sinusoidal series')
@@ -126,7 +126,7 @@ class defineSinusoidalSerieWindow(QWidget):
         button_layout = QHBoxLayout()
         style = "padding: 4px 12px;"
         self.shuffle_button = QPushButton("Generate")
-        self.import_button  = QPushButton("Import serie")
+        self.import_button  = QPushButton("Import series")
         self.close_button   = QPushButton("Close")
         for b in [self.shuffle_button, self.import_button, self.close_button]:
             b.setStyleSheet(style)
@@ -152,7 +152,7 @@ class defineSinusoidalSerieWindow(QWidget):
         self.update_timer.timeout.connect(self.myplot)
 
         self.shuffle_button.clicked.connect(self.myplot)
-        self.import_button.clicked.connect(self.import_serie)
+        self.import_button.clicked.connect(self.import_series)
         self.close_button.clicked.connect(self.close)
         QShortcut('q', self).activated.connect(self.close)
 
@@ -191,8 +191,8 @@ class defineSinusoidalSerieWindow(QWidget):
         if noise > 0:
             y += np.random.normal(0, noise, len(x))
 
-        serie = pd.Series(y, index=x)
-        self.index, self.values = serie.index, serie.values
+        series = pd.Series(y, index=x)
+        self.index, self.values = series.index, series.values
 
         #=== Update HTML formula
         self.formula_label.setText(
@@ -225,16 +225,16 @@ class defineSinusoidalSerieWindow(QWidget):
         self.status_bar.showMessage('Updated', 1000)
 
     #---------------------------------------------------------------------------------------------
-    def import_serie(self):
+    def import_series(self):
 
-        serie_Id = generate_Id() 
+        series_Id = generate_Id() 
 
-        history = f'Sinusoidal serie generated with parameters displayed above.'
-        history += f'<BR>---> serie <i><b>{serie_Id}</b></i>'
+        history = f'Sinusoidal series generated with parameters displayed above.'
+        history += f'<BR>---> series <i><b>{series_Id}</b></i>'
 
-        serieDict = {
-            'Id': serie_Id, 
-            'Type': 'Serie', 
+        seriesDict = {
+            'Id': series_Id, 
+            'Type': 'Series', 
             'Name': '', 
             'X': 'X', 
             'Y': 'Y',
@@ -243,16 +243,16 @@ class defineSinusoidalSerieWindow(QWidget):
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': history,
             'Comment': '',
-            'Serie': pd.Series(self.values, index=self.index),
+            'Series': pd.Series(self.values, index=self.index),
         }
         try:
-            self.add_item_tree_widget(None, serieDict)
+            self.add_item_tree_widget(None, seriesDict)
         except:
             pass
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
-        self.open_sinusoidalSerieWindow.pop('123456', None)
+        self.open_sinusoidalSeriesWindow.pop('123456', None)
         event.accept()
 
 
@@ -263,9 +263,9 @@ if __name__ == "__main__":
         print('handle', parent, item)
 
     app = QApplication([])
-    open_sinusoidalSerieWindow = {}
-    win = defineSinusoidalSerieWindow(open_sinusoidalSerieWindow, handle_item)
-    open_sinusoidalSerieWindow['sin'] = defineSinusoidalSerieWindow
+    open_sinusoidalSeriesWindow = {}
+    win = defineSinusoidalSeriesWindow(open_sinusoidalSeriesWindow, handle_item)
+    open_sinusoidalSeriesWindow['sin'] = defineSinusoidalSeriesWindow
     win.show()
     sys.exit(app.exec_())
 

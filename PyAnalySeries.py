@@ -21,7 +21,7 @@ from PyQt5.QtGui import *
 from resources.misc import *
 from resources.CustomQColorDialog import CustomQColorDialog 
 
-from resources.displaySingleSerieWindow import displaySingleSerieWindow
+from resources.displaySingleSeriesWindow import displaySingleSeriesWindow
 from resources.displayTogetherSeriesWindow import displayTogetherSeriesWindow
 from resources.displayStackedSeriesWindow import displayStackedSeriesWindow
 
@@ -38,9 +38,9 @@ from resources.CustomQTableWidget import CustomQTableWidget
 
 from resources.importDataWindow import importDataWindow
 
-from resources.defineRandomSerieWindow import defineRandomSerieWindow
-from resources.defineInsolationAstroSerieWindow import defineInsolationAstroSerieWindow
-from resources.defineSinusoidalSerieWindow import defineSinusoidalSerieWindow
+from resources.defineRandomSeriesWindow import defineRandomSeriesWindow
+from resources.defineInsolationAstroSeriesWindow import defineInsolationAstroSeriesWindow
+from resources.defineSinusoidalSeriesWindow import defineSinusoidalSeriesWindow
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
@@ -52,7 +52,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.31.2'
+version = 'v5.40'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -60,9 +60,9 @@ open_filterWindows = {}
 open_sampleWindows = {} 
 open_interpolationWindows = {} 
 open_importWindow = {}
-open_randomSerieWindow = {}
-open_insolationAstroSerieWindow = {}
-open_sinusoidalSerieWindow = {}
+open_randomSeriesWindow = {}
+open_insolationAstroSeriesWindow = {}
+open_sinusoidalSeriesWindow = {}
 open_spectralAnalysisWindow = {}
 
 #========================================================================================
@@ -121,8 +121,8 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
 
     tree_widget.blockSignals(True)
 
-    icon_serie = QIcon(str(app_dir / 'resources' / 'icon_serie.png'))
-    icon_serieDuplicated = QIcon(str(app_dir / 'resources' / 'icon_serieDuplicated.png'))
+    icon_series = QIcon(str(app_dir / 'resources' / 'icon_series.png'))
+    icon_seriesDuplicated = QIcon(str(app_dir / 'resources' / 'icon_seriesDuplicated.png'))
     icon_filter = QIcon(str(app_dir / 'resources' / 'icon_filter.png'))
     icon_sample = QIcon(str(app_dir / 'resources' / 'icon_sample.png'))
     icon_interpolate = QIcon(str(app_dir / 'resources' / 'icon_interpolate.png'))
@@ -130,12 +130,12 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     item = QTreeWidgetItem()
     item.setFlags(item.flags() & ~Qt.ItemIsDropEnabled)
 
-    if itemDict['Type'].startswith('Serie'):
-        Serie = itemDict['Serie']
-        if Serie.index.duplicated().any():
-            item.setIcon(0, icon_serieDuplicated)
+    if itemDict['Type'].startswith('Series'):            # to be backward compatible with Serie and now Series
+        Series = itemDict['Series']
+        if Series.index.duplicated().any():
+            item.setIcon(0, icon_seriesDuplicated)
         else:
-            item.setIcon(0, icon_serie)
+            item.setIcon(0, icon_series)
     elif itemDict['Type'] == 'FILTER':
             item.setIcon(0, icon_filter)
     elif itemDict['Type'] == 'SAMPLE':
@@ -178,7 +178,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
         item.setText(3, itemDict['X1Name'])
         item.setFont(3, font)
 
-    if not itemDict['Type'].startswith('Serie'):
+    if not itemDict['Type'].startswith('Series'):
         if update: update_items_from_data(item)
         return
 
@@ -267,27 +267,27 @@ def on_item_changed(item, column):
         tree_widget.blockSignals(False)
 
 #========================================================================================
-def selectColor(buttonColor, serie_item):
-    serieDict = serie_item.data(0, Qt.UserRole)
-    starting_color = serieDict['Color']
+def selectColor(buttonColor, series_item):
+    seriesDict = series_item.data(0, Qt.UserRole)
+    starting_color = seriesDict['Color']
     color = CustomQColorDialog.getColor(starting_color)
     if color:
-        serieDict = serieDict | {'Color': color.name()}
-        serie_item.setData(0, Qt.UserRole, serieDict)
-        buttonColor = tree_widget.itemWidget(serie_item, 5)
-        buttonColor.setStyleSheet(f"background-color: {serieDict['Color']}; border: none; border-radius: 3px;")
-        update_items_from_data(serie_item)
-        mark_ws(serie_item.parent())
+        seriesDict = seriesDict | {'Color': color.name()}
+        series_item.setData(0, Qt.UserRole, seriesDict)
+        buttonColor = tree_widget.itemWidget(series_item, 5)
+        buttonColor.setStyleSheet(f"background-color: {seriesDict['Color']}; border: none; border-radius: 3px;")
+        update_items_from_data(series_item)
+        mark_ws(series_item.parent())
 
 #========================================================================================
-def checkboxInverted_changed(checkboxInverted, serie_item):
-    serieDict = serie_item.data(0, Qt.UserRole)
-    serieDict = serieDict | {'Y axis inverted': checkboxInverted.isChecked()}
-    serie_item.setData(0, Qt.UserRole, serieDict)
-    checkboxInverted = tree_widget.itemWidget(serie_item, 6)
-    checkboxInverted.setChecked(serieDict["Y axis inverted"])
-    update_items_from_data(serie_item)
-    mark_ws(serie_item.parent())
+def checkboxInverted_changed(checkboxInverted, series_item):
+    seriesDict = series_item.data(0, Qt.UserRole)
+    seriesDict = seriesDict | {'Y axis inverted': checkboxInverted.isChecked()}
+    series_item.setData(0, Qt.UserRole, seriesDict)
+    checkboxInverted = tree_widget.itemWidget(series_item, 6)
+    checkboxInverted.setChecked(seriesDict["Y axis inverted"])
+    update_items_from_data(series_item)
+    mark_ws(series_item.parent())
 
 #========================================================================================
 def update_items_from_data(ref_item):
@@ -305,7 +305,7 @@ def update_items_from_data(ref_item):
         itemDict = item.data(0, Qt.UserRole)
 
         if item.parent() == ref_item.parent():
-            if  itemDict['Type'].startswith('Serie'):
+            if  itemDict['Type'].startswith('Series'):
                 sync_window_with_item(item)
             continue
 
@@ -322,7 +322,7 @@ def update_items_from_data(ref_item):
             if 'Y' in ref_itemDict.keys(): item.setText(4, ref_itemDict['Y'])
             item.setData(0, Qt.UserRole, ref_itemDict)
 
-            if  itemDict['Type'].startswith('Serie'):
+            if  itemDict['Type'].startswith('Series'):
                 buttonColor = tree_widget.itemWidget(item, 5)
                 buttonColor.setStyleSheet(f"background-color: {ref_itemDict['Color']}; border: none; border-radius: 3px;")
                 checkboxInverted = tree_widget.itemWidget(item, 6)
@@ -331,7 +331,7 @@ def update_items_from_data(ref_item):
       
             # Mark if item has changed
             itemDict = item.data(0, Qt.UserRole)
-            if (before | {'Serie': 0}) != (itemDict | {'Serie': 0}):
+            if (before | {'Series': 0}) != (itemDict | {'Series': 0}):
                 mark_ws(item.parent())
 
             tree_widget.blockSignals(True)
@@ -381,7 +381,7 @@ def load_WorkSheet(fileName):
     for sheetName in sheetNames:
 
         #-------------------------------------
-        if sheetName.startswith('Serie Id-'):
+        if sheetName.startswith('Serie Id-') or sheetName.startswith('Series Id-'):
 
             try:
                 df = pd.read_excel(fileName, sheet_name=sheetName, na_filter=False)
@@ -392,18 +392,26 @@ def load_WorkSheet(fileName):
                 else:
                     Color = generate_color()
 
+                history = df['History'][0]
+                history = re.sub(r'^(<br\s*/?>)', '', history, flags=re.IGNORECASE)     # to correct old comments
+                history = re.sub(r'\bserie\b', 'series', history)                       # to correct serie to series
+                history = re.sub(r'\bSerie\b', 'Series', history)                       # to correct Serie to Series
+
+                type = df['Type'][0] 
+                type = re.sub(r'\bSerie\b', 'Series',  type)                            # to correct Serie to Series
+
                 aDict = {
-                    'Id': 'Id-' + sheetName.split('Serie Id-')[1],
-                    'Type': df['Type'][0],
+                    'Id': 'Id-' + sheetName.split('Id-')[1],
+                    'Type': type,
                     'Name': df['Name'][0],
                     'X':  df.columns[0],
                     'Y':  df.columns[1],
-                    'Y axis inverted': bool(df['Y axis inverted'][0]),
+                    'Y axis inverted': df['Y axis inverted'][0],                # boolean
                     'Color': Color,
                     'Date': df['Date'][0] if 'Date' in df.columns else '',
                     'Comment': df['Comment'][0],
-                    'History': re.sub(r'^(<br\s*/?>)', '', df['History'][0], flags=re.IGNORECASE),    # to correct old comments
-                    'Serie': pd.Series(addNanList(df.iloc[:,1]), index=addNanList(df.iloc[:,0]))
+                    'History': history,
+                    'Series': pd.Series(addNanList(df.iloc[:,1]), index=addNanList(df.iloc[:,0]))
                 }
 
                 if 'InterpolationMode' in df.columns:
@@ -418,7 +426,7 @@ def load_WorkSheet(fileName):
                 itemDict_list.append(aDict)
 
             except:
-                msg = f"The file '{fileName}' contains a serie that is wrongly formatted in {sheetName} sheet."
+                msg = f"The file '{fileName}' contains a series that is wrongly formatted in {sheetName} sheet."
                 QMessageBox.critical(main_window, "Load file", msg)
                 main_window.statusBar().showMessage(msg, 5000)
                 QApplication.processEvents()
@@ -428,6 +436,12 @@ def load_WorkSheet(fileName):
             
             try:
                 df = pd.read_excel(fileName, sheet_name=sheetName, na_filter=False)
+
+                history = df['History'][0]
+                history = re.sub(r'^(<br\s*/?>)', '', history, flags=re.IGNORECASE)     # to correct old comments
+                history = re.sub(r'\bserie\b', 'series', history)                       # to correct serie to series
+                history = re.sub(r'\bSerie\b', 'Series', history)                       # to correct Serie to Series
+
                 aDict = {
                         'Id': 'Id-' + sheetName.split('Id-')[1],
                         'Type': df['Type'][0],
@@ -435,7 +449,7 @@ def load_WorkSheet(fileName):
                         'Parameters': str(df['Parameters'][0]),
                         'Date': df['Date'][0] if 'Date' in df.columns else '',
                         'Comment': df['Comment'][0],
-                        'History': re.sub(r'^(<br\s*/?>)', '', df['History'][0], flags=re.IGNORECASE)    # to correct old comments
+                        'History': history
                 }
 
                 if 'XCoords' in df.columns:                 # for SAMPLE
@@ -456,16 +470,22 @@ def load_WorkSheet(fileName):
 
             try:
                 df = pd.read_excel(fileName, sheet_name=sheetName, na_filter=False)
+
+                history = df['History'][0]
+                history = re.sub(r'^(<br\s*/?>)', '', history, flags=re.IGNORECASE)     # to correct old comments
+                history = re.sub(r'\bserie\b', 'series', history)                       # to correct serie to series
+                history = re.sub(r'\bSerie\b', 'Series', history)                       # to correct Serie to Series
+
                 aDict = {
                         'Id': 'Id-' + sheetName.split('INTERPOLATION Id-')[1],
-                        'Type': df['Type'][0],
+                        'Type': 'INTERPOLATION',
                         'Name': df['Name'][0],
                         'X1Coords': df['X1Coords'].values,
                         'X2Coords': df['X2Coords'].values,
                         'X1Name': df['X1Name'][0],
                         'Date': df['Date'][0] if 'Date' in df.columns else '',
                         'Comment': df['Comment'][0],
-                        'History': re.sub(r'^(<br\s*/?>)', '', df['History'][0], flags=re.IGNORECASE)    # to correct old comments
+                        'History': history
                 }
 
                 itemDict_list.append(aDict)
@@ -577,9 +597,14 @@ def save_WorkSheet(ws_item):
             itemDict = item.data(0, Qt.UserRole)
 
             #-----------------------
-            if itemDict["Type"].startswith('Serie'):
-                sheetName = f'{itemDict["Type"].split(" ")[0]} {itemDict["Id"]}'
+            if itemDict["Type"].startswith('Series'):
+                
+                sheetName = f'Serie {itemDict["Id"]}'                       # to remove sheetname 'Serie Idxxxxxxxx' (wrong spell)
                 if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
+
+                sheetName = f'Series {itemDict["Id"]}'                      # to remove sheetname 'Series Idxxxxxxxx' (will be rewritten)
+                if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
+
                 ws = wb.create_sheet(title=sheetName)
 
                 ws.cell(row=1, column=1, value=itemDict['X'])
@@ -592,7 +617,7 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=1, column=8, value='Comment')
                 ws.cell(row=1, column=9, value='History')
 
-                for i, (index, value) in enumerate(itemDict['Serie'].sort_index().items(), start=2):            # force sort on index
+                for i, (index, value) in enumerate(itemDict['Series'].sort_index().items(), start=2):            # force sort on index
                     ws.cell(row=i, column=1, value=index)
                     ws.cell(row=i, column=2, value=value)
                 ws.cell(row=2, column=3, value=itemDict['Type'])
@@ -740,61 +765,61 @@ def import_Data():
         importWindow.show()
 
 #========================================================================================
-def define_insolationAstroSerie():
-    global open_insolationAstroSerieWindow
+def define_insolationAstroSeries():
+    global open_insolationAstroSeriesWindow
 
     current_index = tree_widget.currentItem()
     if not current_index:
         new_WorkSheet()
     
-    Id_insolationAstroSerieWindow = '123456'
+    Id_insolationAstroSeriesWindow = '123456'
 
-    if open_insolationAstroSerieWindow:
-        insolationAstroSerieWindow = open_insolationAstroSerieWindow[Id_insolationAstroSerieWindow]
-        insolationAstroSerieWindow.raise_()
-        insolationAstroSerieWindow.activateWindow()
+    if open_insolationAstroSeriesWindow:
+        insolationAstroSeriesWindow = open_insolationAstroSeriesWindow[Id_insolationAstroSeriesWindow]
+        insolationAstroSeriesWindow.raise_()
+        insolationAstroSeriesWindow.activateWindow()
     else:
-        insolationAstroSerieWindow = defineInsolationAstroSerieWindow(open_insolationAstroSerieWindow, add_item_tree_widget)
-        open_insolationAstroSerieWindow[Id_insolationAstroSerieWindow] = insolationAstroSerieWindow
-        insolationAstroSerieWindow.show()
+        insolationAstroSeriesWindow = defineInsolationAstroSeriesWindow(open_insolationAstroSeriesWindow, add_item_tree_widget)
+        open_insolationAstroSeriesWindow[Id_insolationAstroSeriesWindow] = insolationAstroSeriesWindow
+        insolationAstroSeriesWindow.show()
 
 #========================================================================================
-def define_sinusoidalSerie():
-    global open_sinusoidalSerieWindow
+def define_sinusoidalSeries():
+    global open_sinusoidalSeriesWindow
 
     current_index = tree_widget.currentItem()
     if not current_index:
         new_WorkSheet()
     
-    Id_sinusoidalSerieWindow = '123456'
+    Id_sinusoidalSeriesWindow = '123456'
 
-    if open_sinusoidalSerieWindow:
-        sinusoidalSerieWindow = open_sinusoidalSerieWindow[Id_sinusoidalSerieWindow]
-        sinusoidalSerieWindow.raise_()
-        sinusoidalSerieWindow.activateWindow()
+    if open_sinusoidalSeriesWindow:
+        sinusoidalSeriesWindow = open_sinusoidalSeriesWindow[Id_sinusoidalSeriesWindow]
+        sinusoidalSeriesWindow.raise_()
+        sinusoidalSeriesWindow.activateWindow()
     else:
-        sinusoidalSerieWindow = defineSinusoidalSerieWindow(open_sinusoidalSerieWindow, add_item_tree_widget)
-        open_sinusoidalSerieWindow[Id_sinusoidalSerieWindow] = sinusoidalSerieWindow
-        sinusoidalSerieWindow.show()
+        sinusoidalSeriesWindow = defineSinusoidalSeriesWindow(open_sinusoidalSeriesWindow, add_item_tree_widget)
+        open_sinusoidalSeriesWindow[Id_sinusoidalSeriesWindow] = sinusoidalSeriesWindow
+        sinusoidalSeriesWindow.show()
 
 #========================================================================================
-def define_randomSerie():
-    global open_randomSerieWindow
+def define_randomSeries():
+    global open_randomSeriesWindow
 
     current_index = tree_widget.currentItem()
     if not current_index:
         new_WorkSheet()
     
-    Id_randomSerieWindow = '123456'
+    Id_randomSeriesWindow = '123456'
 
-    if open_randomSerieWindow:
-        randomSerieWindow = open_randomSerieWindow[Id_randomSerieWindow]
-        randomSerieWindow.raise_()
-        randomSerieWindow.activateWindow()
+    if open_randomSeriesWindow:
+        randomSeriesWindow = open_randomSeriesWindow[Id_randomSeriesWindow]
+        randomSeriesWindow.raise_()
+        randomSeriesWindow.activateWindow()
     else:
-        randomSerieWindow = defineRandomSerieWindow(open_randomSerieWindow, add_item_tree_widget)
-        open_randomSerieWindow[Id_randomSerieWindow] = randomSerieWindow
-        randomSerieWindow.show()
+        randomSeriesWindow = defineRandomSeriesWindow(open_randomSeriesWindow, add_item_tree_widget)
+        open_randomSeriesWindow[Id_randomSeriesWindow] = randomSeriesWindow
+        randomSeriesWindow.show()
 
 #========================================================================================
 def create_tree_widget():
@@ -1005,12 +1030,12 @@ def get_unique_selected_items(tree_widget):
     return unique_items
 
 #========================================================================================
-def displaySingleSerie_selected_series():
+def displaySingleSeries_selected_series():
     global open_displayWindows
 
     items = get_unique_selected_items(tree_widget)
     if len(items) == 0:
-        main_window.statusBar().showMessage('Please select at least 1 serie', 5000)
+        main_window.statusBar().showMessage('Please select at least 1 series', 5000)
         return
 
     for item in items:
@@ -1023,8 +1048,8 @@ def displaySingleSerie_selected_series():
             displayWindow.raise_()
             displayWindow.activateWindow()
         else:
-            if itemDict['Type'].startswith('Serie'): 
-                displayWindow = displaySingleSerieWindow(Id_displayWindow, open_displayWindows, item)
+            if itemDict['Type'].startswith('Series'): 
+                displayWindow = displaySingleSeriesWindow(Id_displayWindow, open_displayWindows, item)
             elif itemDict['Type'] == 'FILTER':
                 displayWindow = displayFilterWindow(Id_displayWindow, open_displayWindows, item)
             elif itemDict['Type'] == 'SAMPLE':
@@ -1046,10 +1071,10 @@ def displayMultipleSeries_selected_series(overlaid=True):
 
     items = get_unique_selected_items(tree_widget)
     if len(items) == 0:
-        main_window.statusBar().showMessage('Please select at least 1 serie', 5000)
+        main_window.statusBar().showMessage('Please select at least 1 series', 5000)
         return
     elif len(items) == 1:                             # If only 1 item selected
-        displaySingleSerie_selected_series()
+        displaySingleSeries_selected_series()
         return
 
     if len(items) > 8: 
@@ -1057,19 +1082,19 @@ def displayMultipleSeries_selected_series(overlaid=True):
         return
 
     items_selected = []                             # select only series
-    serieDicts = []
+    seriesDicts = []
     for item in items:
         itemDict = item.data(0, Qt.UserRole)
-        if  itemDict['Type'].startswith('Serie'):
+        if  itemDict['Type'].startswith('Series'):
             items_selected.append(item)
-            serieDicts.append(itemDict)
+            seriesDicts.append(itemDict)
 
     if len(items_selected) < 2:
         main_window.statusBar().showMessage('Please select at least 2 series', 5000)
         return
 
     #-------------------------------------------------------------
-    Id_displayWindow = tuple(serieDict['Id'] for serieDict in serieDicts)
+    Id_displayWindow = tuple(seriesDict['Id'] for seriesDict in seriesDicts)
 
     if Id_displayWindow in open_displayWindows:
         displayWindow = open_displayWindows[Id_displayWindow]
@@ -1096,12 +1121,12 @@ def define_filter():
     items = get_unique_selected_items(tree_widget)
     items_selected = []                             # select only series
     for item in items:
-        serieDict = item.data(0, Qt.UserRole)
-        if  serieDict['Type'].startswith('Serie'): 
+        seriesDict = item.data(0, Qt.UserRole)
+        if  seriesDict['Type'].startswith('Series'): 
             items_selected.append(item)
 
     if len(items_selected) != 1 : 
-        main_window.statusBar().showMessage('Please select only 1 serie', 5000)
+        main_window.statusBar().showMessage('Please select only 1 series', 5000)
         return
 
     #-------------------------------------------------------------
@@ -1129,13 +1154,13 @@ def apply_filter():
     itemFilters_selected = []
     for item in items:
         itemDict = item.data(0, Qt.UserRole)
-        if  itemDict['Type'].startswith('Serie'): 
+        if  itemDict['Type'].startswith('Series'): 
             itemSeries_selected.append(item)
         elif itemDict['Type'] == 'FILTER':
             itemFilters_selected.append(item)
 
     if len(itemFilters_selected) != 1 or len(itemSeries_selected) < 1:
-        main_window.statusBar().showMessage('Please select 1 FILTER and at least 1 serie', 5000)
+        main_window.statusBar().showMessage('Please select 1 FILTER and at least 1 series', 5000)
         return
        
     #-------------------------------------------------------------
@@ -1164,23 +1189,23 @@ def apply_filter():
     filter_window_size = int(filterDict['Parameters'])
 
     for item in itemSeries_selected:
-        serieDict = item.data(0, Qt.UserRole)
-        serie = serieDict['Serie']
-        serie = serie.groupby(serie.index).mean()
+        seriesDict = item.data(0, Qt.UserRole)
+        series = seriesDict['Series']
+        series = series.groupby(series.index).mean()
 
         filtered_Id = generate_Id()
-        filtered_serieDict = serieDict | {'Id': filtered_Id,
-            'Type': 'Serie filtered',
-            'Serie': defineFilterWindow.moving_average(serie, window_size=filter_window_size),
-            'Color': generate_color(exclude_color=serieDict['Color']),
+        filtered_seriesDict = seriesDict | {'Id': filtered_Id,
+            'Type': 'Series filtered',
+            'Series': defineFilterWindow.moving_average(series, window_size=filter_window_size),
+            'Color': generate_color(exclude_color=seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-            'History': append_to_htmlText(serieDict['History'], 
-                f'Serie <i><b>{serieDict["Id"]}</i></b> filtered with FILTER <i><b>{filterDict["Id"]}</i></b> with a moving average of size {filter_window_size}<BR>---> serie <i><b>{filtered_Id}</b></i>'),
+            'History': append_to_htmlText(seriesDict['History'], 
+                f'Series <i><b>{seriesDict["Id"]}</i></b> filtered with FILTER <i><b>{filterDict["Id"]}</i></b> with a moving average of size {filter_window_size}<BR>---> series <i><b>{filtered_Id}</b></i>'),
             'Comment': ''
         }
         ws_item = item.parent()
         position = ws_item.indexOfChild(item)
-        add_item_tree_widget(ws_item, filtered_serieDict, position+1)
+        add_item_tree_widget(ws_item, filtered_seriesDict, position+1)
 
     #-------------------------------------------------------------
     main_window.setFocus()                  # replace selection
@@ -1196,12 +1221,12 @@ def define_sample():
     items = get_unique_selected_items(tree_widget)
     items_selected = []                             # select only series
     for item in items:
-        serieDict = item.data(0, Qt.UserRole)
-        if  serieDict['Type'].startswith('Serie'): 
+        seriesDict = item.data(0, Qt.UserRole)
+        if  seriesDict['Type'].startswith('Series'): 
             items_selected.append(item)
 
     if len(items_selected) == 0 or len(items_selected) > 2 : 
-        main_window.statusBar().showMessage('Please select at least 1 serie (2nd possible for sampling reference)', 5000)
+        main_window.statusBar().showMessage('Please select at least 1 series (2nd possible for sampling reference)', 5000)
         return
 
     #-------------------------------------------------------------
@@ -1229,13 +1254,13 @@ def apply_sample():
     itemSamples_selected = []
     for item in items:
         itemDict = item.data(0, Qt.UserRole)
-        if  itemDict['Type'].startswith('Serie'): 
+        if  itemDict['Type'].startswith('Series'): 
             itemSeries_selected.append(item)
         elif itemDict['Type'] == 'SAMPLE':
             itemSamples_selected.append(item)
 
     if len(itemSamples_selected) != 1 or len(itemSeries_selected) < 1:
-        main_window.statusBar().showMessage('Please select 1 SAMPLE and at least 1 serie', 5000)
+        main_window.statusBar().showMessage('Please select 1 SAMPLE and at least 1 series', 5000)
         return
        
     #-------------------------------------------------------------
@@ -1263,15 +1288,15 @@ def apply_sample():
     sampleDict = itemFilter.data(0, Qt.UserRole)
 
     for item in itemSeries_selected:
-        serieDict = item.data(0, Qt.UserRole)
-        serie = serieDict['Serie']
-        serie = serie.groupby(serie.index).mean()
+        seriesDict = item.data(0, Qt.UserRole)
+        series = seriesDict['Series']
+        series = series.groupby(series.index).mean()
 
         try:
             if 'XCoords' in sampleDict.keys():
                 param1_str, param2_str = sampleDict['Parameters'].split(';')
                 sample_kind = param1_str.strip()
-                sample_integrated = bool(param2_str.strip())
+                sample_integrated = str_to_bool(param2_str.strip())
                 sample_index =  sampleDict['XCoords']
                 if sample_integrated: 
                     textHistory = f'using x values and {sample_kind} interpolation with integration'
@@ -1281,9 +1306,9 @@ def apply_sample():
                 param1_str, param2_str, param3_str = sampleDict['Parameters'].split(';')
                 sample_step = float(param1_str.strip())
                 sample_kind = param2_str.strip()
-                sample_integrated = bool(param3_str.strip())
-                index_min = serie.index.min()
-                index_max = serie.index.max()
+                sample_integrated = str_to_bool(param3_str.strip())
+                index_min = series.index.min()
+                index_max = series.index.max()
                 index_min = np.ceil(index_min / sample_step) * sample_step
                 index_max = np.floor(index_max / sample_step) * sample_step
                 sample_index = np.arange(index_min, index_max + sample_step, sample_step)
@@ -1293,18 +1318,18 @@ def apply_sample():
                     textHistory = f'every {sample_step} and {sample_kind} interpolation'
 
             sampled_Id = generate_Id()
-            sampled_serieDict = serieDict | {'Id': sampled_Id,
-                'Type': 'Serie sampled',
-                'Serie': defineSampleWindow.sample(serie, sample_index, kind=sample_kind, integrated=sample_integrated),
-                'Color': generate_color(exclude_color=serieDict['Color']),
+            sampled_seriesDict = seriesDict | {'Id': sampled_Id,
+                'Type': 'Series sampled',
+                'Series': defineSampleWindow.sample(series, sample_index, kind=sample_kind, integrated=sample_integrated),
+                'Color': generate_color(exclude_color=seriesDict['Color']),
                 'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-                'History': append_to_htmlText(serieDict['History'], 
-                    f'Serie <i><b>{serieDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sampleDict["Id"]}</i></b><BR>---> serie <i><b>{sampled_Id}</b></i>'),
+                'History': append_to_htmlText(seriesDict['History'], 
+                    f'Series <i><b>{seriesDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sampleDict["Id"]}</i></b><BR>---> series <i><b>{sampled_Id}</b></i>'),
                 'Comment': ''
             }
             ws_item = item.parent()
             position = ws_item.indexOfChild(item)
-            add_item_tree_widget(ws_item, sampled_serieDict, position+1)
+            add_item_tree_widget(ws_item, sampled_seriesDict, position+1)
 
         except:
             msg = f"Problem when applying Sampling. Delete the uncorrect SAMPLING and redefine a new one."
@@ -1327,7 +1352,7 @@ def define_interpolation():
     itemInterpolations_selected = []
     for item in items:
         itemDict = item.data(0, Qt.UserRole)
-        if  itemDict['Type'].startswith('Serie'): 
+        if  itemDict['Type'].startswith('Series'): 
             itemSeries_selected.append(item)
         elif itemDict['Type'] == 'INTERPOLATION':
             itemInterpolations_selected.append(item)
@@ -1371,13 +1396,13 @@ def apply_interpolation(interpolationMode):
     itemInterpolations_selected = []
     for item in items:
         itemDict = item.data(0, Qt.UserRole)
-        if  itemDict['Type'].startswith('Serie'): 
+        if  itemDict['Type'].startswith('Series'): 
             itemSeries_selected.append(item)
         elif itemDict['Type'] == 'INTERPOLATION':
             itemInterpolations_selected.append(item)
 
     if len(itemInterpolations_selected) != 1 or len(itemSeries_selected) < 1:
-        main_window.statusBar().showMessage('Please select 1 INTERPOLATION and at least 1 serie', 5000)
+        main_window.statusBar().showMessage('Please select 1 INTERPOLATION and at least 1 series', 5000)
         return
        
     #-------------------------------------------------------------
@@ -1408,30 +1433,30 @@ def apply_interpolation(interpolationMode):
     f_1to2, f_2to1 = defineInterpolationWindow.defineInterpolationFunctions(X1Coords, X2Coords, interpolationMode=interpolationMode)
 
     for item in itemSeries_selected:
-        serieDict = item.data(0, Qt.UserRole)
-        serie = serieDict['Serie']
-        serie = serie.groupby(serie.index).mean()
+        seriesDict = item.data(0, Qt.UserRole)
+        series = seriesDict['Series']
+        series = series.groupby(series.index).mean()
 
         interpolated_Id = generate_Id()
-        interpolated_serieDict = serieDict | {'Id': interpolated_Id,
-            'Type': 'Serie interpolated',
-            'Serie': pd.Series(serie.values, index=f_2to1(serie.index)),
+        interpolated_seriesDict = seriesDict | {'Id': interpolated_Id,
+            'Type': 'Series interpolated',
+            'Series': pd.Series(series.values, index=f_2to1(series.index)),
             'InterpolationMode': interpolationMode,
             'X': interpolationDict['X1Name'], 
-            'XOriginal': serieDict['X'], 
-            'XOriginalValues': serie.index.to_list(),
+            'XOriginal': seriesDict['X'], 
+            'XOriginalValues': series.index.to_list(),
             'X1Coords': X1Coords,
             'X2Coords': X2Coords, 
-            'Color': generate_color(exclude_color=serieDict['Color']),
+            'Color': generate_color(exclude_color=seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-            'History': append_to_htmlText(serieDict['History'], 
-                f'Serie <i><b>{serieDict["Id"]}</i></b> interpolated with INTERPOLATION <i><b>{interpolationDict["Id"]}</i></b> with mode {interpolationMode}<BR>---> serie <i><b>{interpolated_Id}</b></i>'),
+            'History': append_to_htmlText(seriesDict['History'], 
+                f'Series <i><b>{seriesDict["Id"]}</i></b> interpolated with INTERPOLATION <i><b>{interpolationDict["Id"]}</i></b> with mode {interpolationMode}<BR>---> series <i><b>{interpolated_Id}</b></i>'),
             'Comment': ''
         }
 
         ws_item = item.parent()
         position = ws_item.indexOfChild(item)
-        add_item_tree_widget(ws_item, interpolated_serieDict, position+1)
+        add_item_tree_widget(ws_item, interpolated_seriesDict, position+1)
 
     #-------------------------------------------------------------
     main_window.setFocus()                  # replace selection
@@ -1605,10 +1630,10 @@ def on_item_double_clicked(item, column):
     elif column == 1:
         tree_widget.custom_tooltip.hide()
         item.setFlags(item.flags() | Qt.ItemIsEditable)
-    elif column == 3 and (itemDict['Type'].startswith('Serie') or
+    elif column == 3 and (itemDict['Type'].startswith('Series') or
                           itemDict['Type'] == "INTERPOLATION"): 
         item.setFlags(item.flags() | Qt.ItemIsEditable)
-    elif column == 4 and itemDict['Type'].startswith('Serie'):
+    elif column == 4 and itemDict['Type'].startswith('Series'):
         item.setFlags(item.flags() | Qt.ItemIsEditable)
     else:
         item.setFlags(item.flags() & ~Qt.ItemIsEditable)
@@ -1757,7 +1782,7 @@ paste_action.triggered.connect(paste_items)
 
 display_action = QAction("Display Single", main_window)
 display_action.setShortcut('Ctrl+d')
-display_action.triggered.connect(displaySingleSerie_selected_series)
+display_action.triggered.connect(displaySingleSeries_selected_series)
 
 displayTogetherSeries_action = QAction("Display Together", main_window)
 displayTogetherSeries_action.setShortcut('Ctrl+t')
@@ -1786,18 +1811,18 @@ importData_action = QAction("Import data", main_window)
 importData_action.setShortcut('Ctrl+m')
 importData_action.triggered.connect(import_Data)
 
-randomSerie_action = QAction("Random serie", main_window)
-randomSerie_action.triggered.connect(define_randomSerie)
-insolationAstroSerie_action = QAction("Insolation / Astronomical serie", main_window)
-insolationAstroSerie_action.triggered.connect(define_insolationAstroSerie)
-sinusoidalSerie_action = QAction("Sinusoidal serie", main_window)
-sinusoidalSerie_action.triggered.connect(define_sinusoidalSerie)
+randomSeries_action = QAction("Random series", main_window)
+randomSeries_action.triggered.connect(define_randomSeries)
+insolationAstroSeries_action = QAction("Insolation / Astronomical series", main_window)
+insolationAstroSeries_action.triggered.connect(define_insolationAstroSeries)
+sinusoidalSeries_action = QAction("Sinusoidal series", main_window)
+sinusoidalSeries_action.triggered.connect(define_sinusoidalSeries)
 
 create_menu.addAction(importData_action)
 create_menu.addSeparator()
-create_menu.addAction(randomSerie_action)
-create_menu.addAction(insolationAstroSerie_action)
-create_menu.addAction(sinusoidalSerie_action)
+create_menu.addAction(randomSeries_action)
+create_menu.addAction(insolationAstroSeries_action)
+create_menu.addAction(sinusoidalSeries_action)
 
 #----------------------------------------------
 process_menu = menu_bar.addMenu("Process")

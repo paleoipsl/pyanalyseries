@@ -21,15 +21,15 @@ for key in plt.rcParams.keys():
         plt.rcParams[key] = []
 
 #=========================================================================================
-class defineRandomSerieWindow(QWidget):
+class defineRandomSeriesWindow(QWidget):
     #---------------------------------------------------------------------------------------------
-    def __init__(self, open_randomSerieWindow, add_item_tree_widget):
+    def __init__(self, open_randomSeriesWindow, add_item_tree_widget):
         super().__init__()
 
-        self.open_randomSerieWindow = open_randomSerieWindow
+        self.open_randomSeriesWindow = open_randomSeriesWindow
         self.add_item_tree_widget = add_item_tree_widget
 
-        title = 'Define Random serie'
+        title = 'Define Random series'
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)
@@ -112,7 +112,7 @@ class defineRandomSerieWindow(QWidget):
         style = "padding: 4px 12px;"
         self.shuffle_button = QPushButton("Shuffle", self)
         self.shuffle_button.setStyleSheet(style)
-        self.import_button = QPushButton("Import serie", self)
+        self.import_button = QPushButton("Import series", self)
         self.import_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
@@ -125,7 +125,7 @@ class defineRandomSerieWindow(QWidget):
         main_layout.addLayout(button_layout)
 
         self.shuffle_button.clicked.connect(self.myplot)
-        self.import_button.clicked.connect(self.import_serie)
+        self.import_button.clicked.connect(self.import_series)
         self.close_button.clicked.connect(self.close)
 
         self.status_bar = QStatusBar()
@@ -161,10 +161,10 @@ class defineRandomSerieWindow(QWidget):
         x = np.linspace(self.xstart, self.xend, self.nbPts)
         y = np.random.uniform(self.minVal,self.maxVal, self.nbPts)
 
-        serie = pd.Series(y, index=x)
+        series = pd.Series(y, index=x)
 
-        self.index = serie.index
-        self.values = serie.values
+        self.index = series.index
+        self.values = series.values
 
         ax = self.interactive_plot.axs[0]
         ax.clear()
@@ -186,10 +186,10 @@ class defineRandomSerieWindow(QWidget):
         self.status_bar.showMessage('Updated', 1000)
 
     #---------------------------------------------------------------------------------------------
-    def import_serie(self):
+    def import_series(self):
 
-        serie_Id = generate_Id()
-        history = f'Random serie with parameters :' + \
+        series_Id = generate_Id()
+        history = f'Random series with parameters :' + \
                    '<ul>' + \
                    f'<li>Start point : {self.xstart}' + \
                    f'<li>End point : {self.xend}' + \
@@ -197,11 +197,11 @@ class defineRandomSerieWindow(QWidget):
                    f'<li>Min value : {self.maxVal}' + \
                    f'<li>Max value : {self.minVal}' + \
                    '</ul>'
-        history += f'---> serie <i><b>{serie_Id}</b></i>'
+        history += f'---> series <i><b>{series_Id}</b></i>'
 
-        serieDict = {
-            'Id': serie_Id, 
-            'Type': 'Serie', 
+        seriesDict = {
+            'Id': series_Id, 
+            'Type': 'Series', 
             'Name': '', 
             'X': 'X',
             'Y': 'Y',
@@ -210,17 +210,17 @@ class defineRandomSerieWindow(QWidget):
             'History': history,
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'Comment': '',
-            'Serie': pd.Series(self.values, index=self.index),
+            'Series': pd.Series(self.values, index=self.index),
             }
 
         try:
-            self.add_item_tree_widget(None, serieDict)          # will be added on parent from current index
+            self.add_item_tree_widget(None, seriesDict)          # will be added on parent from current index
         except:
             pass
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
-        self.open_randomSerieWindow.pop('123456', None)
+        self.open_randomSeriesWindow.pop('123456', None)
         event.accept()
 
 #=========================================================================================
@@ -232,12 +232,12 @@ if __name__ == "__main__":
 
     app = QApplication([])
 
-    Id_randomSerieWindow = '1234'
-    open_randomSerieWindow = {}
+    Id_randomSeriesWindow = '1234'
+    open_randomSeriesWindow = {}
 
-    randomSerieWindow = defineRandomSerieWindow(open_randomSerieWindow, handle_item)
-    open_randomSerieWindow[Id_randomSerieWindow] = defineRandomSerieWindow
-    randomSerieWindow.show()
+    randomSeriesWindow = defineRandomSeriesWindow(open_randomSeriesWindow, handle_item)
+    open_randomSeriesWindow[Id_randomSeriesWindow] = defineRandomSeriesWindow
+    randomSeriesWindow.show()
 
     sys.exit(app.exec_())
 

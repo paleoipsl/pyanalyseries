@@ -22,7 +22,7 @@ for key in plt.rcParams.keys():
         plt.rcParams[key] = []
 
 #=========================================================================================
-class displaySingleSerieWindow(QWidget):
+class displaySingleSeriesWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def __init__(self, Id, open_displayWindows, item):
         super().__init__()
@@ -31,16 +31,16 @@ class displaySingleSerieWindow(QWidget):
         self.open_displayWindows = open_displayWindows
         self.item = item
 
-        self.serieWidth = 0.8
+        self.seriesWidth = 0.8
 
-        self.serieDict = self.item.data(0, Qt.UserRole)
-        self.Y_axisInverted = self.serieDict['Y axis inverted']
+        self.seriesDict = self.item.data(0, Qt.UserRole)
+        self.Y_axisInverted = self.seriesDict['Y axis inverted']
 
-        self.xName = self.serieDict['X']
-        self.yName = self.serieDict['Y']
-        serie = self.serieDict['Serie']
+        self.xName = self.seriesDict['X']
+        self.yName = self.seriesDict['Y']
+        series = self.seriesDict['Series']
 
-        title = 'Display serie : ' + self.Id
+        title = 'Display series : ' + self.Id
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)
@@ -51,16 +51,16 @@ class displaySingleSerieWindow(QWidget):
         data_tab = QWidget()
         data_layout = QVBoxLayout()
         self.data_table = CustomQTableWidget()
-        self.data_table.setRowCount(len(serie))
+        self.data_table.setRowCount(len(series))
         self.data_table.setColumnCount(2)
         self.data_table.setHorizontalHeaderLabels([self.xName, self.yName])
-        duplicates = serie.index.duplicated()
-        missing_values = serie.isna().to_numpy()
-        serie = serie.sort_index()
+        duplicates = series.index.duplicated()
+        missing_values = series.isna().to_numpy()
+        series = series.sort_index()
 
-        for i in range(len(serie)):
-            self.data_table.setItem(i, 0, QTableWidgetItem(str(f'{serie.index[i]:.6f}')))
-            self.data_table.setItem(i, 1, QTableWidgetItem(str(f'{serie.values[i]:.6f}')))
+        for i in range(len(series)):
+            self.data_table.setItem(i, 0, QTableWidgetItem(str(f'{series.index[i]:.6f}')))
+            self.data_table.setItem(i, 1, QTableWidgetItem(str(f'{series.values[i]:.6f}')))
             if missing_values[i]:
                 base = QColor('peachpuff')
                 alt = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
@@ -87,12 +87,12 @@ class displaySingleSerieWindow(QWidget):
         stats_table.setColumnCount(2)
         stats_table.setHorizontalHeaderLabels(["Stat", "Value"])
         stats = {
-            "Number of points": (len(serie), 'd'),
-            "Number of duplicates": ((serie.index.value_counts() > 1).sum(), 'd'),
-            "Number of missing": (serie.isna().sum(), 'd'),
-            "Mean": (serie.mean(), '.2f'),
-            "Maximum": (serie.max(), '.2f'),
-            "Minimum": (serie.min(), '.2f'),
+            "Number of points": (len(series), 'd'),
+            "Number of duplicates": ((series.index.value_counts() > 1).sum(), 'd'),
+            "Number of missing": (series.isna().sum(), 'd'),
+            "Mean": (series.mean(), '.2f'),
+            "Maximum": (series.max(), '.2f'),
+            "Minimum": (series.min(), '.2f'),
         }
         for i, (key, value) in enumerate(stats.items()):
             stats_table.setItem(i, 0, QTableWidgetItem(key))
@@ -120,14 +120,14 @@ class displaySingleSerieWindow(QWidget):
         info_tab = QWidget()
         info_layout = QVBoxLayout()
 
-        self.textName = QLabel(f"Name : <b>{self.serieDict['Name']}</b>")
+        self.textName = QLabel(f"Name : <b>{self.seriesDict['Name']}</b>")
 
-        self.textDate = QLabel(f"Date : {self.serieDict['Date']}")
+        self.textDate = QLabel(f"Date : {self.seriesDict['Date']}")
 
         labelHistory = QLabel("History :")
         self.textHistory = QTextEdit()
         self.textHistory.setFixedHeight(self.textHistory.fontMetrics().lineSpacing() * 10)
-        self.textHistory.setText(self.serieDict['History'])
+        self.textHistory.setText(self.seriesDict['History'])
         self.textHistory.setReadOnly(True)
         self.textHistory.setStyleSheet("""
             QTextEdit[readOnly="true"] {
@@ -141,7 +141,7 @@ class displaySingleSerieWindow(QWidget):
         labelComment = QLabel("Comment :")
         self.textComment = QTextEdit()
         self.textComment.setFixedHeight(self.textComment.fontMetrics().lineSpacing() * 10)
-        self.textComment.setText(self.serieDict['Comment'])
+        self.textComment.setText(self.seriesDict['Comment'])
 
         info_layout.addWidget(self.textName)
         info_layout.addWidget(self.textDate)
@@ -198,21 +198,21 @@ class displaySingleSerieWindow(QWidget):
         ax.set_xlabel(self.xName)
         ax.set_ylabel(self.yName)
         ax.autoscale()
-        serieDict = self.item.data(0, Qt.UserRole)
-        serie = serieDict['Serie']
-        serie = serie.groupby(serie.index).mean()           # sort on index by default
-        serieColor = serieDict['Color']
-        Y_axisInverted = serieDict['Y axis inverted']
+        seriesDict = self.item.data(0, Qt.UserRole)
+        series = seriesDict['Series']
+        series = series.groupby(series.index).mean()           # sort on index by default
+        seriesColor = seriesDict['Color']
+        Y_axisInverted = seriesDict['Y axis inverted']
 
-        line, = ax.plot(serie.index, serie.values, color=serieColor, linewidth=self.serieWidth)
-        points = ax.scatter(serie.index, serie.values, s=5, marker='o', color=serieColor, visible=False)
+        line, = ax.plot(series.index, series.values, color=seriesColor, linewidth=self.seriesWidth)
+        points = ax.scatter(series.index, series.values, s=5, marker='o', color=seriesColor, visible=False)
         ax.line_points_pairs.append((line, points))
 
-        if 'InterpolationMode' in serieDict:
-            interpolationMode = serieDict['InterpolationMode']
-            XOriginal = serieDict['XOriginal']
-            X1Coords = serieDict['X1Coords']
-            X2Coords = serieDict['X2Coords']
+        if 'InterpolationMode' in seriesDict:
+            interpolationMode = seriesDict['InterpolationMode']
+            XOriginal = seriesDict['XOriginal']
+            X1Coords = seriesDict['X1Coords']
+            X2Coords = seriesDict['X2Coords']
             (f_1to2, f_2to1) = defineInterpolationWindow.defineInterpolationFunctions(X1Coords, X2Coords, interpolationMode=interpolationMode)
 
             second_xaxis = ax.secondary_xaxis('top', functions=(f_1to2, f_2to1))
@@ -236,10 +236,10 @@ class displaySingleSerieWindow(QWidget):
 
         self.raise_()
 
-        self.serieDict = self.item.data(0, Qt.UserRole)
-        self.textName.setText(f"Name : <b>{self.serieDict['Name']}</b>")
-        self.xName = self.serieDict['X']
-        self.yName = self.serieDict['Y']
+        self.seriesDict = self.item.data(0, Qt.UserRole)
+        self.textName.setText(f"Name : <b>{self.seriesDict['Name']}</b>")
+        self.xName = self.seriesDict['X']
+        self.yName = self.seriesDict['Y']
         self.data_table.setHorizontalHeaderLabels([self.xName, self.yName])
         self.data_table.resizeColumnsToContents()
         xlim = self.interactive_plot.axs[0].get_xlim()
@@ -250,10 +250,10 @@ class displaySingleSerieWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
         plt.close()
-        self.serieDict['Comment'] = self.textComment.toPlainText()
+        self.seriesDict['Comment'] = self.textComment.toPlainText()
         # if WS has been removed while a Display is active 
         try:
-            self.item.setData(0, Qt.UserRole, self.serieDict)
+            self.item.setData(0, Qt.UserRole, self.seriesDict)
         except:
             #print("item not available to be updated")
             pass 
@@ -269,14 +269,14 @@ if __name__ == "__main__":
 
     x = np.linspace(0, 10, 100)
     y = np.sin(x)
-    serie = pd.Series(y, index=x)
+    series = pd.Series(y, index=x)
 
     itemDict = {
         'Id': 'abcd',
         'Name': 'A name',
         'X': 'xName',
         'Y': 'yName',
-        'Serie': serie, 
+        'Series': series, 
         'Color': 'darkorange',
         'Y axis inverted': True,
         'Comment': 'A text',
@@ -288,7 +288,7 @@ if __name__ == "__main__":
 
     open_displayWindows = {}
     Id_displayWindow = '1234'
-    displayWindow = displaySingleSerieWindow(Id_displayWindow, open_displayWindows, item)
+    displayWindow = displaySingleSeriesWindow(Id_displayWindow, open_displayWindows, item)
     open_displayWindows[Id_displayWindow] = displayWindow
     displayWindow.show()
 

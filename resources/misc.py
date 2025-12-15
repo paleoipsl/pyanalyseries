@@ -81,3 +81,13 @@ def is_axvline(line):
     )
 
     return x_is_constant and y_covers_full_axis
+
+#========================================================================================
+def str_to_bool(s: str) -> bool:
+    if s == "True":
+        return True
+    if s == "False":
+        return False
+    raise ValueError(f"Invalid boolean string: {s!r}")
+
+#========================================================================================

@@ -28,7 +28,7 @@ class displayStackedSeriesWindow(QWidget):
         self.open_displayWindows = open_displayWindows
         self.items = items 
 
-        self.serieWidth = 0.8
+        self.seriesWidth = 0.8
         self.sharex = True
 
         title = 'Display stacked series : ' + ', '.join(self.Ids)
@@ -96,21 +96,21 @@ class displayStackedSeriesWindow(QWidget):
             ax.twins = []                           # replace because ax.remove() has deleted those attributs 
             ax.twins_orientation = None
 
-            serieDict = item.data(0, Qt.UserRole)
+            seriesDict = item.data(0, Qt.UserRole)
 
             ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
-            ax.set_xlabel(serieDict['X'])
-            ax.set_ylabel(serieDict['Y'])
+            ax.set_xlabel(seriesDict['X'])
+            ax.set_ylabel(seriesDict['Y'])
             ax.autoscale()
 
-            serie = serieDict['Serie']
-            serie = serie.groupby(serie.index).mean()
-            serieColor = serieDict['Color']
-            Y_axisInverted = serieDict['Y axis inverted']
+            series = seriesDict['Series']
+            series = series.groupby(series.index).mean()
+            seriesColor = seriesDict['Color']
+            Y_axisInverted = seriesDict['Y axis inverted']
 
             ax.line_points_pairs = []
-            line, = ax.plot(serie.index, serie.values, color=serieColor, linewidth=self.serieWidth)
-            points = ax.scatter(serie.index, serie.values, s=5, marker='o', color=serieColor, visible=False)
+            line, = ax.plot(series.index, series.values, color=seriesColor, linewidth=self.seriesWidth)
+            points = ax.scatter(series.index, series.values, s=5, marker='o', color=seriesColor, visible=False)
             ax.line_points_pairs.append((line, points))
 
             ax.yaxis.set_inverted(Y_axisInverted)
@@ -119,10 +119,10 @@ class displayStackedSeriesWindow(QWidget):
         if self.sharex:
             XDict = {}
             for n, item in enumerate(self.items):
-                serieDict = item.data(0, Qt.UserRole)
-                if serieDict['X'] not in XDict:
-                    XDict[serieDict['X']] = []
-                XDict[serieDict['X']].append(n)
+                seriesDict = item.data(0, Qt.UserRole)
+                if seriesDict['X'] not in XDict:
+                    XDict[seriesDict['X']] = []
+                XDict[seriesDict['X']].append(n)
 
             sharexLists = [n for n in XDict.values() if len(n) > 1]
             #print(sharexLists)
@@ -158,40 +158,40 @@ if __name__ == "__main__":
 
     x1 = np.linspace(0, 10, 100)
     y1 = np.sin(x1)
-    serie1 = pd.Series(y1, index=x1)
+    series1 = pd.Series(y1, index=x1)
 
-    serie1Dict = {
+    series1Dict = {
         'Id': '111',
         'X': 'x1Name',
         'Y': 'y1Name',
-        'Serie': serie1,
+        'Series': series1,
         'Color': 'steelblue',
         'Y axis inverted': True,
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }
     item1 = QTreeWidgetItem()
-    item1.setData(0, Qt.UserRole, serie1Dict)
+    item1.setData(0, Qt.UserRole, series1Dict)
 
     x2 = np.linspace(5, 15, 100)
     y2 = np.cos(x2)
-    serie2 = pd.Series(y2, index=x2)
+    series2 = pd.Series(y2, index=x2)
 
-    serie2Dict = {
+    series2Dict = {
         'Id': '222',
         'X': 'x2Name',
         'Y': 'y2Name',
-        'Serie': serie2,
+        'Series': series2,
         'Color': 'darkorange',
         'Y axis inverted': True,
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }
     item2 = QTreeWidgetItem()
-    item2.setData(0, Qt.UserRole, serie2Dict)
+    item2.setData(0, Qt.UserRole, series2Dict)
 
     open_displayWindows = {}
-    Id_displayWindow = tuple([serie1Dict['Id'], serie2Dict['Id']])
+    Id_displayWindow = tuple([series1Dict['Id'], series2Dict['Id']])
     displayWindow = displayStackedSeriesWindow(Id_displayWindow, open_displayWindows, [item1, item2])
     open_displayWindows[Id_displayWindow] = displayWindow
     displayWindow.show()

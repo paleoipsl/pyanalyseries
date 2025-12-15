@@ -36,7 +36,7 @@ class defineInterpolationWindow(QWidget):
         self.items = items
         self.add_item_tree_widget = add_item_tree_widget
 
-        self.serieWidth = 0.8
+        self.seriesWidth = 0.8
         self.pointerColor = 'blue'
         self.key_shift = False
         self.key_control = False
@@ -115,52 +115,52 @@ class defineInterpolationWindow(QWidget):
         #----------------------------------------------
         control_layout1 = QHBoxLayout()
         
-        self.selectSerieRef_combo_label = QLabel("Reference serie:")
-        self.selectSerieRef_combo_label.setFixedWidth(120)
-        self.selectSerieRef_combo = QComboBox()
+        self.selectSeriesRef_combo_label = QLabel("Reference series:")
+        self.selectSeriesRef_combo_label.setFixedWidth(120)
+        self.selectSeriesRef_combo = QComboBox()
         font = QFont("Courier New", 12)
-        self.selectSerieRef_combo.setFont(font)
+        self.selectSeriesRef_combo.setFont(font)
 
         for n,item in enumerate(self.items):
-            serieDict = item.data(0, Qt.UserRole)
-            XName = serieDict['X']
-            YName = serieDict['Y']
-            Id = serieDict['Id']
-            self.selectSerieRef_combo.addItem(f'{n+1} with {Id}: {XName} / {YName}')
-        self.selectSerieRef_combo.setCurrentIndex(0)
+            seriesDict = item.data(0, Qt.UserRole)
+            XName = seriesDict['X']
+            YName = seriesDict['Y']
+            Id = seriesDict['Id']
+            self.selectSeriesRef_combo.addItem(f'{n+1} with {Id}: {XName} / {YName}')
+        self.selectSeriesRef_combo.setCurrentIndex(0)
 
-        control_layout1.addWidget(self.selectSerieRef_combo_label)
-        control_layout1.addWidget(self.selectSerieRef_combo)
+        control_layout1.addWidget(self.selectSeriesRef_combo_label)
+        control_layout1.addWidget(self.selectSeriesRef_combo)
         control_layout1.addStretch()
 
         main_layout.addLayout(control_layout1)
 
-        self.selectSerieRef_combo.currentIndexChanged.connect(self.selectSerie_change)
+        self.selectSeriesRef_combo.currentIndexChanged.connect(self.selectSeries_change)
 
         #----------------------------------------------
         control_layout2 = QHBoxLayout()
 
-        self.selectSerieDist_combo_label = QLabel("Distorded serie:")
-        self.selectSerieDist_combo_label.setFixedWidth(120)
-        self.selectSerieDist_combo = QComboBox()
+        self.selectSeriesDist_combo_label = QLabel("Distorded series:")
+        self.selectSeriesDist_combo_label.setFixedWidth(120)
+        self.selectSeriesDist_combo = QComboBox()
         font = QFont("Courier New", 12)
-        self.selectSerieDist_combo.setFont(font)
+        self.selectSeriesDist_combo.setFont(font)
 
         for n,item in enumerate(self.items):
-            serieDict = item.data(0, Qt.UserRole)
-            XName = serieDict['X']
-            YName = serieDict['Y']
-            Id = serieDict['Id']
-            self.selectSerieDist_combo.addItem(f'{n+1} with {Id}: {XName} / {YName}')
-        self.selectSerieDist_combo.setCurrentIndex(1)
+            seriesDict = item.data(0, Qt.UserRole)
+            XName = seriesDict['X']
+            YName = seriesDict['Y']
+            Id = seriesDict['Id']
+            self.selectSeriesDist_combo.addItem(f'{n+1} with {Id}: {XName} / {YName}')
+        self.selectSeriesDist_combo.setCurrentIndex(1)
 
-        control_layout2.addWidget(self.selectSerieDist_combo_label)
-        control_layout2.addWidget(self.selectSerieDist_combo)
+        control_layout2.addWidget(self.selectSeriesDist_combo_label)
+        control_layout2.addWidget(self.selectSeriesDist_combo)
         control_layout2.addStretch()
 
         main_layout.addLayout(control_layout2)
 
-        self.selectSerieDist_combo.currentIndexChanged.connect(self.selectSerie_change)
+        self.selectSeriesDist_combo.currentIndexChanged.connect(self.selectSeries_change)
 
         #----------------------------------------------
         control_layout3 = QHBoxLayout()
@@ -184,8 +184,8 @@ class defineInterpolationWindow(QWidget):
         self.saveInterpolation_button = QPushButton("Save interpolation", self)
         self.saveInterpolation_button.setStyleSheet(style)
         self.saveInterpolation_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.saveInterpolationAndSerieInterpolated_button = QPushButton("Save interpolation and serie interpolated", self)
-        self.saveInterpolationAndSerieInterpolated_button.setStyleSheet(style)
+        self.saveInterpolationAndSeriesInterpolated_button = QPushButton("Save interpolation and series interpolated", self)
+        self.saveInterpolationAndSeriesInterpolated_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
 
@@ -200,7 +200,7 @@ class defineInterpolationWindow(QWidget):
         saveClose_layout = QVBoxLayout()
         saveClose_layout.addWidget(self.saveInterpolation_button)
         saveCloseLine_layout = QHBoxLayout()
-        saveCloseLine_layout.addWidget(self.saveInterpolationAndSerieInterpolated_button)
+        saveCloseLine_layout.addWidget(self.saveInterpolationAndSeriesInterpolated_button)
         saveCloseLine_layout.addWidget(self.close_button)
         saveClose_layout.addLayout(saveCloseLine_layout)
         control_layout3.addLayout(saveClose_layout)
@@ -213,7 +213,7 @@ class defineInterpolationWindow(QWidget):
         self.removeAddLastConnect_button.clicked.connect(self.removeAddLastConnect)
         self.interp_combo.currentIndexChanged.connect(self.interpMode_change)
         self.saveInterpolation_button.clicked.connect(self.saveInterpolation)
-        self.saveInterpolationAndSerieInterpolated_button.clicked.connect(self.saveInterpolationAndSerieInterpolated)
+        self.saveInterpolationAndSeriesInterpolated_button.clicked.connect(self.saveInterpolationAndSeriesInterpolated)
         self.close_button.clicked.connect(self.close)
 
         #----------------------------------------------
@@ -262,7 +262,7 @@ class defineInterpolationWindow(QWidget):
         self.updateInterpPlot()
 
     #---------------------------------------------------------------------------------------------
-    def selectSerie_change(self):
+    def selectSeries_change(self):
 
         xlim0 = self.axs[0].get_xlim()      # keep axs[0] range 
         xlim1 = self.axs[1].get_xlim()      # keep axs[1] range 
@@ -331,12 +331,12 @@ class defineInterpolationWindow(QWidget):
         if self.second_xaxis: self.second_xaxis.remove()
         self.second_xaxis = self.axsInterp.secondary_xaxis('top', functions=(f_1to2, f_2to1))
         self.second_xaxis.tick_params(labelrotation=30)
-        self.second_xaxis.set_xlabel(self.X2Name, color=self.serie2Color)
+        self.second_xaxis.set_xlabel(self.X2Name, color=self.series2Color)
         plt.setp(self.second_xaxis.get_xticklabels(), horizontalalignment='left')
 
         X2Interp = f_2to1(self.X2)
-        self.line2Interp, = self.axsInterp.plot(X2Interp, self.Y2, color=self.serie2Color, alpha=0.8, linewidth=self.serieWidth, label='line2Interp')
-        self.axsInterp.set_ylabel(self.Y2Name, color=self.serie2Color)
+        self.line2Interp, = self.axsInterp.plot(X2Interp, self.Y2, color=self.series2Color, alpha=0.8, linewidth=self.seriesWidth, label='line2Interp')
+        self.axsInterp.set_ylabel(self.Y2Name, color=self.series2Color)
         self.axsInterp.yaxis.set_label_position('right')
 
         self.updateConnections()
@@ -422,15 +422,15 @@ class defineInterpolationWindow(QWidget):
         # self.axs[1] --> Distorded to interpolate
 
         #----------------------------------------------------
-        self.itemRef = self.items[self.selectSerieRef_combo.currentIndex()]
+        self.itemRef = self.items[self.selectSeriesRef_combo.currentIndex()]
 
-        self.serie1Dict = self.itemRef.data(0, Qt.UserRole)
-        self.X1Name = self.serie1Dict['X']
-        self.Y1Name = self.serie1Dict['Y']
-        self.serie1 = self.serie1Dict['Serie']
-        self.serie1 = self.serie1.groupby(self.serie1.index).mean()
-        self.X1 = self.serie1.index
-        self.Y1 = self.serie1.values
+        self.series1Dict = self.itemRef.data(0, Qt.UserRole)
+        self.X1Name = self.series1Dict['X']
+        self.Y1Name = self.series1Dict['Y']
+        self.series1 = self.series1Dict['Series']
+        self.series1 = self.series1.groupby(self.series1.index).mean()
+        self.X1 = self.series1.index
+        self.Y1 = self.series1.values
 
         self.axs[0].grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
         self.axs[0].set_xlabel(self.X1Name)
@@ -438,26 +438,26 @@ class defineInterpolationWindow(QWidget):
         self.axs[0].patch.set_alpha(0)
         self.axs[0].line_points_pairs = []
 
-        self.serie1Color = self.serie1Dict['Color']
-        self.serie1_Y_axisInverted = self.serie1Dict['Y axis inverted']
-        self.axs[0].yaxis.set_inverted(self.serie1_Y_axisInverted)
+        self.series1Color = self.series1Dict['Color']
+        self.series1_Y_axisInverted = self.series1Dict['Y axis inverted']
+        self.axs[0].yaxis.set_inverted(self.series1_Y_axisInverted)
 
-        self.line1, = self.axs[0].plot(self.X1, self.Y1, color=self.serie1Color, linewidth=self.serieWidth, label='line1', picker=True, pickradius=20)
-        self.points1 = self.axs[0].scatter(self.X1, self.Y1, s=5, marker='o', color=self.serie1Color, visible=False, label='points1', picker=True, pickradius=5)
+        self.line1, = self.axs[0].plot(self.X1, self.Y1, color=self.series1Color, linewidth=self.seriesWidth, label='line1', picker=True, pickradius=20)
+        self.points1 = self.axs[0].scatter(self.X1, self.Y1, s=5, marker='o', color=self.series1Color, visible=False, label='points1', picker=True, pickradius=5)
         self.axs[0].line_points_pairs.append((self.line1, self.points1))
 
         self.linecursor1 = self.axs[0].axvline(color='k', alpha=0.25, linewidth=1)
 
         #----------------------------------------------------
-        self.itemDist = self.items[self.selectSerieDist_combo.currentIndex()]
+        self.itemDist = self.items[self.selectSeriesDist_combo.currentIndex()]
 
-        self.serie2Dict = self.itemDist.data(0, Qt.UserRole)
-        self.X2Name = self.serie2Dict['X']
-        self.Y2Name = self.serie2Dict['Y']
-        self.serie2 = self.serie2Dict['Serie']
-        self.serie2 = self.serie2.groupby(self.serie2.index).mean()
-        self.X2 = self.serie2.index
-        self.Y2 = self.serie2.values
+        self.series2Dict = self.itemDist.data(0, Qt.UserRole)
+        self.X2Name = self.series2Dict['X']
+        self.Y2Name = self.series2Dict['Y']
+        self.series2 = self.series2Dict['Series']
+        self.series2 = self.series2.groupby(self.series2.index).mean()
+        self.X2 = self.series2.index
+        self.Y2 = self.series2.values
 
         self.axs[1].grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
         self.axs[1].set_xlabel(self.X2Name)
@@ -465,12 +465,12 @@ class defineInterpolationWindow(QWidget):
         self.axs[1].patch.set_alpha(0)
         self.axs[1].line_points_pairs = []
 
-        self.serie2Color = self.serie2Dict['Color']
-        self.serie2_Y_axisInverted = self.serie2Dict['Y axis inverted']
-        self.axs[1].yaxis.set_inverted(self.serie2_Y_axisInverted)
+        self.series2Color = self.series2Dict['Color']
+        self.series2_Y_axisInverted = self.series2Dict['Y axis inverted']
+        self.axs[1].yaxis.set_inverted(self.series2_Y_axisInverted)
 
-        self.line2, = self.axs[1].plot(self.X2, self.Y2, color=self.serie2Color, linewidth=self.serieWidth, label='line2', picker=True, pickradius=20)
-        self.points2 = self.axs[1].scatter(self.X2, self.Y2, s=5, marker='o', color=self.serie2Color, visible=False, label='points2', picker=True, pickradius=5)
+        self.line2, = self.axs[1].plot(self.X2, self.Y2, color=self.series2Color, linewidth=self.seriesWidth, label='line2', picker=True, pickradius=20)
+        self.points2 = self.axs[1].scatter(self.X2, self.Y2, s=5, marker='o', color=self.series2Color, visible=False, label='points2', picker=True, pickradius=5)
         self.axs[1].line_points_pairs.append((self.line2, self.points2))
 
         self.linecursor2 = self.axs[1].axvline(color='k', alpha=0.25, linewidth=1)
@@ -610,7 +610,7 @@ class defineInterpolationWindow(QWidget):
 
         #-------------------
         elif event.key == 'z':
-            self.selectSerie_change()
+            self.selectSeries_change()
             self.showInterp.setChecked(not self.showInterp.isChecked())
             self.showInterp_change()
 
@@ -854,7 +854,7 @@ class defineInterpolationWindow(QWidget):
         return interpolation_Id
 
     #---------------------------------------------------------------------------------------------
-    def saveInterpolationAndSerieInterpolated(self):
+    def saveInterpolationAndSeriesInterpolated(self):
 
         interpolation_Id = self.saveInterpolation()
         if interpolation_Id is None:
@@ -863,25 +863,25 @@ class defineInterpolationWindow(QWidget):
         f_1to2, f_2to1 = self.defineInterpolationFunctions(self.X1Coords, self.X2Coords, interpolationMode=self.interpolationMode)
 
         interpolated_Id = generate_Id()
-        interpolated_serieDict = self.serie2Dict | {'Id': interpolated_Id, 
-            'Type': 'Serie interpolated', 
-            'Serie': pd.Series(self.Y2, index=f_2to1(self.X2)),
+        interpolated_seriesDict = self.series2Dict | {'Id': interpolated_Id, 
+            'Type': 'Series interpolated', 
+            'Series': pd.Series(self.Y2, index=f_2to1(self.X2)),
             'InterpolationMode': self.interpolationMode,
             'X': self.X1Name,
             'XOriginal': self.X2Name,
             'XOriginalValues': self.X2,
             'X1Coords': self.X1Coords,
             'X2Coords': self.X2Coords,
-            'Color': generate_color(exclude_color=self.serie2Dict['Color']),
+            'Color': generate_color(exclude_color=self.series2Dict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-            'History': append_to_htmlText(self.serie2Dict['History'], 
-                f'Serie <i><b>{self.serie2Dict["Id"]}</i></b> interpolated with INTERPOLATION <i><b>{interpolation_Id}</i></b> with mode {self.interpolationMode}<BR>---> serie <i><b>{interpolated_Id}</b></i>'),
+            'History': append_to_htmlText(self.series2Dict['History'], 
+                f'Series <i><b>{self.series2Dict["Id"]}</i></b> interpolated with INTERPOLATION <i><b>{interpolation_Id}</i></b> with mode {self.interpolationMode}<BR>---> series <i><b>{interpolated_Id}</b></i>'),
             'Comment': ''
         }
 
         try:
             position = self.itemDist.parent().indexOfChild(self.itemDist)
-            self.add_item_tree_widget(self.itemDist.parent(), interpolated_serieDict, position+1)
+            self.add_item_tree_widget(self.itemDist.parent(), interpolated_seriesDict, position+1)
         except:
             pass
 
@@ -917,26 +917,26 @@ if __name__ == "__main__":
     y2 = np.cos(x)
     y3 = np.cos(2*x)+4
 
-    serie1 = pd.Series(y1, index=x)
-    serie1Dict = {'Id': 'abcd', 'X': 'x1Name', 'Y': 'y1Name', 'Serie': serie1, 
+    series1 = pd.Series(y1, index=x)
+    series1Dict = {'Id': 'abcd', 'X': 'x1Name', 'Y': 'y1Name', 'Series': series1, 
             'Color': 'darkorange', "Y axis inverted": False, 
             'Comment': 'A text', 'History': 'command1 ; command2'}
     item1 = QTreeWidgetItem()
-    item1.setData(0, Qt.UserRole, serie1Dict)
+    item1.setData(0, Qt.UserRole, series1Dict)
 
-    serie2 = pd.Series(y2, index=x)
-    serie2Dict = {'Id': 'abcd', 'X': 'x2Name', 'Y': 'y2Name', 'Serie': serie2, 
+    series2 = pd.Series(y2, index=x)
+    series2Dict = {'Id': 'abcd', 'X': 'x2Name', 'Y': 'y2Name', 'Series': series2, 
             'Color': 'blue', "Y axis inverted": False, 
             'Comment': 'A text', 'History': 'command1 ; command2'}
     item2 = QTreeWidgetItem()
-    item2.setData(0, Qt.UserRole, serie2Dict)
+    item2.setData(0, Qt.UserRole, series2Dict)
 
-    serie3 = pd.Series(y3, index=x)
-    serie3Dict = {'Id': 'abcd', 'X': 'x3Name', 'Y': 'y3Name', 'Serie': serie3, 
+    series3 = pd.Series(y3, index=x)
+    series3Dict = {'Id': 'abcd', 'X': 'x3Name', 'Y': 'y3Name', 'Series': series3, 
             'Color': 'green', "Y axis inverted": False, 
             'Comment': 'A text', 'History': 'command1 ; command2'}
     item3 = QTreeWidgetItem()
-    item3.setData(0, Qt.UserRole, serie3Dict)
+    item3.setData(0, Qt.UserRole, series3Dict)
 
     open_interpolationWindows = {}
     Id_interpolationWindow = '1234'

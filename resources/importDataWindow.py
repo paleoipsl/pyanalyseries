@@ -211,9 +211,9 @@ class importDataWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def is_monotonic_increasing_and_unique(self, values):
    
-        serie = pd.Series(values)
-        #print(serie.is_monotonic_increasing, serie.is_unique)
-        is_monotonic = serie.is_monotonic_increasing and serie.is_unique
+        series = pd.Series(values)
+        #print(series.is_monotonic_increasing, series.is_unique)
+        is_monotonic = series.is_monotonic_increasing and series.is_unique
     
         return is_monotonic
 
@@ -264,18 +264,18 @@ class importDataWindow(QWidget):
     
             Y = self.data_table.horizontalHeaderItem(col).text()
     
-            serie_Id = generate_Id()
-            history = 'Imported serie'
-            history += f'<BR>---> serie <i><b>{serie_Id}</b></i>'
+            series_Id = generate_Id()
+            history = 'Imported series'
+            history += f'<BR>---> series <i><b>{series_Id}</b></i>'
 
             if self.dropNA.isChecked():
-                serie = pd.Series(values, index=index).sort_index().dropna()           # sort_index and dropna
+                series = pd.Series(values, index=index).sort_index().dropna()           # sort_index and dropna
             else:
-                serie = pd.Series(values, index=index).sort_index()                    # sort_index
+                series = pd.Series(values, index=index).sort_index()                    # sort_index
 
-            serieDict = {
-                'Id': serie_Id,
-                'Type': 'Serie',
+            seriesDict = {
+                'Id': series_Id,
+                'Type': 'Series',
                 'Name': '',
                 'X': X,
                 'Y': Y,
@@ -284,14 +284,14 @@ class importDataWindow(QWidget):
                 'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
                 'History': history,
                 'Comment': '',
-                'Serie': serie
+                'Series': series
             }
             try:
-                self.add_item_tree_widget(None, serieDict)
+                self.add_item_tree_widget(None, seriesDict)
             except:
                 pass
     
-            msg = f'{X} / {Y} imported as serie {serie_Id}'
+            msg = f'{X} / {Y} imported as series {series_Id}'
             self.status_bar.showMessage(msg, 2000)
 
     #---------------------------------------------------------------------------------------------

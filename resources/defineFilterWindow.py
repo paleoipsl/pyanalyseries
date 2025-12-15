@@ -31,7 +31,7 @@ class defineFilterWindow(QWidget):
         self.item = item
         self.add_item_tree_widget = add_item_tree_widget
 
-        self.serieWidth = 0.8
+        self.seriesWidth = 0.8
         self.window_size = 9 
 
         title = 'Define FILTER : ' + self.Id
@@ -80,8 +80,8 @@ class defineFilterWindow(QWidget):
         self.saveFilter_button = QPushButton("Save filter", self)
         self.saveFilter_button.setStyleSheet(style)
         self.saveFilter_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.saveFilterAndSerieFiltered_button = QPushButton("Save filter and serie filtered", self)
-        self.saveFilterAndSerieFiltered_button.setStyleSheet(style)
+        self.saveFilterAndSeriesFiltered_button = QPushButton("Save filter and series filtered", self)
+        self.saveFilterAndSeriesFiltered_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
         button_layout.addStretch()
@@ -89,7 +89,7 @@ class defineFilterWindow(QWidget):
         saveClose_layout = QVBoxLayout()
         saveClose_layout.addWidget(self.saveFilter_button)
         saveCloseLine_layout = QHBoxLayout()
-        saveCloseLine_layout.addWidget(self.saveFilterAndSerieFiltered_button)
+        saveCloseLine_layout.addWidget(self.saveFilterAndSeriesFiltered_button)
         saveCloseLine_layout.addWidget(self.close_button)
         saveClose_layout.addLayout(saveCloseLine_layout)
         button_layout.addLayout(saveClose_layout)
@@ -97,7 +97,7 @@ class defineFilterWindow(QWidget):
         main_layout.addLayout(button_layout)
 
         self.saveFilter_button.clicked.connect(self.saveFilter)
-        self.saveFilterAndSerieFiltered_button.clicked.connect(self.saveFilterAndSerieFiltered)
+        self.saveFilterAndSeriesFiltered_button.clicked.connect(self.saveFilterAndSeriesFiltered)
         self.close_button.clicked.connect(self.close)
 
         self.status_bar = QStatusBar()
@@ -128,11 +128,11 @@ class defineFilterWindow(QWidget):
 
         self.interactive_plot.reset()
 
-        self.serieDict = self.item.data(0, Qt.UserRole)
-        self.xName = self.serieDict['X']
-        self.yName = self.serieDict['Y']
-        self.serie = self.serieDict['Serie']
-        self.serie = self.serie.groupby(self.serie.index).mean()
+        self.seriesDict = self.item.data(0, Qt.UserRole)
+        self.xName = self.seriesDict['X']
+        self.yName = self.seriesDict['Y']
+        self.series = self.seriesDict['Series']
+        self.series = self.series.groupby(self.series.index).mean()
 
         ax = self.interactive_plot.axs[0]
 
@@ -141,17 +141,17 @@ class defineFilterWindow(QWidget):
         ax.set_ylabel(self.yName)
         ax.autoscale()
 
-        serieFiltered = self.moving_average(self.serie, window_size=self.window_size)
-        serieColor = self.serieDict['Color']
-        Y_axisInverted = self.serieDict['Y axis inverted']
+        seriesFiltered = self.moving_average(self.series, window_size=self.window_size)
+        seriesColor = self.seriesDict['Color']
+        Y_axisInverted = self.seriesDict['Y axis inverted']
         ax.yaxis.set_inverted(Y_axisInverted)
 
-        line1, = ax.plot(self.serie.index, self.serie.values, color=serieColor, linewidth=self.serieWidth, label='Original')
-        points1 = ax.scatter(self.serie.index, self.serie.values, s=5, marker='o', color=serieColor, visible=False)
+        line1, = ax.plot(self.series.index, self.series.values, color=seriesColor, linewidth=self.seriesWidth, label='Original')
+        points1 = ax.scatter(self.series.index, self.series.values, s=5, marker='o', color=seriesColor, visible=False)
         ax.line_points_pairs.append((line1, points1))
         
-        line2, = ax.plot(serieFiltered.index, serieFiltered.values, color='black', linewidth=self.serieWidth, alpha=0.4, label='Filtered')
-        points2 = ax.scatter(serieFiltered.index, serieFiltered.values, s=5, marker='o', color='black', alpha=0.4, visible=False)
+        line2, = ax.plot(seriesFiltered.index, seriesFiltered.values, color='black', linewidth=self.seriesWidth, alpha=0.4, label='Filtered')
+        points2 = ax.scatter(seriesFiltered.index, seriesFiltered.values, s=5, marker='o', color='black', alpha=0.4, visible=False)
         ax.line_points_pairs.append((line2, points2))
 
         legend = ax.legend()
@@ -180,15 +180,15 @@ class defineFilterWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     @staticmethod
-    def moving_average(serie, window_size=5):
+    def moving_average(series, window_size=5):
         if window_size == 1:
-            result_serie = serie
+            result_series = series
         else:
             half_window = window_size // 2
-            result_values = np.convolve(serie.values, np.ones(window_size), 'valid') / window_size
-            adjusted_index = serie.index[half_window: -half_window]
-            result_serie = pd.Series(result_values, index=adjusted_index)
-        return result_serie
+            result_values = np.convolve(series.values, np.ones(window_size), 'valid') / window_size
+            adjusted_index = series.index[half_window: -half_window]
+            result_series = pd.Series(result_values, index=adjusted_index)
+        return result_series
 
     #---------------------------------------------------------------------------------------------
     def saveFilter(self):
@@ -213,23 +213,23 @@ class defineFilterWindow(QWidget):
         return filter_Id
 
     #---------------------------------------------------------------------------------------------
-    def saveFilterAndSerieFiltered(self):
+    def saveFilterAndSeriesFiltered(self):
         filter_Id = self.saveFilter() 
 
         filtered_Id = generate_Id()
-        filtered_serieDict = self.serieDict | {'Id': filtered_Id,
-            'Type': 'Serie filtered', 
-            'Serie': self.moving_average(self.serie, self.window_size),
-            'Color': generate_color(exclude_color=self.serieDict['Color']),
+        filtered_seriesDict = self.seriesDict | {'Id': filtered_Id,
+            'Type': 'Series filtered', 
+            'Series': self.moving_average(self.series, self.window_size),
+            'Color': generate_color(exclude_color=self.seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-            'History': append_to_htmlText(self.serieDict['History'], 
-                f'Serie <i><b>{self.serieDict["Id"]}</i></b> filtered with FILTER <i><b>{filter_Id}</i></b> with a moving average of size {self.window_size}<BR>---> serie <i><b>{filtered_Id}</b></i>'),
+            'History': append_to_htmlText(self.seriesDict['History'], 
+                f'Series <i><b>{self.seriesDict["Id"]}</i></b> filtered with FILTER <i><b>{filter_Id}</i></b> with a moving average of size {self.window_size}<BR>---> series <i><b>{filtered_Id}</b></i>'),
             'Comment': '',
         }
 
         try:
             position = self.item.parent().indexOfChild(self.item)
-            self.add_item_tree_widget(self.item.parent(), filtered_serieDict, position+1)
+            self.add_item_tree_widget(self.item.parent(), filtered_seriesDict, position+1)
         except:
             pass
 
@@ -250,13 +250,13 @@ if __name__ == "__main__":
 
     x = np.linspace(0, 10, 100)
     y = np.sin(x)
-    serie = pd.Series(y, index=x)
+    series = pd.Series(y, index=x)
 
-    serieDict = {'Id': 'abcd', 'X': 'xName', 'Y': 'yName', 'Serie': serie, 
+    seriesDict = {'Id': 'abcd', 'X': 'xName', 'Y': 'yName', 'Series': series, 
             'Color': 'darkorange', "Y axis inverted": True, 
             'Comment': 'A text', 'History': 'command1 ; command2'}
     item = QTreeWidgetItem()
-    item.setData(0, Qt.UserRole, serieDict)
+    item.setData(0, Qt.UserRole, seriesDict)
 
     open_filterWindows = {}
     Id_filterWindow = '1234'

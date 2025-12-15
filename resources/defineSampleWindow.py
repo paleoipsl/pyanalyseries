@@ -39,7 +39,7 @@ class defineSampleWindow(QWidget):
             self.itemRef = self.items[1]
         else: 
             self.itemRef = None
-        self.serieWidth = 0.8
+        self.seriesWidth = 0.8
         self.step = 25.0
         self.kind = 'linear' 
         self.integrated = False
@@ -59,26 +59,26 @@ class defineSampleWindow(QWidget):
         rightMargin = 40
 
         # ===== 
-        serie_layout = QHBoxLayout()
+        series_layout = QHBoxLayout()
 
-        self.series_combo_label = QLabel("Sample serie:")
+        self.series_combo_label = QLabel("Sample series :")
         self.series_combo_label.setFixedWidth(120)
         self.series_combo = QComboBox()
         font = QFont("Courier New", 12)
         self.series_combo.setFont(font)
         for n,item in enumerate(self.items):
-            serieDict = item.data(0, Qt.UserRole)
-            XName = serieDict['X']
-            YName = serieDict['Y']
-            Id = serieDict['Id']
+            seriesDict = item.data(0, Qt.UserRole)
+            XName = seriesDict['X']
+            YName = seriesDict['Y']
+            Id = seriesDict['Id']
             self.series_combo.addItem(f'{n+1} with {Id}: {XName} / {YName}')
         self.series_combo.setCurrentIndex(0)
 
-        serie_layout.addWidget(self.series_combo_label)
-        serie_layout.addWidget(self.series_combo)
-        serie_layout.addStretch()
+        series_layout.addWidget(self.series_combo_label)
+        series_layout.addWidget(self.series_combo)
+        series_layout.addStretch()
 
-        groupbox1_layout.addLayout(serie_layout)
+        groupbox1_layout.addLayout(series_layout)
 
         # =====
         self.step_radio = QRadioButton("Sampling with step :")
@@ -95,7 +95,7 @@ class defineSampleWindow(QWidget):
         step_layout.addStretch()
         step_layout.setContentsMargins(rightMargin, 0, 0, 0)
 
-        self.xvalues_radio = QRadioButton("Sampling using x values of serie:")
+        self.xvalues_radio = QRadioButton("Sampling using x values of series :")
         self.xvalues_label = QLabel('None')
         font = QFont("Courier New", 12)
         self.xvalues_label.setFont(font)
@@ -115,11 +115,11 @@ class defineSampleWindow(QWidget):
 
         if self.itemRef:
             self.xvalues_radio.setChecked(True)
-            self.serieRefDict = self.itemRef.data(0, Qt.UserRole)
-            self.serieRef_XName = self.serieRefDict['X']
-            self.serieRef_YName = self.serieRefDict['Y']
-            self.serieRef_Id = self.serieRefDict['Id']
-            self.xvalues_label.setText(f'2 with {self.serieRef_Id}: {self.serieRef_XName} / {self.serieRef_YName}')
+            self.seriesRefDict = self.itemRef.data(0, Qt.UserRole)
+            self.seriesRef_XName = self.seriesRefDict['X']
+            self.seriesRef_YName = self.seriesRefDict['Y']
+            self.seriesRef_Id = self.seriesRefDict['Id']
+            self.xvalues_label.setText(f'2 with {self.seriesRef_Id} : {self.seriesRef_XName} / {self.seriesRef_YName}')
             self.sample_from_xvalues = True 
         else:
             self.step_radio.setChecked(True)
@@ -185,8 +185,8 @@ class defineSampleWindow(QWidget):
         self.saveSample_button = QPushButton("Save sample", self)
         self.saveSample_button.setStyleSheet(style)
         self.saveSample_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.saveSampleAndSerieSampled_button = QPushButton("Save sample and serie sampled", self)
-        self.saveSampleAndSerieSampled_button.setStyleSheet(style)
+        self.saveSampleAndSeriesSampled_button = QPushButton("Save sample and series sampled", self)
+        self.saveSampleAndSeriesSampled_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
         button_layout.addStretch()
@@ -194,7 +194,7 @@ class defineSampleWindow(QWidget):
         saveClose_layout = QVBoxLayout()
         saveClose_layout.addWidget(self.saveSample_button)
         saveCloseLine_layout = QHBoxLayout()
-        saveCloseLine_layout.addWidget(self.saveSampleAndSerieSampled_button)
+        saveCloseLine_layout.addWidget(self.saveSampleAndSeriesSampled_button)
         saveCloseLine_layout.addWidget(self.close_button)
         saveClose_layout.addLayout(saveCloseLine_layout)
         button_layout.addLayout(saveClose_layout)
@@ -202,7 +202,7 @@ class defineSampleWindow(QWidget):
         main_layout.addLayout(button_layout)
 
         self.saveSample_button.clicked.connect(self.saveSample)
-        self.saveSampleAndSerieSampled_button.clicked.connect(self.saveSampleAndSerieSampled)
+        self.saveSampleAndSeriesSampled_button.clicked.connect(self.saveSampleAndSeriesSampled)
         self.close_button.clicked.connect(self.close)
 
         self.status_bar = QStatusBar()
@@ -252,11 +252,11 @@ class defineSampleWindow(QWidget):
         self.item = self.items[n]
         self.itemRef = self.items[n^1]
          
-        self.serieRefDict = self.itemRef.data(0, Qt.UserRole)
-        self.serieRef_XName = self.serieRefDict['X']
-        self.serieRef_YName = self.serieRefDict['Y']
-        self.serieRef_Id = self.serieRefDict['Id']
-        self.xvalues_label.setText(f'{(n^1)+1} with {self.serieRef_Id}: {self.serieRef_XName} / {self.serieRef_YName}')
+        self.seriesRefDict = self.itemRef.data(0, Qt.UserRole)
+        self.seriesRef_XName = self.seriesRefDict['X']
+        self.seriesRef_YName = self.seriesRefDict['Y']
+        self.seriesRef_Id = self.seriesRefDict['Id']
+        self.xvalues_label.setText(f'{(n^1)+1} with {self.seriesRef_Id} : {self.seriesRef_XName} / {self.seriesRef_YName}')
 
         self.interactive_plot.axs[0].clear()
         self.myplot()
@@ -266,19 +266,19 @@ class defineSampleWindow(QWidget):
 
         self.interactive_plot.reset()
 
-        self.serieDict = self.item.data(0, Qt.UserRole)
-        self.xName = self.serieDict['X']
-        self.yName = self.serieDict['Y']
-        self.serie = self.serieDict['Serie']
-        self.serie = self.serie.groupby(self.serie.index).mean()
+        self.seriesDict = self.item.data(0, Qt.UserRole)
+        self.xName = self.seriesDict['X']
+        self.yName = self.seriesDict['Y']
+        self.series = self.seriesDict['Series']
+        self.series = self.series.groupby(self.series.index).mean()
 
         if self.sample_from_xvalues:
-            self.serieRefDict = self.itemRef.data(0, Qt.UserRole)
-            self.serieRef = self.serieRefDict['Serie']
-            self.sample_index = self.serieRef.index
+            self.seriesRefDict = self.itemRef.data(0, Qt.UserRole)
+            self.seriesRef = self.seriesRefDict['Series']
+            self.sample_index = self.seriesRef.index
         else:
-            index_min = self.serie.index.min()
-            index_max = self.serie.index.max()
+            index_min = self.series.index.min()
+            index_max = self.series.index.max()
             index_min = np.ceil(index_min / self.step) * self.step
             index_max = np.floor(index_max / self.step) * self.step
             self.sample_index = np.arange(index_min, index_max + self.step, self.step)
@@ -290,17 +290,17 @@ class defineSampleWindow(QWidget):
         ax.set_ylabel(self.yName)
         ax.autoscale()
 
-        serieSampled = self.sample(self.serie, self.sample_index, self.kind, integrated=self.integrated, ax=ax)
-        serieColor = self.serieDict['Color']
-        Y_axisInverted = self.serieDict['Y axis inverted']
+        seriesSampled = self.sample(self.series, self.sample_index, self.kind, integrated=self.integrated, ax=ax)
+        seriesColor = self.seriesDict['Color']
+        Y_axisInverted = self.seriesDict['Y axis inverted']
         ax.yaxis.set_inverted(Y_axisInverted)
 
-        line1, = ax.plot(self.serie.index, self.serie.values, color=serieColor, linewidth=self.serieWidth, label='Original')
-        points1 = ax.scatter(self.serie.index, self.serie.values, s=5, marker='o', color=serieColor, visible=False)
+        line1, = ax.plot(self.series.index, self.series.values, color=seriesColor, linewidth=self.seriesWidth, label='Original')
+        points1 = ax.scatter(self.series.index, self.series.values, s=5, marker='o', color=seriesColor, visible=False)
         ax.line_points_pairs.append((line1, points1))
         
-        line2, = ax.plot(serieSampled.index, serieSampled.values, color='black', linewidth=self.serieWidth, alpha=0.4, label='Sampled')
-        points2 = ax.scatter(serieSampled.index, serieSampled.values, s=5, marker='o', color='black', alpha=0.4, visible=False)
+        line2, = ax.plot(seriesSampled.index, seriesSampled.values, color='black', linewidth=self.seriesWidth, alpha=0.4, label='Sampled')
+        points2 = ax.scatter(seriesSampled.index, seriesSampled.values, s=5, marker='o', color='black', alpha=0.4, visible=False)
         ax.line_points_pairs.append((line2, points2))
 
         legend = ax.legend()
@@ -330,12 +330,12 @@ class defineSampleWindow(QWidget):
 
     #----------------------------------------------------------------------------------
     @staticmethod
-    def sample(serie, sample_index, kind="linear", integrated=False, ax=None, quad_points=20):
+    def sample(series, sample_index, kind="linear", integrated=False, ax=None, quad_points=20):
         """
         Interpolates or integrates a time series on specified sample points.
     
         Parameters:
-            serie (pd.Series): Time series with index as x-values.
+            series (pd.Series): Time series with index as x-values.
             sample_index (np.ndarray): Points where values are interpolated or integrated.
             kind (str): Interpolation type ('linear', 'cubic', etc.).
             integrated (bool): If True, use integration-based sampling.
@@ -347,22 +347,22 @@ class defineSampleWindow(QWidget):
         """
     
         # Remove duplicate indices and keep the mean
-        serie = serie.groupby(serie.index).mean()
+        series = series.groupby(series.index).mean()
     
         # Restrict to range of data
-        x_min, x_max = serie.index.min(), serie.index.max()
+        x_min, x_max = series.index.min(), series.index.max()
         sample_index = np.array(sample_index)                           # convert list to numpy array
         valid_sample_index = sample_index[(sample_index >= x_min) & (sample_index <= x_max)]
     
         if not integrated:
             # Standard interpolation
-            result_serie = pd.Series(index=valid_sample_index, dtype=float)
-            result_serie = result_serie.combine_first(serie).sort_index()
-            result_serie = result_serie.interpolate(method=kind, limit_direction="both")
-            return result_serie.loc[valid_sample_index]
+            result_series = pd.Series(index=valid_sample_index, dtype=float)
+            result_series = result_series.combine_first(series).sort_index()
+            result_series = result_series.interpolate(method=kind, limit_direction="both")
+            return result_series.loc[valid_sample_index]
         else:
             # Integrated interpolation using fixed_quad
-            interpolator = interpolate.interp1d(serie.index, serie.values, kind=kind, fill_value="extrapolate")
+            interpolator = interpolate.interp1d(series.index, series.values, kind=kind, fill_value="extrapolate")
   
             # Compute midpoints between valid sample points
             mids = (valid_sample_index[1:] + valid_sample_index[:-1]) / 2
@@ -423,12 +423,12 @@ class defineSampleWindow(QWidget):
             sampleDict = {
                 'Id': sample_Id,
                 'Type': 'SAMPLE', 
-                'Name': f'Sample using x values of {self.serieRef_YName}',
+                'Name': f'Sample using x values of {self.seriesRef_YName}',
                 'Parameters': f'{self.kind} ; {self.integrated}',
                 'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
                 'History': f'SAMPLE <i><b>{sample_Id}</i></b> with parameters :' + \
                         '<ul>' + \
-                        f'<li>X values from {self.serieRef_Id} : {self.serieRef_XName} / {self.serieRef_YName}' + \
+                        f'<li>X values from {self.seriesRef_Id} : {self.seriesRef_XName} / {self.seriesRef_YName}' + \
                         f'<li>Kind of interpolation : {self.kind}' + \
                         f'<li>Integrated : {self.integrated}' + \
                         '</ul>',
@@ -443,7 +443,7 @@ class defineSampleWindow(QWidget):
         return sample_Id
 
     #---------------------------------------------------------------------------------------------
-    def saveSampleAndSerieSampled(self):
+    def saveSampleAndSeriesSampled(self):
         sample_Id = self.saveSample()
 
         sampled_Id = generate_Id()
@@ -454,23 +454,23 @@ class defineSampleWindow(QWidget):
                 textHistory = f'every {self.step} and {self.kind} interpolation'
         else:
             if self.integrated:
-                textHistory = f'using x values from {self.serieRef_YName} and {self.kind} interpolation with integration'
+                textHistory = f'using x values from {self.seriesRef_YName} and {self.kind} interpolation with integration'
             else:
-                textHistory = f'using x values from {self.serieRef_YName} and {self.kind} interpolation'
+                textHistory = f'using x values from {self.seriesRef_YName} and {self.kind} interpolation'
 
-        sampled_serieDict = self.serieDict | {'Id': sampled_Id, 
-            'Type': 'Serie sampled', 
-            'Serie': self.sample(self.serie, self.sample_index, kind=self.kind, integrated=self.integrated),
-            'Color': generate_color(exclude_color=self.serieDict['Color']),
+        sampled_seriesDict = self.seriesDict | {'Id': sampled_Id, 
+            'Type': 'Series sampled', 
+            'Series': self.sample(self.series, self.sample_index, kind=self.kind, integrated=self.integrated),
+            'Color': generate_color(exclude_color=self.seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-            'History': append_to_htmlText(self.serieDict['History'], 
-                f'Serie <i><b>{self.serieDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sample_Id}</i></b><BR>---> serie <i><b>{sampled_Id}</b></i>'),
+            'History': append_to_htmlText(self.seriesDict['History'], 
+                f'Series <i><b>{self.seriesDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sample_Id}</i></b><BR>---> series <i><b>{sampled_Id}</b></i>'),
             'Comment': '',
         }
 
         try:
             position = self.item.parent().indexOfChild(self.item)
-            self.add_item_tree_widget(self.item.parent(), sampled_serieDict, position+1)
+            self.add_item_tree_widget(self.item.parent(), sampled_seriesDict, position+1)
         except:
             pass 
 
@@ -508,22 +508,22 @@ if __name__ == "__main__":
     y2 = np.cos(x2)
 
     #---------------------------------
-    serie1 = pd.Series(y1, index=x1)
+    series1 = pd.Series(y1, index=x1)
 
-    serie1Dict = {'Id': 'abcd', 'X': 'xName', 'Y': 'yName', 'Serie': serie1, 
+    series1Dict = {'Id': 'abcd', 'X': 'xName', 'Y': 'yName', 'Series': series1, 
             'Color': 'darkorange', "Y axis inverted": True, 
             'Comment': 'A text', 'History': 'command1 ; command2'}
     item1 = QTreeWidgetItem()
-    item1.setData(0, Qt.UserRole, serie1Dict)
+    item1.setData(0, Qt.UserRole, series1Dict)
 
     #---------------------------------
-    serie2 = pd.Series(y2, index=x2)
+    series2 = pd.Series(y2, index=x2)
 
-    serie2Dict = {'Id': 'abcd', 'X': 'xName', 'Y': 'yName', 'Serie': serie2, 
+    series2Dict = {'Id': 'abcd', 'X': 'xName', 'Y': 'yName', 'Series': series2, 
             'Color': 'darkorange', "Y axis inverted": True, 
             'Comment': 'A text', 'History': 'command1 ; command2'}
     item2 = QTreeWidgetItem()
-    item2.setData(0, Qt.UserRole, serie2Dict)
+    item2.setData(0, Qt.UserRole, series2Dict)
 
     #---------------------------------
     items = []
