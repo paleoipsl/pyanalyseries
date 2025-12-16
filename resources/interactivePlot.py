@@ -12,6 +12,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 import numpy as np
+from pathlib import Path
 
 from .misc import *
 
@@ -680,9 +681,16 @@ class interactivePlot:
 
     #---------------------------------------------------------------------------------------------
     def savePlot(self):
-        fileName, _ = QFileDialog.getSaveFileName(None, 'Save Plots', '', 'PNG Files (*.png);;PDF Files (*.pdf)')
+        fileName, selectedFilter = QFileDialog.getSaveFileName(None, 'Save Plots', '', 'PNG Files (*.png);;PDF Files (*.pdf)')
+
         if fileName:
-            plt.savefig(fileName)
+            path = Path(fileName)
+            if path.suffix == '':
+                if 'PDF' in selectedFilter:
+                    path = path.with_suffix('.pdf')
+                else:
+                    path = path.with_suffix('.png')
+            plt.savefig(str(path))
 
 #=========================================================================================
 # Example usage

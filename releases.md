@@ -1,3 +1,5 @@
+ * 5.41
+   * Ensure correct file extension based on selected save format
  * 5.40
    * Change Serie to Series in interface, dialogs and code
    * Fix read of boolean values (in define sampling)
