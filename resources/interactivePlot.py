@@ -288,18 +288,26 @@ class interactivePlot:
                 act_ylog2.setEnabled(False)
 
             if isinstance(artist, XAxis):
+                context_menu.addAction("X axis → autoscale local")
+                context_menu.addAction("X axis → autoscale global")
+                context_menu.addSeparator()
                 context_menu.addAction("X axis → invert")
                 context_menu.addSeparator()
                 context_menu.addAction(act_xlinear)
                 context_menu.addAction(act_xlog1)
                 context_menu.addAction(act_xlog2)
             elif isinstance(artist, YAxis):
+                context_menu.addAction("Y axis → autoscale local")
+                context_menu.addAction("Y axis → autoscale global")
+                context_menu.addSeparator()
                 context_menu.addAction("Y axis → invert")
                 context_menu.addSeparator()
                 context_menu.addAction(act_ylinear)
                 context_menu.addAction(act_ylog1)
                 context_menu.addAction(act_ylog2)
             else:
+                context_menu.addAction("Autoscale global")
+                context_menu.addSeparator()
                 context_menu.addAction("Save plot as PNG or PDF")
 
             global_pos = event.guiEvent.globalPos()
@@ -310,28 +318,59 @@ class interactivePlot:
                 self.fig.canvas.callbacks.process('key_release_event', ev)
                 return
 
-            if action.text() == "X axis → invert":
+            if action.text() == "X axis → autoscale local":
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'a', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
+            elif action.text() == "X axis → autoscale global":
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
+            elif action.text() == "X axis → invert":
                 invert_status = ax.xaxis.get_inverted()
                 ax.xaxis.set_inverted(not invert_status)
             elif action.text() == "X axis → log (10ⁿ)":
                 ax.set_xscale("log")
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "X axis → log (1-2-5)":
                 ax.set_xscale("log")
                 ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
                 ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "X axis → linear":
                 ax.set_xscale("linear")
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
+
+            elif action.text() == "Y axis → autoscale local":
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'a', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
+            elif action.text() == "Y axis → autoscale global":
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "Y axis → invert":
                 invert_status = ax.yaxis.get_inverted()
                 ax.yaxis.set_inverted(not invert_status)
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "Y axis → log (10ⁿ)":
                 ax.set_yscale("log")
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "Y axis → log (1-2-5)":
                 ax.set_yscale("log")
                 ax.yaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
                 ax.yaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "Y axis → linear":
                 ax.set_yscale("linear")
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
+
+            elif action.text() == "Autoscale global":
+                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
+                self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "Save plot as PNG or PDF":
                 self.savePlot()
                 ev = KeyEvent('key_press_release', self.fig.canvas, 'control')
@@ -343,10 +382,6 @@ class interactivePlot:
             ev = KeyEvent('key_press_release', self.fig.canvas, 'control')
             self.fig.canvas.callbacks.process('key_release_event', ev)
 
-            # trigger autoscale
-            ev = KeyEvent('key_press_event', self.fig.canvas, 'a', event.x, event.y)
-            self.fig.canvas.callbacks.process('key_press_event', ev)
-    
             self.fig.canvas.draw_idle()
 
     #---------------------------------------------------------------------------------------------
@@ -442,7 +477,52 @@ class interactivePlot:
 
     #---------------------------------------------------------------------------------------------
     def on_key_press(self, event):
+    
+        #-----------------------------------------
+        def compute_minmax(ax, visible_lines, axis, mode):
+            """
+            axis: 'x' or 'y'
+            mode: 'global' or 'local'
+            returns: (vmin, vmax)
+            """
+            if axis == 'y':
+                get_data = lambda ln: ln.get_ydata()
+                get_range = lambda ln: ln.get_xdata()
+            elif axis == 'x':
+                get_data = lambda ln: ln.get_xdata()
+                get_range = lambda ln: ln.get_ydata()
+            else:
+                raise ValueError("axis must be 'x' or 'y'")
+        
+            if mode == 'global':
+                v_min = min(np.nanmin(get_data(line)) for line in visible_lines)
+                v_max = max(np.nanmax(get_data(line)) for line in visible_lines)
+                return v_min, v_max
+        
+            if mode == 'local':
+                # filtre sur l’AUTRE axe : ylim si on calcule x, xlim si on calcule y
+                min_lim, max_lim = ax.get_ylim() if axis == 'x' else ax.get_xlim()
+                min_lim, max_lim = min(min_lim, max_lim), max(min_lim, max_lim)
+        
+                mins = [
+                    np.nanmin(get_data(line)[(get_range(line) >= min_lim) & (get_range(line) <= max_lim)])
+                    for line in visible_lines
+                    if np.any((get_range(line) >= min_lim) & (get_range(line) <= max_lim))
+                ]
+                maxs = [
+                    np.nanmax(get_data(line)[(get_range(line) >= min_lim) & (get_range(line) <= max_lim)])
+                    for line in visible_lines
+                    if np.any((get_range(line) >= min_lim) & (get_range(line) <= max_lim))
+                ]
+        
+                if not mins or not maxs:
+                    return None, None
+        
+                return min(mins), max(maxs)
+        
+            raise ValueError("mode must be 'global' or 'local'")
 
+        #-----------------------------------------
         ax, artist = self.detect_artist(event)  # Detect the Artist element under the mouse
 
         #------------------------------
@@ -454,49 +534,56 @@ class interactivePlot:
                             points.set_visible(True)
                 self.fig.canvas.draw()
 
-            elif event.key == 'a':
+            elif event.key == 'A':
                 #print("key a on Axe")
 
                 #---------------------------------------
                 # No twin axis
                 if len(ax.twins) == 0:
+
+                    #print("No twin axis")
+
                     visible_lines = [line for line in ax.lines if (line.get_visible() and not is_axvline(line))]
-                    if visible_lines:
-                        x_min = min(line.get_xdata().min() for line in visible_lines)
-                        x_max = max(line.get_xdata().max() for line in visible_lines)
+                    if not visible_lines: return
 
-                        xinverted_status = ax.xaxis.get_inverted()
-                        if ax.get_xscale() == 'linear':
-                            x_margin = (x_max - x_min) * 0.05
-                            ax.set_xlim(x_min - x_margin, x_max + x_margin)
-                        elif ax.get_xscale() == 'log':
-                            log_xmin, log_xmax = np.log(x_min), np.log(x_max)
-                            x_margin = (log_xmax - log_xmin) * 0.05
-                            new_xmin = np.exp(log_xmin - x_margin)
-                            new_xmax = np.exp(log_xmax + x_margin)
-                            ax.set_xlim(new_xmin, new_xmax)
-                        ax.xaxis.set_inverted(xinverted_status)                # set back to state
+                    x_min = min(line.get_xdata().min() for line in visible_lines)
+                    x_max = max(line.get_xdata().max() for line in visible_lines)
 
-                        y_min = min(np.nanmin(line.get_ydata()) for line in visible_lines)  # np.nanmin to ignore nan
-                        y_max = max(np.nanmax(line.get_ydata()) for line in visible_lines)
+                    xinverted_status = ax.xaxis.get_inverted()
+                    if ax.get_xscale() == 'linear':
+                        x_margin = (x_max - x_min) * 0.05
+                        ax.set_xlim(x_min - x_margin, x_max + x_margin)
+                    elif ax.get_xscale() == 'log':
+                        log_xmin, log_xmax = np.log(x_min), np.log(x_max)
+                        x_margin = (log_xmax - log_xmin) * 0.05
+                        new_xmin = np.exp(log_xmin - x_margin)
+                        new_xmax = np.exp(log_xmax + x_margin)
+                        ax.set_xlim(new_xmin, new_xmax)
+                    ax.xaxis.set_inverted(xinverted_status)                # set back to state
 
-                        yinverted_status = ax.yaxis.get_inverted()
-                        if ax.get_yscale() == 'linear':
-                            y_margin = (y_max - y_min) * 0.05
-                            ax.set_ylim(y_min - y_margin, y_max + y_margin)
-                        elif ax.get_yscale() == 'log':
-                            log_ymin, log_ymax = np.log(y_min), np.log(y_max)
-                            y_margin = (log_ymax - log_ymin) * 0.05
-                            new_ymin = np.exp(log_ymin - y_margin)
-                            new_ymax = np.exp(log_ymax + y_margin)
-                            ax.set_ylim(new_ymin, new_ymax)
-                        ax.yaxis.set_inverted(yinverted_status)                # set back to state
+                    y_min = min(np.nanmin(line.get_ydata()) for line in visible_lines)  # np.nanmin to ignore nan
+                    y_max = max(np.nanmax(line.get_ydata()) for line in visible_lines)
+
+                    yinverted_status = ax.yaxis.get_inverted()
+                    if ax.get_yscale() == 'linear':
+                        y_margin = (y_max - y_min) * 0.05
+                        ax.set_ylim(y_min - y_margin, y_max + y_margin)
+                    elif ax.get_yscale() == 'log':
+                        log_ymin, log_ymax = np.log(y_min), np.log(y_max)
+                        y_margin = (log_ymax - log_ymin) * 0.05
+                        new_ymin = np.exp(log_ymin - y_margin)
+                        new_ymax = np.exp(log_ymax + y_margin)
+                        ax.set_ylim(new_ymin, new_ymax)
+                    ax.yaxis.set_inverted(yinverted_status)                # set back to state
 
                 #---------------------------------------
                 else:
 
                     #---------------------------------------
                     if ax.twins_orientation == 'vertical':
+
+                        #print("Twin vertical")
+
                         # Set vertical range
                         all_visible_lines = []
                         for ax_current in ax.twins + [ax]:
@@ -538,6 +625,9 @@ class interactivePlot:
 
                     #---------------------------------------
                     elif ax.twins_orientation == 'horizontal':
+
+                        #print("Twin horinzontal")
+
                         # Set horizontal range
                         all_visible_lines = []
                         for ax_current in ax.twins + [ax]:
@@ -581,50 +671,56 @@ class interactivePlot:
 
         #------------------------------
         elif isinstance(artist, XAxis):
-            if event.key == 'a':
-                #print("key a on xaxis")
-                visible_lines = [line for line in ax.lines if (line.get_visible() and not is_axvline(line))]
-                if visible_lines:
-                    x_min = min(line.get_xdata().min() for line in visible_lines)
-                    x_max = max(line.get_xdata().max() for line in visible_lines)
 
-                    xinverted_status = ax.xaxis.get_inverted()
-                    if ax.get_xscale() == 'linear':
-                        x_margin = (x_max - x_min) * 0.05
-                        ax.set_xlim(x_min - x_margin, x_max + x_margin)
-                    elif ax.get_xscale() == 'log':
-                        log_xmin, log_xmax = np.log(x_min), np.log(x_max)
-                        x_margin = (log_xmax - log_xmin) * 0.05
-                        new_xmin = np.exp(log_xmin - x_margin)
-                        new_xmax = np.exp(log_xmax + x_margin)
-                        ax.set_xlim(new_xmin, new_xmax)
-                    ax.xaxis.set_inverted(xinverted_status)                # set back to state
+            visible_lines = [line for line in ax.lines if (line.get_visible() and not is_axvline(line))]
+            if not visible_lines: return
+       
+            #print("XAxis")
 
-                    ax.figure.canvas.draw()  # Redraw the canvas
-            
+            if event.key in ('A', 'a'):
+                mode = 'global' if event.key == 'A' else 'local'
+                x_min, x_max = compute_minmax(ax, visible_lines, axis='x', mode=mode)
+                if x_min is None: return
+
+                xinverted_status = ax.xaxis.get_inverted()
+                if ax.get_xscale() == 'linear':
+                    x_margin = (x_max - x_min) * 0.05
+                    ax.set_xlim(x_min - x_margin, x_max + x_margin)
+                elif ax.get_xscale() == 'log':
+                    log_xmin, log_xmax = np.log(x_min), np.log(x_max)
+                    x_margin = (log_xmax - log_xmin) * 0.05
+                    new_xmin = np.exp(log_xmin - x_margin)
+                    new_xmax = np.exp(log_xmax + x_margin)
+                    ax.set_xlim(new_xmin, new_xmax)
+                ax.xaxis.set_inverted(xinverted_status)                # set back to state
+
+                ax.figure.canvas.draw()  # Redraw the canvas
+
         #------------------------------
         elif isinstance(artist, YAxis):
-            if event.key == 'a':
-                #print("key a on yaxis")
-                visible_lines = [line for line in ax.lines if (line.get_visible() and not is_axvline(line))]
-                if visible_lines:
-                    y_min = min(np.nanmin(line.get_ydata()) for line in visible_lines)
-                    y_max = max(np.nanmax(line.get_ydata()) for line in visible_lines)
+        
+            visible_lines = [line for line in ax.lines if (line.get_visible() and not is_axvline(line))]
+            if not visible_lines: return
+       
+            #print("YAxis")
 
-                    yinverted_status = ax.yaxis.get_inverted()
-                    if ax.get_yscale() == 'linear':
-                        y_margin = (y_max - y_min) * 0.05
-                        ax.set_ylim(y_min - y_margin, y_max + y_margin)
-                    elif ax.get_yscale() == 'log':
-                        log_ymin, log_ymax = np.log(y_min), np.log(y_max)
-                        y_margin = (log_ymax - log_ymin) * 0.05
-                        new_ymin = np.exp(log_ymin - y_margin)
-                        new_ymax = np.exp(log_ymax + y_margin)
-                        ax.set_ylim(new_ymin, new_ymax)
-                    ax.yaxis.set_inverted(yinverted_status)                # set back to state
+            if event.key in ('A', 'a'):
+                mode = 'global' if event.key == 'A' else 'local'
+                y_min, y_max = compute_minmax(ax, visible_lines, axis='y', mode=mode)
+                if y_min is None: return
 
-                    ax.figure.canvas.draw()  # Redraw the canvas
-
+                yinverted_status = ax.yaxis.get_inverted()
+                if ax.get_yscale() == 'linear':
+                    y_margin = (y_max - y_min) * 0.05
+                    ax.set_ylim(y_min - y_margin, y_max + y_margin)
+                elif ax.get_yscale() == 'log':
+                    log_ymin, log_ymax = np.log(y_min), np.log(y_max)
+                    y_margin = (log_ymax - log_ymin) * 0.05
+                    ax.set_ylim(np.exp(log_ymin - y_margin), np.exp(log_ymax + y_margin))
+                ax.yaxis.set_inverted(yinverted_status)
+        
+                ax.figure.canvas.draw()
+        
     #---------------------------------------------------------------------------------------------
     def on_key_release(self, event):
 

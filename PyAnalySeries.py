@@ -52,7 +52,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.41'
+version = 'v5.42'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -1668,44 +1668,45 @@ def show_dialog(title, fileHTML, width, height):
     dialog.exec_()
 
 #========================================================================================
-def exit_confirm():
+def exit_confirm(parent):
 
     if count_unsaved_ws() == 0:
         reply = QMessageBox.question(
-            main_window, "Exit",
+            parent, "Exit",
             "Are you sure you want to exit the application?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
         )
-        if reply == QMessageBox.Yes:
-            app.quit()
+        return reply == QMessageBox.StandardButton.Yes
 
     else:
-        msg = QMessageBox()
+        msg = QMessageBox(parent)
         msg.setWindowTitle("Exit")
         msg.setText("There are unsaved worksheets. What do you want to do?")
-        no_save_exit = msg.addButton(QMessageBox.Discard)
-        cancel = msg.addButton(QMessageBox.Cancel)
-        save_exit = msg.addButton("Save all unsaved worksheets and Exit", QMessageBox.AcceptRole)
-        msg.exec_()
+        no_save_exit = msg.addButton(QMessageBox.StandardButton.Discard)
+        cancel = msg.addButton(QMessageBox.StandardButton.Cancel)
+        save_exit = msg.addButton("Save all unsaved worksheets and Exit", QMessageBox.ButtonRole.AcceptRole)
+        msg.exec()
 
-        if msg.clickedButton() == save_exit:
+        clicked = msg.clickedButton()
+        if clicked == save_exit:
             #print("save_exit")
             save_WorkSheets()
-            app.quit()
-        elif msg.clickedButton() == no_save_exit:
+            return True
+        elif clicked == no_save_exit:
             #print("no_save_exit")
-            app.quit()
+            return True 
         else:
             #print("cancel")
-            pass
+            return False 
 
 #========================================================================================
-def close_event(event):
-    if exit_confirm():
-        event.accept()
-    else:
-        event.ignore()
+class MainWindow(QMainWindow):
+    def closeEvent(self, event):
+        if exit_confirm(self):
+            event.accept()
+        else:
+            event.ignore()
 
 #========================================================================================
 app = QApplication(sys.argv)
@@ -1718,7 +1719,7 @@ app.setFont(fontArial)
 icon = QIcon(str(app_dir / 'resources' / 'PyAnalySeries_icon.png'))
 app.setWindowIcon(icon)
 
-main_window = QMainWindow()
+main_window = MainWindow()
 main_window.setWindowTitle(f"PyAnalySeries {version}")
 main_window.setGeometry(100, 100, 1400, 600)
 
@@ -1755,7 +1756,7 @@ saveWSs_action.setShortcut('Ctrl+Shift+S')
 saveWSs_action.triggered.connect(save_WorkSheets)
 exit_action = QAction('Exit', main_window)
 exit_action.setShortcut('Q')
-exit_action.triggered.connect(exit_confirm)
+exit_action.triggered.connect(main_window.close)
 
 file_menu.addAction(newWS_action)
 file_menu.addAction(openWS_action)
@@ -1883,7 +1884,4 @@ main_window.setStatusBar(QStatusBar())
 main_window.statusBar().showMessage('Application ready', 5000)
 main_window.show()
 
-main_window.closeEvent = close_event
-
 sys.exit(app.exec_())
-

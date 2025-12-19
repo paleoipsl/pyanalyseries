@@ -1,3 +1,6 @@
+ * 5.42
+   * Add local and global autoscale
+   * Fix exit handling
  * 5.41
    * Ensure correct file extension based on selected save format
  * 5.40
