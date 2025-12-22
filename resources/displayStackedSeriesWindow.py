@@ -106,14 +106,11 @@ class displayStackedSeriesWindow(QWidget):
             series = seriesDict['Series']
             series = series.groupby(series.index).mean()
             seriesColor = seriesDict['Color']
-            Y_axisInverted = seriesDict['Y axis inverted']
 
             ax.line_points_pairs = []
             line, = ax.plot(series.index, series.values, color=seriesColor, linewidth=self.seriesWidth)
             points = ax.scatter(series.index, series.values, s=5, marker='o', color=seriesColor, visible=False)
             ax.line_points_pairs.append((line, points))
-
-            ax.yaxis.set_inverted(Y_axisInverted)
 
         #-----------------------------------
         if self.sharex:
@@ -166,7 +163,7 @@ if __name__ == "__main__":
         'Y': 'y1Name',
         'Series': series1,
         'Color': 'steelblue',
-        'Y axis inverted': True,
+        'Date': '',
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }
@@ -183,7 +180,7 @@ if __name__ == "__main__":
         'Y': 'y2Name',
         'Series': series2,
         'Color': 'darkorange',
-        'Y axis inverted': True,
+        'Date': '',
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }

@@ -146,6 +146,7 @@ if __name__ == "__main__":
         'Type': 'SAMPLE', 
         'Parameters': '5 ; linear',
         'XCoords': [3, 7, 8.3, 9.4, 10],
+        'Date': '',
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }

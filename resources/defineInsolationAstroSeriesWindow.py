@@ -622,7 +622,6 @@ class defineInsolationAstroSeriesWindow(QWidget):
             'Name': '', 
             'X': 'years',
             'Y': shortName,
-            'Y axis inverted': False,
             'Color': generate_color(),
             'History': history,
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),

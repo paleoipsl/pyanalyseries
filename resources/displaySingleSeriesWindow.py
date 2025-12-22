@@ -34,7 +34,6 @@ class displaySingleSeriesWindow(QWidget):
         self.seriesWidth = 0.8
 
         self.seriesDict = self.item.data(0, Qt.UserRole)
-        self.Y_axisInverted = self.seriesDict['Y axis inverted']
 
         self.xName = self.seriesDict['X']
         self.yName = self.seriesDict['Y']
@@ -202,7 +201,6 @@ class displaySingleSeriesWindow(QWidget):
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()           # sort on index by default
         seriesColor = seriesDict['Color']
-        Y_axisInverted = seriesDict['Y axis inverted']
 
         line, = ax.plot(series.index, series.values, color=seriesColor, linewidth=self.seriesWidth)
         points = ax.scatter(series.index, series.values, s=5, marker='o', color=seriesColor, visible=False)
@@ -225,7 +223,6 @@ class displaySingleSeriesWindow(QWidget):
         if limits:
             ax.set_xlim(limits[0])
             ax.set_ylim(limits[1])
-        ax.yaxis.set_inverted(Y_axisInverted)
 
         ax.figure.canvas.draw()
         ax.figure.canvas.setFocus()
@@ -278,7 +275,7 @@ if __name__ == "__main__":
         'Y': 'yName',
         'Series': series, 
         'Color': 'darkorange',
-        'Y axis inverted': True,
+        'Date': '',
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }

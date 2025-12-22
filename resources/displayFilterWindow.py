@@ -121,6 +121,7 @@ if __name__ == "__main__":
         'Name': 'A name',
         'Type': 'FILTER', 
         'Parameters': '5',
+        'Date': '',
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }

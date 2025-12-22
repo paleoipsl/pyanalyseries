@@ -110,14 +110,12 @@ class displayTogetherSeriesWindow(QWidget):
         ax.set_xlabel(self.xName)
         ax.set_ylabel('')
         ax.autoscale()
-        Y_axisInverted_list = []
 
         for item in self.items:
             seriesDict = item.data(0, Qt.UserRole)
             series = seriesDict['Series']
             series = series.groupby(series.index).mean()
             seriesColor = seriesDict['Color']
-            Y_axisInverted_list.append(seriesDict['Y axis inverted'])
 
             line, = ax.plot(series.index, series.values, color=seriesColor, linewidth=self.seriesWidth, label=seriesDict['Y'])
             points = ax.scatter(series.index, series.values, s=5, marker='o', color=seriesColor, visible=False)
@@ -127,8 +125,6 @@ class displayTogetherSeriesWindow(QWidget):
         for legend_line, ax_line in zip(legend.get_lines(), ax.get_lines()):
             legend_line.set_picker(5)
             ax.map_legend_to_line[legend_line] = ax_line
-
-        ax.yaxis.set_inverted(any(Y_axisInverted_list))
 
         self.interactive_plot.on_resize(None)
         ax.figure.canvas.draw()
@@ -152,7 +148,6 @@ class displayTogetherSeriesWindow(QWidget):
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()
         seriesColor = seriesDict['Color']
-        Y_axisInverted = seriesDict['Y axis inverted']
 
         ax = self.interactive_plot.axs[0]
         ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
@@ -169,7 +164,6 @@ class displayTogetherSeriesWindow(QWidget):
         ax.set_xlabel(self.xName)
         ax.set_ylabel(seriesDict['Y'])
         ax.yaxis.label.set_color(seriesColor)
-        ax.yaxis.set_inverted(Y_axisInverted)
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
@@ -177,7 +171,6 @@ class displayTogetherSeriesWindow(QWidget):
             series = seriesDict['Series']
             series = series.groupby(series.index).mean()
             seriesColor = seriesDict['Color']
-            Y_axisInverted = seriesDict['Y axis inverted']
 
             twin = self.interactive_plot.axs[0].twinx()
             twin.spine_left_position = -offset * (n+1)
@@ -194,7 +187,6 @@ class displayTogetherSeriesWindow(QWidget):
             legendHandles.append(legendHandle)
             twin.set(ylabel=seriesDict['Y'])
             twin.yaxis.label.set_color(seriesColor)
-            twin.yaxis.set_inverted(Y_axisInverted)
             twin.line_points_pairs = []
             twin.line_points_pairs.append((line, points))
             self.interactive_plot.axs.append(twin)
@@ -232,12 +224,10 @@ class displayTogetherSeriesWindow(QWidget):
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()
         seriesColor = seriesDict['Color']
-        Y_axisInverted = seriesDict['Y axis inverted']
 
         ax = self.interactive_plot.axs[0]
         ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
         ax.autoscale()
-        Y_axisInverted_list = []
         ax.patch.set_visible(False)
         ax.twins = []
         ax.twins_orientation = 'horizontal'
@@ -250,7 +240,6 @@ class displayTogetherSeriesWindow(QWidget):
         ax.set_xlabel(self.xName)
         ax.set_ylabel('')
         ax.xaxis.label.set_color(seriesColor)
-        ax.yaxis.set_inverted(Y_axisInverted)
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
@@ -258,7 +247,6 @@ class displayTogetherSeriesWindow(QWidget):
             series = seriesDict['Series']
             series = series.groupby(series.index).mean()
             seriesColor = seriesDict['Color']
-            Y_axisInverted_list.append(seriesDict['Y axis inverted'])
 
             twin = self.interactive_plot.axs[0].twiny()
             twin.spine_bottom_position = -offset * (n+1)
@@ -275,7 +263,6 @@ class displayTogetherSeriesWindow(QWidget):
             legendHandles.append(legendHandle)
             twin.set(xlabel=seriesDict['X'])
             twin.xaxis.label.set_color(seriesColor)
-            twin.yaxis.set_inverted(Y_axisInverted)
             twin.line_points_pairs = []
             twin.line_points_pairs.append((line, points))
             self.interactive_plot.axs.append(twin)
@@ -290,8 +277,6 @@ class displayTogetherSeriesWindow(QWidget):
             axcurrent_line = axcurrent.get_lines()[0]
             legend_line.set_picker(5)
             ax.map_legend_to_line[legend_line] = axcurrent_line
-
-        ax.yaxis.set_inverted(any(Y_axisInverted_list))
 
         #---------------------------------
         self.interactive_plot.on_resize(None)
@@ -326,7 +311,7 @@ if __name__ == "__main__":
         'Y': 'y1Name',
         'Series': series1,
         'Color': 'steelblue',
-        'Y axis inverted': True,
+        'Date': '',
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }
@@ -343,7 +328,7 @@ if __name__ == "__main__":
         'Y': 'y2Name',
         'Series': series2,
         'Color': 'darkorange',
-        'Y axis inverted': True,
+        'Date': '',
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }

@@ -202,6 +202,7 @@ if __name__ == "__main__":
         'X1Coords': X1Coords, 
         'X2Coords': X2Coords, 
         'X1Name': 'X1Name', 
+        'Date': '',
         'Comment': 'A text',
         'History': 'command1 ; command2'
     }

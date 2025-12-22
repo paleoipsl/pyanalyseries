@@ -439,8 +439,6 @@ class defineInterpolationWindow(QWidget):
         self.axs[0].line_points_pairs = []
 
         self.series1Color = self.series1Dict['Color']
-        self.series1_Y_axisInverted = self.series1Dict['Y axis inverted']
-        self.axs[0].yaxis.set_inverted(self.series1_Y_axisInverted)
 
         self.line1, = self.axs[0].plot(self.X1, self.Y1, color=self.series1Color, linewidth=self.seriesWidth, label='line1', picker=True, pickradius=20)
         self.points1 = self.axs[0].scatter(self.X1, self.Y1, s=5, marker='o', color=self.series1Color, visible=False, label='points1', picker=True, pickradius=5)
@@ -466,8 +464,6 @@ class defineInterpolationWindow(QWidget):
         self.axs[1].line_points_pairs = []
 
         self.series2Color = self.series2Dict['Color']
-        self.series2_Y_axisInverted = self.series2Dict['Y axis inverted']
-        self.axs[1].yaxis.set_inverted(self.series2_Y_axisInverted)
 
         self.line2, = self.axs[1].plot(self.X2, self.Y2, color=self.series2Color, linewidth=self.seriesWidth, label='line2', picker=True, pickradius=20)
         self.points2 = self.axs[1].scatter(self.X2, self.Y2, s=5, marker='o', color=self.series2Color, visible=False, label='points2', picker=True, pickradius=5)
@@ -919,22 +915,22 @@ if __name__ == "__main__":
 
     series1 = pd.Series(y1, index=x)
     series1Dict = {'Id': 'abcd', 'X': 'x1Name', 'Y': 'y1Name', 'Series': series1, 
-            'Color': 'darkorange', "Y axis inverted": False, 
-            'Comment': 'A text', 'History': 'command1 ; command2'}
+            'Color': 'darkorange',
+            'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item1 = QTreeWidgetItem()
     item1.setData(0, Qt.UserRole, series1Dict)
 
     series2 = pd.Series(y2, index=x)
     series2Dict = {'Id': 'abcd', 'X': 'x2Name', 'Y': 'y2Name', 'Series': series2, 
-            'Color': 'blue', "Y axis inverted": False, 
-            'Comment': 'A text', 'History': 'command1 ; command2'}
+            'Color': 'blue',
+            'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item2 = QTreeWidgetItem()
     item2.setData(0, Qt.UserRole, series2Dict)
 
     series3 = pd.Series(y3, index=x)
     series3Dict = {'Id': 'abcd', 'X': 'x3Name', 'Y': 'y3Name', 'Series': series3, 
-            'Color': 'green', "Y axis inverted": False, 
-            'Comment': 'A text', 'History': 'command1 ; command2'}
+            'Color': 'green',
+            'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item3 = QTreeWidgetItem()
     item3.setData(0, Qt.UserRole, series3Dict)
 

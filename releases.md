@@ -1,3 +1,7 @@
+ * 5.43
+   * Remove Y-axis inverted (now available via the context menu)
+   * Fix missing Date in various examples from resource classes
+   * Fix worksheet saving when items are removed in overwrite mode
  * 5.42
    * Add local and global autoscale
    * Fix exit handling

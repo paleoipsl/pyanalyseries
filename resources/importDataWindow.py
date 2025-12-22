@@ -279,7 +279,6 @@ class importDataWindow(QWidget):
                 'Name': '',
                 'X': X,
                 'Y': Y,
-                'Y axis inverted': False,
                 'Color': generate_color(),
                 'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
                 'History': history,

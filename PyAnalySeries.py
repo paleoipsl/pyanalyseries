@@ -52,7 +52,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.42'
+version = 'v5.43'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -193,12 +193,6 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     buttonColor.clicked.connect(lambda: selectColor(buttonColor, item))
     tree_widget.setItemWidget(item, 5, buttonColor)
 
-    checkboxInverted = QCheckBox()
-    checkboxInverted.setFixedSize(60, 15)
-    checkboxInverted.setChecked(itemDict["Y axis inverted"])
-    checkboxInverted.stateChanged.connect(lambda: checkboxInverted_changed(checkboxInverted, item))
-    tree_widget.setItemWidget(item, 6, checkboxInverted)
-
     if update: update_items_from_data(item)
 
     tree_widget.blockSignals(False)
@@ -280,16 +274,6 @@ def selectColor(buttonColor, series_item):
         mark_ws(series_item.parent())
 
 #========================================================================================
-def checkboxInverted_changed(checkboxInverted, series_item):
-    seriesDict = series_item.data(0, Qt.UserRole)
-    seriesDict = seriesDict | {'Y axis inverted': checkboxInverted.isChecked()}
-    series_item.setData(0, Qt.UserRole, seriesDict)
-    checkboxInverted = tree_widget.itemWidget(series_item, 6)
-    checkboxInverted.setChecked(seriesDict["Y axis inverted"])
-    update_items_from_data(series_item)
-    mark_ws(series_item.parent())
-
-#========================================================================================
 def update_items_from_data(ref_item):
 
     tree_widget.blockSignals(True)
@@ -325,8 +309,6 @@ def update_items_from_data(ref_item):
             if  itemDict['Type'].startswith('Series'):
                 buttonColor = tree_widget.itemWidget(item, 5)
                 buttonColor.setStyleSheet(f"background-color: {ref_itemDict['Color']}; border: none; border-radius: 3px;")
-                checkboxInverted = tree_widget.itemWidget(item, 6)
-                checkboxInverted.setChecked(ref_itemDict["Y axis inverted"])
                 sync_window_with_item(item)
       
             # Mark if item has changed
@@ -406,7 +388,6 @@ def load_WorkSheet(fileName):
                     'Name': df['Name'][0],
                     'X':  df.columns[0],
                     'Y':  df.columns[1],
-                    'Y axis inverted': df['Y axis inverted'][0],                # boolean
                     'Color': Color,
                     'Date': df['Date'][0] if 'Date' in df.columns else '',
                     'Comment': df['Comment'][0],
@@ -480,8 +461,8 @@ def load_WorkSheet(fileName):
                         'Id': 'Id-' + sheetName.split('INTERPOLATION Id-')[1],
                         'Type': 'INTERPOLATION',
                         'Name': df['Name'][0],
-                        'X1Coords': df['X1Coords'].values,
-                        'X2Coords': df['X2Coords'].values,
+                        'X1Coords': cleanSpaceList(df['X1Coords']),
+                        'X2Coords': cleanSpaceList(df['X2Coords']),
                         'X1Name': df['X1Name'][0],
                         'Date': df['Date'][0] if 'Date' in df.columns else '',
                         'Comment': df['Comment'][0],
@@ -576,9 +557,20 @@ def save_WorkSheet(ws_item):
         wb = Workbook()
 
     #----------------------------------
+    for sheetName in wb.sheetnames:
+        # remove sheetname 'Serie Idxxxxxxxx' (wrong spell)
+        if sheetName.startswith('Serie Id') or \
+           sheetName.startswith('Series Id') or \
+           sheetName.startswith('SAMPLE Id') or \
+           sheetName.startswith('FILTER Id') or \
+           sheetName.startswith('INTERPOLATION Id') or \
+           sheetName == 'Information' or \
+           sheetName == 'Sheet':
+            del wb[sheetName]
+
+    #----------------------------------
     try:
         sheetName = f'Information'
-        if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
         ws = wb.create_sheet(title=sheetName)
 
         ws.cell(row=1, column=1, value=f'Created with PyAnalyseries {version}')
@@ -599,53 +591,46 @@ def save_WorkSheet(ws_item):
             #-----------------------
             if itemDict["Type"].startswith('Series'):
                 
-                sheetName = f'Serie {itemDict["Id"]}'                       # to remove sheetname 'Serie Idxxxxxxxx' (wrong spell)
-                if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
-
-                sheetName = f'Series {itemDict["Id"]}'                      # to remove sheetname 'Series Idxxxxxxxx' (will be rewritten)
-                if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
-
+                sheetName = f'Series {itemDict["Id"]}'
                 ws = wb.create_sheet(title=sheetName)
 
                 ws.cell(row=1, column=1, value=itemDict['X'])
                 ws.cell(row=1, column=2, value=itemDict['Y'])
                 ws.cell(row=1, column=3, value='Type')
                 ws.cell(row=1, column=4, value='Name')
-                ws.cell(row=1, column=5, value='Y axis inverted')
-                ws.cell(row=1, column=6, value='Color')
-                ws.cell(row=1, column=7, value='Date')
-                ws.cell(row=1, column=8, value='Comment')
-                ws.cell(row=1, column=9, value='History')
+                ws.cell(row=1, column=5, value='Color')
+                ws.cell(row=1, column=6, value='Date')
+                ws.cell(row=1, column=7, value='Comment')
+                ws.cell(row=1, column=8, value='History')
 
                 for i, (index, value) in enumerate(itemDict['Series'].sort_index().items(), start=2):            # force sort on index
                     ws.cell(row=i, column=1, value=index)
                     ws.cell(row=i, column=2, value=value)
                 ws.cell(row=2, column=3, value=itemDict['Type'])
                 ws.cell(row=2, column=4, value=itemDict['Name'])
-                ws.cell(row=2, column=5, value=itemDict['Y axis inverted'])
-                ws.cell(row=2, column=6, value=itemDict['Color'])
-                ws.cell(row=2, column=7, value=itemDict['Date'])
-                ws.cell(row=2, column=8, value=itemDict['Comment'])
-                ws.cell(row=2, column=9, value=itemDict['History'])
+                ws.cell(row=2, column=5, value=itemDict['Color'])
+                ws.cell(row=2, column=6, value=itemDict['Date'])
+                ws.cell(row=2, column=7, value=itemDict['Comment'])
+                ws.cell(row=2, column=8, value=itemDict['History'])
         
                 if 'InterpolationMode' in itemDict:
-                    ws.cell(row=1, column=10, value='InterpolationMode')
-                    ws.cell(row=1, column=11, value='X1Coords')
-                    ws.cell(row=1, column=12, value='X2Coords')
-                    ws.cell(row=1, column=13, value=itemDict['XOriginal'])
+                    ws.cell(row=1, column=9, value='InterpolationMode')
+                    ws.cell(row=1, column=10, value='X1Coords')
+                    ws.cell(row=1, column=11, value='X2Coords')
+                    ws.cell(row=1, column=12, value=itemDict['XOriginal'])
 
-                    ws.cell(row=2, column=10, value=itemDict['InterpolationMode'])
+                    ws.cell(row=2, column=9, value=itemDict['InterpolationMode'])
                     for i, value in enumerate(itemDict['X1Coords'], start=2):
-                        ws.cell(row=i, column=11, value=value)
+                        ws.cell(row=i, column=10, value=value)
                     for i, value in enumerate(itemDict['X2Coords'], start=2):
-                        ws.cell(row=i, column=12, value=value)
+                        ws.cell(row=i, column=11, value=value)
                     for i, value in enumerate(itemDict['XOriginalValues'], start=2):
-                        ws.cell(row=i, column=13, value=value)
+                        ws.cell(row=i, column=12, value=value)
 
             #-----------------------
             elif itemDict["Type"] in ['FILTER', 'SAMPLE']:
+
                 sheetName = f'{itemDict["Type"]} {itemDict["Id"]}'
-                if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
                 ws = wb.create_sheet(title=sheetName)
 
                 ws.cell(row=1, column=1, value='Type')
@@ -669,8 +654,8 @@ def save_WorkSheet(ws_item):
 
             #-----------------------
             elif itemDict["Type"] == 'INTERPOLATION':
+
                 sheetName = f'{itemDict["Type"]} {itemDict["Id"]}'
-                if sheetName in wb.sheetnames: wb.remove(wb[sheetName])
                 ws = wb.create_sheet(title=sheetName)
 
                 ws.cell(row=1, column=1, value='X1Coords')
@@ -695,11 +680,8 @@ def save_WorkSheet(ws_item):
                 
             #-----------------------
 
-        if ws_item.childCount() > 0:
-            if 'Sheet' in wb.sheetnames:
-                del wb['Sheet']
-            for sheet in wb.worksheets:
-                autofit_columns(sheet)
+        for sheet in wb.worksheets:
+            autofit_columns(sheet)
 
         wb.save(outFile)
         return True 
@@ -827,15 +809,14 @@ def create_tree_widget():
     font = QFont('Courier New', 12)
 
     tree_widget = CustomTreeWidget()
-    tree_widget.setColumnCount(7)
-    tree_widget.setHeaderLabels(["Name", "Id", "Type", "X", "Y", "Color", "Y axis inverted"])
+    tree_widget.setColumnCount(6)
+    tree_widget.setHeaderLabels(["Name", "Id", "Type", "X", "Y", "Color"])
     tree_widget.setColumnWidth(0, 400)
     tree_widget.setColumnWidth(1, 150)
     tree_widget.setColumnWidth(2, 150)
-    tree_widget.setColumnWidth(3, 250)
-    tree_widget.setColumnWidth(4, 250)
-    tree_widget.setColumnWidth(5, 50)
-    tree_widget.setColumnWidth(6, 50)
+    tree_widget.setColumnWidth(3, 300)
+    tree_widget.setColumnWidth(4, 300)
+    tree_widget.setColumnWidth(5, 20)
     tree_widget.setAlternatingRowColors(True)
     tree_widget.setTextElideMode(Qt.ElideRight)
     tree_widget.setSelectionMode(QTreeWidget.ExtendedSelection)

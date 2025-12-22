@@ -205,7 +205,6 @@ class defineRandomSeriesWindow(QWidget):
             'Name': '', 
             'X': 'X',
             'Y': 'Y',
-            'Y axis inverted': False,
             'Color': generate_color(),
             'History': history,
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),

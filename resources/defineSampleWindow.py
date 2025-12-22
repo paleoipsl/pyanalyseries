@@ -292,8 +292,6 @@ class defineSampleWindow(QWidget):
 
         seriesSampled = self.sample(self.series, self.sample_index, self.kind, integrated=self.integrated, ax=ax)
         seriesColor = self.seriesDict['Color']
-        Y_axisInverted = self.seriesDict['Y axis inverted']
-        ax.yaxis.set_inverted(Y_axisInverted)
 
         line1, = ax.plot(self.series.index, self.series.values, color=seriesColor, linewidth=self.seriesWidth, label='Original')
         points1 = ax.scatter(self.series.index, self.series.values, s=5, marker='o', color=seriesColor, visible=False)
@@ -312,7 +310,6 @@ class defineSampleWindow(QWidget):
         if limits:
             ax.set_xlim(limits[0])
             ax.set_ylim(limits[1])
-            ax.yaxis.set_inverted(Y_axisInverted)
 
         self.interactive_plot.fig.canvas.draw()
         self.interactive_plot.fig.canvas.setFocus()
@@ -511,8 +508,8 @@ if __name__ == "__main__":
     series1 = pd.Series(y1, index=x1)
 
     series1Dict = {'Id': 'abcd', 'X': 'xName', 'Y': 'yName', 'Series': series1, 
-            'Color': 'darkorange', "Y axis inverted": True, 
-            'Comment': 'A text', 'History': 'command1 ; command2'}
+            'Color': 'darkorange',
+            'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item1 = QTreeWidgetItem()
     item1.setData(0, Qt.UserRole, series1Dict)
 
@@ -520,8 +517,8 @@ if __name__ == "__main__":
     series2 = pd.Series(y2, index=x2)
 
     series2Dict = {'Id': 'abcd', 'X': 'xName', 'Y': 'yName', 'Series': series2, 
-            'Color': 'darkorange', "Y axis inverted": True, 
-            'Comment': 'A text', 'History': 'command1 ; command2'}
+            'Color': 'darkorange',
+            'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item2 = QTreeWidgetItem()
     item2.setData(0, Qt.UserRole, series2Dict)
 
