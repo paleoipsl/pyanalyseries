@@ -124,7 +124,6 @@ class displayInterpolationWindow(QWidget):
                 background-color: #f8f8f8;
                 border: 1px solid lightgray;
                 font-family: Courier New;
-                font-size: 12;
             }
         """)
 

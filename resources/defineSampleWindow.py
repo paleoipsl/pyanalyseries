@@ -64,7 +64,7 @@ class defineSampleWindow(QWidget):
         self.series_combo_label = QLabel("Sample series :")
         self.series_combo_label.setFixedWidth(120)
         self.series_combo = QComboBox()
-        font = QFont("Courier New", 12)
+        font = QFont("Courier New")
         self.series_combo.setFont(font)
         for n,item in enumerate(self.items):
             seriesDict = item.data(0, Qt.UserRole)
@@ -97,7 +97,7 @@ class defineSampleWindow(QWidget):
 
         self.xvalues_radio = QRadioButton("Sampling using x values of series :")
         self.xvalues_label = QLabel('None')
-        font = QFont("Courier New", 12)
+        font = QFont("Courier New")
         self.xvalues_label.setFont(font)
 
         xvalues_layout = QHBoxLayout()

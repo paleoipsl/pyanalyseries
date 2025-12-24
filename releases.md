@@ -1,3 +1,7 @@
+ * 5.44
+   * Move display actions into a dedicated Display menu
+   * Add a Preferences menu to control font size (persisted via QSettings)
+   * Add a Preferences option to control tooltip visibility (persisted via QSettings)
  * 5.43
    * Remove Y-axis inverted (now available via the context menu)
    * Fix missing Date in various examples from resource classes

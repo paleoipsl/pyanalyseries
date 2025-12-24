@@ -105,7 +105,6 @@ class defineSinusoidalSeriesWindow(QWidget):
         self.formula_label = QLabel()
         self.formula_label.setStyleSheet("""
             font-family: 'Courier New';
-            font-size: 12pt;
             color: #222;
             padding: 6px;
             border-top: 1px solid #ccc;

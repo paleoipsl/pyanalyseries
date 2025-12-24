@@ -18,6 +18,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import *
 
+from resources.preferencesDialog import preferencesDialog 
+
 from resources.misc import *
 from resources.CustomQColorDialog import CustomQColorDialog 
 
@@ -52,7 +54,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.43'
+version = 'v5.44'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -171,7 +173,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     item.setText(1, itemDict['Id'])
     item.setText(2, itemDict['Type'])
 
-    font = QFont('Courier New', 12)
+    font = QFont('Courier New')
     item.setFont(1, font)             # format Id
 
     if itemDict['Type'] == 'INTERPOLATION':
@@ -188,10 +190,15 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     item.setFont(4, font)
 
     buttonColor = QPushButton()
-    buttonColor.setFixedSize(40, 15)
-    buttonColor.setStyleSheet(f"background-color: {itemDict['Color']}; border: none; border-radius: 3px;")
+    buttonColor.setFixedWidth(40)
+    buttonColor.setStyleSheet(f"background-color: {itemDict['Color']};")
     buttonColor.clicked.connect(lambda: selectColor(buttonColor, item))
-    tree_widget.setItemWidget(item, 5, buttonColor)
+    container = QWidget()
+    layout = QHBoxLayout(container)
+    layout.setContentsMargins(0, 0, 0, 0)
+    layout.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
+    layout.addWidget(buttonColor)
+    tree_widget.setItemWidget(item, 5, container)
 
     if update: update_items_from_data(item)
 
@@ -499,6 +506,7 @@ def load_WorkSheet(fileName):
 
 #========================================================================================
 def new_WorkSheet():
+
     settings = QSettings("MyPythonApps", "PyAnalySeries")
     last_dir = settings.value("lastDir", os.getcwd(), type=str)
 
@@ -519,6 +527,7 @@ def new_WorkSheet():
 
 #========================================================================================
 def open_WorkSheet():
+
     settings = QSettings("MyPythonApps", "PyAnalySeries")
     last_dir = settings.value("lastDir", os.getcwd(), type=str)
     #last_dir = settings.value("lastDir", "", type=str)
@@ -537,6 +546,7 @@ def open_WorkSheet():
 
 #========================================================================================
 def autofit_columns(worksheet):
+
     for col in worksheet.columns:
         max_length = 0
         column_letter = get_column_letter(col[0].column)
@@ -806,7 +816,8 @@ def define_randomSeries():
 #========================================================================================
 def create_tree_widget():
 
-    font = QFont('Courier New', 12)
+    size = QApplication.instance().font().pointSize()
+    font = QFont('Courier New', size)
 
     tree_widget = CustomTreeWidget()
     tree_widget.setColumnCount(6)
@@ -820,7 +831,6 @@ def create_tree_widget():
     tree_widget.setAlternatingRowColors(True)
     tree_widget.setTextElideMode(Qt.ElideRight)
     tree_widget.setSelectionMode(QTreeWidget.ExtendedSelection)
-    tree_widget.setIconSize(QSize(16, 16))
     tree_widget.setStyleSheet("""
         QTreeView {
             selection-background-color: rgba(0, 120, 215, 80);
@@ -869,6 +879,27 @@ def create_tree_widget():
     return tree_widget
 
 #========================================================================================
+def update_tree_visuals(tree_widget):
+
+    fm = tree_widget.fontMetrics()
+    row_h = fm.height()
+
+    # --- Boutons (via stylesheet)
+    button_h = row_h - 2
+    tree_widget.setStyleSheet(f"""
+    QTreeWidget QPushButton {{
+        min-height: {button_h}px;
+        max-height: {button_h}px;
+        padding: 0px;
+        border-radius: 3px;
+    }}
+    """)
+
+    # --- Icons
+    icon_h = row_h - 2 
+    tree_widget.setIconSize(QSize(icon_h, icon_h))
+
+#========================================================================================
 class FullRowDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
         brush = index.data(Qt.BackgroundRole)
@@ -894,21 +925,29 @@ class CustomTreeWidget(QTreeWidget):
         self.setItemDelegate(FullRowDelegate(self))
 
         # 🔹 Custom QLabel as tooltip replacement
+        self.custom_tooltip_enabled = True
+
         self.custom_tooltip = QLabel(self)
         self.custom_tooltip.setStyleSheet("""
             background-color: lightyellow;
             border: 1px solid lightgray;
             border-radius: 4px;
             padding: 4px;
-            font-size: 12px;
             font-family: Courier New;
             ul { margin: 0px; }
         """)
+        # font-size: 12px;
         self.custom_tooltip.setWindowFlags(Qt.ToolTip)
         self.custom_tooltip.setFixedWidth(500)
         self.custom_tooltip.setWordWrap(True)
         self.custom_tooltip.setAlignment(Qt.AlignTop | Qt.AlignLeft)  # Align top-left
         self.custom_tooltip.hide()
+
+    #-----------------------------------
+    def set_custom_tooltip_enabled(self, enabled: bool):
+        self.custom_tooltip_enabled = enabled
+        if not enabled:
+            self.custom_tooltip.hide()
 
     #-----------------------------------
     def dropEvent(self, event):
@@ -947,6 +986,10 @@ class CustomTreeWidget(QTreeWidget):
        
     #-----------------------------------
     def eventFilter(self, obj, event):
+
+        if not self.custom_tooltip_enabled:
+            return super().eventFilter(obj, event)
+
         """ Event filter to detect mouse hover and display a tooltip """
         if event.type() == QEvent.HoverMove:
             pos = event.pos()
@@ -1690,11 +1733,38 @@ class MainWindow(QMainWindow):
             event.ignore()
 
 #========================================================================================
+def open_preferencesDialog():
+    dlg = preferencesDialog(on_font_changed, on_custom_tooltip_changed, main_window)
+    dlg.show()
+
+#========================================================================================
+def on_font_changed(size):
+    font = app.font()
+    font.setPointSize(size)
+    app.setFont(font)
+
+    update_tree_visuals(tree_widget)
+
+    settings = QSettings("MyPythonApps", "PyAnalySeries")
+    settings.setValue("ui/fontSize", size)
+
+#========================================================================================
+def on_custom_tooltip_changed(enabled):
+    tree_widget.set_custom_tooltip_enabled(enabled)
+
+    settings = QSettings("MyPythonApps", "PyAnalySeries")
+    settings.setValue("ui/customTooltipEnabled", enabled)
+
+#========================================================================================
 app = QApplication(sys.argv)
 
 app_dir = Path(__file__).resolve().parent
 
-fontArial = QFont('Arial', 12)
+settings = QSettings("MyPythonApps", "PyAnalySeries")
+fontSize = settings.value("ui/fontSize", 12, type=int)
+enabled = settings.value("ui/customTooltipEnabled", True, type=bool)
+
+fontArial = QFont('Arial', fontSize)
 app.setFont(fontArial)
 
 icon = QIcon(str(app_dir / 'resources' / 'PyAnalySeries_icon.png'))
@@ -1712,6 +1782,8 @@ tree_widget.setContextMenuPolicy(Qt.CustomContextMenu)
 tree_widget.customContextMenuRequested.connect(show_context_menu)
 tree_widget.itemChanged.connect(on_item_changed)
 tree_widget.itemDoubleClicked.connect(on_item_double_clicked)
+tree_widget.set_custom_tooltip_enabled(enabled)
+update_tree_visuals(tree_widget)
 
 layout.addWidget(tree_widget)
 
@@ -1762,29 +1834,9 @@ paste_action = QAction("Paste", main_window)
 paste_action.setShortcut(QKeySequence("Ctrl+v"))
 paste_action.triggered.connect(paste_items)
 
-display_action = QAction("Display Single", main_window)
-display_action.setShortcut('Ctrl+d')
-display_action.triggered.connect(displaySingleSeries_selected_series)
-
-displayTogetherSeries_action = QAction("Display Together", main_window)
-displayTogetherSeries_action.setShortcut('Ctrl+t')
-displayTogetherSeries_action.triggered.connect(lambda: displayMultipleSeries_selected_series(overlaid=True))
-
-displayStackedSeries_action = QAction("Display Stacked", main_window)
-displayStackedSeries_action.setShortcut('Ctrl+k')
-displayStackedSeries_action.triggered.connect(lambda: displayMultipleSeries_selected_series(overlaid=False))
-
-close_all_action = QAction("Close all Display windows")
-close_all_action.triggered.connect(close_all_windows)
-
 edit_menu.addAction(cut_action)
 edit_menu.addAction(copy_action)
 edit_menu.addAction(paste_action)
-edit_menu.addSeparator()
-edit_menu.addAction(display_action)
-edit_menu.addAction(displayTogetherSeries_action)
-edit_menu.addAction(displayStackedSeries_action)
-edit_menu.addAction(close_all_action)
 
 #----------------------------------------------
 create_menu = menu_bar.addMenu("Create")
@@ -1805,6 +1857,29 @@ create_menu.addSeparator()
 create_menu.addAction(randomSeries_action)
 create_menu.addAction(insolationAstroSeries_action)
 create_menu.addAction(sinusoidalSeries_action)
+
+#----------------------------------------------
+display_menu = menu_bar.addMenu("Display")
+
+display_action = QAction("Display Single", main_window)
+display_action.setShortcut('Ctrl+d')
+display_action.triggered.connect(displaySingleSeries_selected_series)
+
+displayTogetherSeries_action = QAction("Display Together", main_window)
+displayTogetherSeries_action.setShortcut('Ctrl+t')
+displayTogetherSeries_action.triggered.connect(lambda: displayMultipleSeries_selected_series(overlaid=True))
+
+displayStackedSeries_action = QAction("Display Stacked", main_window)
+displayStackedSeries_action.setShortcut('Ctrl+k')
+displayStackedSeries_action.triggered.connect(lambda: displayMultipleSeries_selected_series(overlaid=False))
+
+close_all_action = QAction("Close all Display windows")
+close_all_action.triggered.connect(close_all_windows)
+
+display_menu.addAction(display_action)
+display_menu.addAction(displayTogetherSeries_action)
+display_menu.addAction(displayStackedSeries_action)
+display_menu.addAction(close_all_action)
 
 #----------------------------------------------
 process_menu = menu_bar.addMenu("Process")
@@ -1839,6 +1914,14 @@ process_menu.addSeparator()
 process_menu.addAction(defineInterpolation_action)
 process_menu.addAction(applyInterpolationLinear_action)
 process_menu.addAction(applyInterpolationPCHIP_action)
+
+#----------------------------------------------
+settings_menu = menu_bar.addMenu('Settings')
+
+preferences_action = QAction("Preferences", main_window)
+preferences_action.triggered.connect(open_preferencesDialog)
+
+settings_menu.addAction(preferences_action)
 
 #----------------------------------------------
 help_menu = menu_bar.addMenu('Help')
