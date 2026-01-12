@@ -202,7 +202,7 @@ class defineSinusoidalSeriesWindow(QWidget):
             f"<br>"
             f"&nbsp; = {a1:.2f}·sin(2π·{f1:.2f}·x + {p1:.2f})"
             f" + {a2:.2f}·sin(2π·{f2:.2f}·x + {p2:.2f})"
-            f" + 𝒩(0,{noise:.2f})"
+            f" + N(0,{noise:.2f})"
         )
 
         #=== Update main plot

@@ -1,3 +1,5 @@
+ * 5.45
+   * Typo fix in defineSinusoidalSeriesWindow
  * 5.44
    * Move display actions into a dedicated Display menu
    * Add a Preferences menu to control font size (persisted via QSettings)
