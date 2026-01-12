@@ -198,7 +198,7 @@ class defineSinusoidalSeriesWindow(QWidget):
             f"<b>Formula:</b><br>"
             f"y = A<sub>1</sub>·sin(2π·f<sub>1</sub>·x + φ<sub>1</sub>)"
             f" + A<sub>2</sub>·sin(2π·f<sub>2</sub>·x + φ<sub>2</sub>)"
-            f" + 𝒩(0,σ)"
+            f" + N(0,σ)"
             f"<br>"
             f"&nbsp; = {a1:.2f}·sin(2π·{f1:.2f}·x + {p1:.2f})"
             f" + {a2:.2f}·sin(2π·{f2:.2f}·x + {p2:.2f})"
