@@ -1,15 +1,15 @@
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 import sys
 import numpy as np
 import pandas as pd
 
 import matplotlib
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 from .misc import *
 from .CustomQTableWidget import CustomQTableWidget 
@@ -33,7 +33,7 @@ class displaySingleSeriesWindow(QWidget):
 
         self.seriesWidth = 0.8
 
-        self.seriesDict = self.item.data(0, Qt.UserRole)
+        self.seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
 
         self.xName = self.seriesDict['X']
         self.yName = self.seriesDict['Y']
@@ -196,7 +196,7 @@ class displaySingleSeriesWindow(QWidget):
         ax.set_xlabel(self.xName)
         ax.set_ylabel(self.yName)
         ax.autoscale()
-        seriesDict = self.item.data(0, Qt.UserRole)
+        seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()           # sort on index by default
         seriesColor = seriesDict['Color']
@@ -232,7 +232,7 @@ class displaySingleSeriesWindow(QWidget):
 
         self.raise_()
 
-        self.seriesDict = self.item.data(0, Qt.UserRole)
+        self.seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
         self.textName.setText(f"Name : <b>{self.seriesDict['Name']}</b>")
         self.xName = self.seriesDict['X']
         self.yName = self.seriesDict['Y']
@@ -249,7 +249,7 @@ class displaySingleSeriesWindow(QWidget):
         self.seriesDict['Comment'] = self.textComment.toPlainText()
         # if WS has been removed while a Display is active 
         try:
-            self.item.setData(0, Qt.UserRole, self.seriesDict)
+            self.item.setData(0, Qt.ItemDataRole.UserRole, self.seriesDict)
         except:
             #print("item not available to be updated")
             pass 
@@ -280,7 +280,7 @@ if __name__ == "__main__":
     }
 
     item = QTreeWidgetItem()
-    item.setData(0, Qt.UserRole, itemDict)
+    item.setData(0, Qt.ItemDataRole.UserRole, itemDict)
 
     open_displayWindows = {}
     Id_displayWindow = '1234'
@@ -288,4 +288,4 @@ if __name__ == "__main__":
     open_displayWindows[Id_displayWindow] = displayWindow
     displayWindow.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

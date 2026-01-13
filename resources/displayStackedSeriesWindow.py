@@ -1,15 +1,15 @@
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 import sys
 import numpy as np
 import pandas as pd
 
 import matplotlib
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 from .interactivePlot import interactivePlot
 
@@ -96,7 +96,7 @@ class displayStackedSeriesWindow(QWidget):
             ax.twins = []                           # replace because ax.remove() has deleted those attributs 
             ax.twins_orientation = None
 
-            seriesDict = item.data(0, Qt.UserRole)
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
 
             ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
             ax.set_xlabel(seriesDict['X'])
@@ -116,7 +116,7 @@ class displayStackedSeriesWindow(QWidget):
         if self.sharex:
             XDict = {}
             for n, item in enumerate(self.items):
-                seriesDict = item.data(0, Qt.UserRole)
+                seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
                 if seriesDict['X'] not in XDict:
                     XDict[seriesDict['X']] = []
                 XDict[seriesDict['X']].append(n)
@@ -168,7 +168,7 @@ if __name__ == "__main__":
         'History': 'command1 ; command2'
     }
     item1 = QTreeWidgetItem()
-    item1.setData(0, Qt.UserRole, series1Dict)
+    item1.setData(0, Qt.ItemDataRole.UserRole, series1Dict)
 
     x2 = np.linspace(5, 15, 100)
     y2 = np.cos(x2)
@@ -185,7 +185,7 @@ if __name__ == "__main__":
         'History': 'command1 ; command2'
     }
     item2 = QTreeWidgetItem()
-    item2.setData(0, Qt.UserRole, series2Dict)
+    item2.setData(0, Qt.ItemDataRole.UserRole, series2Dict)
 
     open_displayWindows = {}
     Id_displayWindow = tuple([series1Dict['Id'], series2Dict['Id']])
@@ -193,4 +193,4 @@ if __name__ == "__main__":
     open_displayWindows[Id_displayWindow] = displayWindow
     displayWindow.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

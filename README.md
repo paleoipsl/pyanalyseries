@@ -60,6 +60,19 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
  * `conda env list`
  * `conda activate env_PyAnalySeries`
 
+>  ***BREAKING CHANGE – CONDA ENVIRONMENT RESET REQUIRED**
+>
+> The application now uses **PyQt6 (Qt6)** and **Pyleoclim**.
+> The existing Conda environment created with **PyQt5** is **not compatible**.
+>
+> **If you already created `env_PyAnalySeries`, you must delete and recreate it.**
+>
+> ```bash
+> conda deactivate
+> conda env remove -n env_PyAnalySeries
+> conda env create --file environment.yml
+> conda activate env_PyAnalySeries
+
 ##### Test
 
  * `python PyAnalySeries.py`

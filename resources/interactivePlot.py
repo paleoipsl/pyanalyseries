@@ -1,15 +1,15 @@
 
 import matplotlib
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
 from matplotlib.axis import XAxis, YAxis
 from matplotlib.lines import Line2D
 from matplotlib.backend_bases import KeyEvent
 from matplotlib.ticker import LogLocator, FuncFormatter
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 
 import numpy as np
 from pathlib import Path
@@ -310,8 +310,8 @@ class interactivePlot:
                 context_menu.addSeparator()
                 context_menu.addAction("Save plot as PNG or PDF")
 
-            global_pos = event.guiEvent.globalPos()
-            action = context_menu.exec_(global_pos)
+            global_pos = event.guiEvent.globalPosition().toPoint()
+            action = context_menu.exec(global_pos)
             if not action: 
                 # hide points if control press while context menu (right mousse button)
                 ev = KeyEvent('key_press_release', self.fig.canvas, 'control')

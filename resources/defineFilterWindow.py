@@ -1,11 +1,11 @@
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 import matplotlib
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 from .misc import *
 from .interactivePlot import interactivePlot
@@ -79,7 +79,7 @@ class defineFilterWindow(QWidget):
         style = "padding: 4px 12px;"
         self.saveFilter_button = QPushButton("Save filter", self)
         self.saveFilter_button.setStyleSheet(style)
-        self.saveFilter_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.saveFilter_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.saveFilterAndSeriesFiltered_button = QPushButton("Save filter and series filtered", self)
         self.saveFilterAndSeriesFiltered_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
@@ -128,7 +128,7 @@ class defineFilterWindow(QWidget):
 
         self.interactive_plot.reset()
 
-        self.seriesDict = self.item.data(0, Qt.UserRole)
+        self.seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
         self.xName = self.seriesDict['X']
         self.yName = self.seriesDict['Y']
         self.series = self.seriesDict['Series']
@@ -260,7 +260,7 @@ if __name__ == "__main__":
             'History': 'command1 ; command2'
     }
     item = QTreeWidgetItem()
-    item.setData(0, Qt.UserRole, seriesDict)
+    item.setData(0, Qt.ItemDataRole.UserRole, seriesDict)
 
     open_filterWindows = {}
     Id_filterWindow = '1234'
@@ -268,4 +268,4 @@ if __name__ == "__main__":
     open_filterWindows[Id_filterWindow] = filterWindow
     filterWindow.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

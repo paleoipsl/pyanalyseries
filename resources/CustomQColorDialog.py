@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QColorDialog, QApplication
-from PyQt5.QtGui import QColor
+from PyQt6.QtWidgets import QColorDialog, QApplication
+from PyQt6.QtGui import QColor
 from matplotlib import cm
 
 #=========================================================================================
@@ -8,7 +8,7 @@ class CustomQColorDialog:
     def getColor(start_color_html=None):
         # Create an instance of QColorDialog
         color_dialog = QColorDialog()
-        color_dialog.setOption(QColorDialog.DontUseNativeDialog)
+        color_dialog.setOption(QColorDialog.ColorDialogOption.DontUseNativeDialog)
 
         # Convert HTML color to QColor and set as the starting color
         if start_color_html:
@@ -24,7 +24,7 @@ class CustomQColorDialog:
             color_dialog.setCustomColor(i, color)
 
         # Open the dialog and retrieve the selected color
-        if color_dialog.exec_() == QColorDialog.Accepted:
+        if color_dialog.exec() == QColorDialog.DialogCode.Accepted:
             return color_dialog.currentColor()
         else:
             return None  # No color was selected

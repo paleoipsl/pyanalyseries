@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 import sys
 
@@ -14,7 +14,7 @@ class displayFilterWindow(QWidget):
         self.open_displayWindows = open_displayWindows
         self.item = item
 
-        self.filterDict = self.item.data(0, Qt.UserRole)
+        self.filterDict = self.item.data(0, Qt.ItemDataRole.UserRole)
 
         title = 'Display FILTER : ' + self.Id
         self.setWindowTitle(title)
@@ -102,7 +102,7 @@ class displayFilterWindow(QWidget):
         self.filterDict['Comment'] = self.textComment.toPlainText()
         # if WS has been removed while a Display is active 
         try:
-            self.item.setData(0, Qt.UserRole, self.filterDict)
+            self.item.setData(0, Qt.ItemDataRole.UserRole, self.filterDict)
         except:
             #print("item not available to be updated")
             pass 
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     }
 
     item = QTreeWidgetItem()
-    item.setData(0, Qt.UserRole, itemDict)
+    item.setData(0, Qt.ItemDataRole.UserRole, itemDict)
 
     open_displayWindows = {}
     Id_displayWindow = '1234'
@@ -134,4 +134,4 @@ if __name__ == "__main__":
     open_displayWindows[Id_displayWindow] = displayWindow
     displayWindow.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

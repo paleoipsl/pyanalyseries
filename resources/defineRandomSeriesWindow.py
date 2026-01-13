@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 import sys
 import datetime
@@ -8,9 +8,9 @@ import pandas as pd
 import numpy as np
 
 import matplotlib
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 from .misc import *
 from .interactivePlot import interactivePlot
@@ -68,7 +68,7 @@ class defineRandomSeriesWindow(QWidget):
 
         validator = QDoubleValidator()
         validator.setDecimals(2) 
-        validator.setNotation(QDoubleValidator.StandardNotation)
+        validator.setNotation(QDoubleValidator.Notation.StandardNotation)
         validator.setLocale(QLocale("en_US"))
 
         self.minVal_input = QLineEdit()
@@ -238,5 +238,5 @@ if __name__ == "__main__":
     open_randomSeriesWindow[Id_randomSeriesWindow] = defineRandomSeriesWindow
     randomSeriesWindow.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 

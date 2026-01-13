@@ -14,9 +14,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 from resources.preferencesDialog import preferencesDialog 
 
@@ -54,7 +54,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v5.45'
+version = 'v6.00'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -65,7 +65,6 @@ open_importWindow = {}
 open_randomSeriesWindow = {}
 open_insolationAstroSeriesWindow = {}
 open_sinusoidalSeriesWindow = {}
-open_spectralAnalysisWindow = {}
 
 #========================================================================================
 def colorize_item(item, color_name, alpha=100):
@@ -106,7 +105,7 @@ def populate_tree_widget(fileName, itemDict_list):
     ws_item.setText(0, fileName)
     ws_item.setToolTip(0, fileName)
     ws_item.setExpanded(True)
-    ws_item.setFlags(ws_item.flags() & ~Qt.ItemIsSelectable)
+    ws_item.setFlags(ws_item.flags() & ~Qt.ItemFlag.ItemIsSelectable)
     open_ws[id(ws_item)] = ws_item.text(0)
 
     for itemDict in itemDict_list:
@@ -130,7 +129,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     icon_interpolate = QIcon(str(app_dir / 'resources' / 'icon_interpolate.png'))
 
     item = QTreeWidgetItem()
-    item.setFlags(item.flags() & ~Qt.ItemIsDropEnabled)
+    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
 
     if itemDict['Type'].startswith('Series'):            # to be backward compatible with Serie and now Series
         Series = itemDict['Series']
@@ -166,7 +165,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
 
     tree_widget.blockSignals(True)
 
-    item.setData(0, Qt.UserRole, itemDict)
+    item.setData(0, Qt.ItemDataRole.UserRole, itemDict)
 
     item.setText(0, itemDict['Name'])
     item.setToolTip(0, itemDict['Name'])
@@ -255,12 +254,12 @@ def on_item_changed(item, column):
 
         tree_widget.blockSignals(True)
 
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
         itemDict['Name'] = item.text(0)
         if 'X' in itemDict.keys(): itemDict['X'] = item.text(3)
         elif 'X1Name' in itemDict.keys(): itemDict['X1Name'] = item.text(3)
         if 'Y' in itemDict.keys(): itemDict['Y'] = item.text(4)
-        item.setData(0, Qt.UserRole, itemDict)
+        item.setData(0, Qt.ItemDataRole.UserRole, itemDict)
 
         mark_ws(item.parent())
         update_items_from_data(item)
@@ -269,12 +268,12 @@ def on_item_changed(item, column):
 
 #========================================================================================
 def selectColor(buttonColor, series_item):
-    seriesDict = series_item.data(0, Qt.UserRole)
+    seriesDict = series_item.data(0, Qt.ItemDataRole.UserRole)
     starting_color = seriesDict['Color']
     color = CustomQColorDialog.getColor(starting_color)
     if color:
         seriesDict = seriesDict | {'Color': color.name()}
-        series_item.setData(0, Qt.UserRole, seriesDict)
+        series_item.setData(0, Qt.ItemDataRole.UserRole, seriesDict)
         buttonColor = tree_widget.itemWidget(series_item, 5)
         buttonColor.setStyleSheet(f"background-color: {seriesDict['Color']}; border: none; border-radius: 3px;")
         update_items_from_data(series_item)
@@ -285,7 +284,7 @@ def update_items_from_data(ref_item):
 
     tree_widget.blockSignals(True)
 
-    ref_itemDict = ref_item.data(0, Qt.UserRole)
+    ref_itemDict = ref_item.data(0, Qt.ItemDataRole.UserRole)
 
     allItems = tree_widget.get_children()
 
@@ -293,14 +292,14 @@ def update_items_from_data(ref_item):
     
     for item in allItems:
 
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
         if item.parent() == ref_item.parent():
             if  itemDict['Type'].startswith('Series'):
                 sync_window_with_item(item)
             continue
 
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
         if itemDict['Id'] == ref_itemDict['Id']:
             #print('----------update', itemDict['Id'], item.parent().text(0))
@@ -311,7 +310,7 @@ def update_items_from_data(ref_item):
             if 'X' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X'])
             if 'X1Name' in ref_itemDict.keys(): item.setText(3, ref_itemDict['X1Name'])
             if 'Y' in ref_itemDict.keys(): item.setText(4, ref_itemDict['Y'])
-            item.setData(0, Qt.UserRole, ref_itemDict)
+            item.setData(0, Qt.ItemDataRole.UserRole, ref_itemDict)
 
             if  itemDict['Type'].startswith('Series'):
                 buttonColor = tree_widget.itemWidget(item, 5)
@@ -319,7 +318,7 @@ def update_items_from_data(ref_item):
                 sync_window_with_item(item)
       
             # Mark if item has changed
-            itemDict = item.data(0, Qt.UserRole)
+            itemDict = item.data(0, Qt.ItemDataRole.UserRole)
             if (before | {'Series': 0}) != (itemDict | {'Series': 0}):
                 mark_ws(item.parent())
 
@@ -330,7 +329,7 @@ def update_items_from_data(ref_item):
 #========================================================================================
 def sync_window_with_item(item):
 
-    itemDict = item.data(0, Qt.UserRole)
+    itemDict = item.data(0, Qt.ItemDataRole.UserRole)
     Id_window = itemDict['Id']
     for key in open_displayWindows.keys():
         displayWindow = open_displayWindows[key]
@@ -596,7 +595,7 @@ def save_WorkSheet(ws_item):
         for n in range(ws_item.childCount()):
 
             item = ws_item.child(n)
-            itemDict = item.data(0, Qt.UserRole)
+            itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
             #-----------------------
             if itemDict["Type"].startswith('Series'):
@@ -711,7 +710,7 @@ def save_WorkSheetCurrent():
     ws_item = current_item.parent() if current_item.parent() else current_item
     ws_name = ws_item.text(0)
 
-    if ws_item.data(0, Qt.UserRole): 
+    if ws_item.data(0, Qt.ItemDataRole.UserRole): 
         ws_name = ws_name.replace(" *", "")
         if save_WorkSheet(ws_item):
             unmark_ws(ws_item)
@@ -726,7 +725,7 @@ def save_WorkSheets():
 
     display_error = False
     for ws_item in tree_widget.get_parents():
-        if ws_item.data(0, Qt.UserRole): 
+        if ws_item.data(0, Qt.ItemDataRole.UserRole): 
             ws_name = ws_item.text(0).replace(" *", "")
             if save_WorkSheet(ws_item):
                 unmark_ws(ws_item)
@@ -829,15 +828,15 @@ def create_tree_widget():
     tree_widget.setColumnWidth(4, 300)
     tree_widget.setColumnWidth(5, 20)
     tree_widget.setAlternatingRowColors(True)
-    tree_widget.setTextElideMode(Qt.ElideRight)
-    tree_widget.setSelectionMode(QTreeWidget.ExtendedSelection)
+    tree_widget.setTextElideMode(Qt.TextElideMode.ElideRight)
+    tree_widget.setSelectionMode(QTreeWidget.SelectionMode.ExtendedSelection)
     tree_widget.setStyleSheet("""
         QTreeView {
             selection-background-color: rgba(0, 120, 215, 80);
             selection-color: black;
         }
     """)
-    tree_widget.setFocusPolicy(Qt.ClickFocus)
+    tree_widget.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
     tree_widget.headerItem().setFont(1, font)
     tree_widget.headerItem().setFont(3, font)
     tree_widget.headerItem().setFont(4, font)
@@ -873,8 +872,8 @@ def create_tree_widget():
     tree_widget.setDragEnabled(True)
     tree_widget.setAcceptDrops(True)
     tree_widget.setDropIndicatorShown(True)
-    tree_widget.setDragDropMode(QTreeWidget.InternalMove)
-    tree_widget.invisibleRootItem().setFlags(Qt.ItemIsEnabled)      # root non droppable
+    tree_widget.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
+    tree_widget.invisibleRootItem().setFlags(Qt.ItemFlag.ItemIsEnabled)      # root non droppable
 
     return tree_widget
 
@@ -902,7 +901,7 @@ def update_tree_visuals(tree_widget):
 #========================================================================================
 class FullRowDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
-        brush = index.data(Qt.BackgroundRole)
+        brush = index.data(Qt.ItemDataRole.BackgroundRole)
 
         if isinstance(brush, QBrush) and index.column() == 0 and option.widget:
             r = option.rect
@@ -919,7 +918,7 @@ class CustomTreeWidget(QTreeWidget):
         super().__init__()
         self.clipboard_items = []
         self.setMouseTracking(True)
-        self.viewport().setAttribute(Qt.WA_Hover, True)
+        self.viewport().setAttribute(Qt.WidgetAttribute.WA_Hover, True)
         self.viewport().installEventFilter(self)
 
         self.setItemDelegate(FullRowDelegate(self))
@@ -937,10 +936,10 @@ class CustomTreeWidget(QTreeWidget):
             ul { margin: 0px; }
         """)
         # font-size: 12px;
-        self.custom_tooltip.setWindowFlags(Qt.ToolTip)
+        self.custom_tooltip.setWindowFlags(Qt.WindowType.ToolTip)
         self.custom_tooltip.setFixedWidth(500)
         self.custom_tooltip.setWordWrap(True)
-        self.custom_tooltip.setAlignment(Qt.AlignTop | Qt.AlignLeft)  # Align top-left
+        self.custom_tooltip.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)  # Align top-left
         self.custom_tooltip.hide()
 
     #-----------------------------------
@@ -959,7 +958,7 @@ class CustomTreeWidget(QTreeWidget):
             return
 
         dragged_item = self.currentItem()
-        target_item = self.itemAt(event.pos())
+        target_item = self.itemAt(event.position().toPoint())
 
         # drag only in same WS
         if not target_item or dragged_item.parent() != target_item.parent():
@@ -972,7 +971,7 @@ class CustomTreeWidget(QTreeWidget):
         # Find the position where to move the drag item
         position = target_item.parent().indexOfChild(target_item)
         # Retrieve the data from the dragged item
-        itemDict = dragged_item.data(0, Qt.UserRole)
+        itemDict = dragged_item.data(0, Qt.ItemDataRole.UserRole)
         dragged_item.parent().removeChild(dragged_item)
         # Use the `add_item_tree_widget` function to add the dragged item to the target parent
         add_item_tree_widget(target_item.parent(), itemDict, position, mark=False, update=False)
@@ -991,13 +990,13 @@ class CustomTreeWidget(QTreeWidget):
             return super().eventFilter(obj, event)
 
         """ Event filter to detect mouse hover and display a tooltip """
-        if event.type() == QEvent.HoverMove:
-            pos = event.pos()
+        if event.type() == QEvent.Type.HoverMove:
+            pos = event.position().toPoint()
             item = self.itemAt(pos)
             col = self.columnAt(pos.x())
 
             if item and col == 1:  # Tooltip only for column 1
-                data = item.data(0, Qt.UserRole)
+                data = item.data(0, Qt.ItemDataRole.UserRole)
                 if isinstance(data, dict):
                     tooltip_text = '''<style> 
                                              p,ol { margin: 0px 0px 0px 0px; }
@@ -1017,7 +1016,7 @@ class CustomTreeWidget(QTreeWidget):
             else:
                 self.custom_tooltip.hide()
 
-        elif event.type() in [QEvent.Leave, QEvent.FocusOut]:
+        elif event.type() in [QEvent.Type.Leave, QEvent.Type.FocusOut]:
             self.custom_tooltip.hide()
 
         return super().eventFilter(obj, event)
@@ -1045,7 +1044,7 @@ def get_unique_selected_items(tree_widget):
     unique_items = []
 
     for item in selected_items:
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
         if itemDict['Id'] not in unique_ids:
             unique_ids.add(itemDict['Id'])  # Ajoute l'ID à l'ensemble
@@ -1063,7 +1062,7 @@ def displaySingleSeries_selected_series():
         return
 
     for item in items:
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
         Id_displayWindow = itemDict['Id']
 
@@ -1108,7 +1107,7 @@ def displayMultipleSeries_selected_series(overlaid=True):
     items_selected = []                             # select only series
     seriesDicts = []
     for item in items:
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
         if  itemDict['Type'].startswith('Series'):
             items_selected.append(item)
             seriesDicts.append(itemDict)
@@ -1145,7 +1144,7 @@ def define_filter():
     items = get_unique_selected_items(tree_widget)
     items_selected = []                             # select only series
     for item in items:
-        seriesDict = item.data(0, Qt.UserRole)
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         if  seriesDict['Type'].startswith('Series'): 
             items_selected.append(item)
 
@@ -1177,7 +1176,7 @@ def apply_filter():
     itemSeries_selected = []
     itemFilters_selected = []
     for item in items:
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
         if  itemDict['Type'].startswith('Series'): 
             itemSeries_selected.append(item)
         elif itemDict['Type'] == 'FILTER':
@@ -1198,22 +1197,22 @@ def apply_filter():
         main_window, 
         "Apply filter confirmation",
         "Do you want to apply filter on selected series ?",
-        QMessageBox.Yes | QMessageBox.No,
-        QMessageBox.No
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        QMessageBox.StandardButton.No
     )
     
-    if reply == QMessageBox.No:
+    if reply == QMessageBox.StandardButton.No:
         for item in items:
             colorize_item(item, None)
         tree_widget.clearSelection()
         return
 
     #-------------------------------------------------------------
-    filterDict = itemFilter.data(0, Qt.UserRole)
+    filterDict = itemFilter.data(0, Qt.ItemDataRole.UserRole)
     filter_window_size = int(filterDict['Parameters'])
 
     for item in itemSeries_selected:
-        seriesDict = item.data(0, Qt.UserRole)
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()
 
@@ -1245,7 +1244,7 @@ def define_sample():
     items = get_unique_selected_items(tree_widget)
     items_selected = []                             # select only series
     for item in items:
-        seriesDict = item.data(0, Qt.UserRole)
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         if  seriesDict['Type'].startswith('Series'): 
             items_selected.append(item)
 
@@ -1277,7 +1276,7 @@ def apply_sample():
     itemSeries_selected = []
     itemSamples_selected = []
     for item in items:
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
         if  itemDict['Type'].startswith('Series'): 
             itemSeries_selected.append(item)
         elif itemDict['Type'] == 'SAMPLE':
@@ -1298,21 +1297,21 @@ def apply_sample():
         main_window, 
         "Apply sample confirmation",
         "Do you want to apply sample on selected series ?",
-        QMessageBox.Yes | QMessageBox.No,
-        QMessageBox.No
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        QMessageBox.StandardButton.No
     )
     
-    if reply == QMessageBox.No:
+    if reply == QMessageBox.StandardButton.No:
         for item in items:
             colorize_item(item, None)
         tree_widget.clearSelection()
         return
 
     #-------------------------------------------------------------
-    sampleDict = itemFilter.data(0, Qt.UserRole)
+    sampleDict = itemFilter.data(0, Qt.ItemDataRole.UserRole)
 
     for item in itemSeries_selected:
-        seriesDict = item.data(0, Qt.UserRole)
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()
 
@@ -1375,7 +1374,7 @@ def define_interpolation():
     itemSeries_selected = []
     itemInterpolations_selected = []
     for item in items:
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
         if  itemDict['Type'].startswith('Series'): 
             itemSeries_selected.append(item)
         elif itemDict['Type'] == 'INTERPOLATION':
@@ -1388,7 +1387,7 @@ def define_interpolation():
     #-------------------------------------------------------------
     if len(itemInterpolations_selected) == 1:
         itemInterpolation = itemInterpolations_selected[0]
-        itemDict = itemInterpolation.data(0, Qt.UserRole)
+        itemDict = itemInterpolation.data(0, Qt.ItemDataRole.UserRole)
         Id_interpolationWindow = itemDict['Id']
     else:
         itemInterpolation = None
@@ -1419,7 +1418,7 @@ def apply_interpolation(interpolationMode):
     itemSeries_selected = []
     itemInterpolations_selected = []
     for item in items:
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
         if  itemDict['Type'].startswith('Series'): 
             itemSeries_selected.append(item)
         elif itemDict['Type'] == 'INTERPOLATION':
@@ -1440,24 +1439,24 @@ def apply_interpolation(interpolationMode):
         main_window, 
         "Apply interpolation confirmation",
         "Do you want to apply interpolation on selected series ?",
-        QMessageBox.Yes | QMessageBox.No,
-        QMessageBox.No
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        QMessageBox.StandardButton.No
     )
     
-    if reply == QMessageBox.No:
+    if reply == QMessageBox.StandardButton.No:
         for item in items:
             colorize_item(item, None)
         tree_widget.clearSelection()
         return
 
     #-------------------------------------------------------------
-    interpolationDict = itemInterpolation.data(0, Qt.UserRole)
+    interpolationDict = itemInterpolation.data(0, Qt.ItemDataRole.UserRole)
     X1Coords = interpolationDict['X1Coords']
     X2Coords = interpolationDict['X2Coords']
     f_1to2, f_2to1 = defineInterpolationWindow.defineInterpolationFunctions(X1Coords, X2Coords, interpolationMode=interpolationMode)
 
     for item in itemSeries_selected:
-        seriesDict = item.data(0, Qt.UserRole)
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()
 
@@ -1527,7 +1526,7 @@ def move_WorkSheet(direction):
             children_data = []
             for i in range(selected_item.childCount()):
                 child = selected_item.child(i)
-                itemDict = child.data(0, Qt.UserRole)  # Get the data for the child
+                itemDict = child.data(0, Qt.ItemDataRole.UserRole)  # Get the data for the child
                 children_data.append(itemDict)
 
             # Remove all children to ensure a fresh start
@@ -1557,7 +1556,7 @@ def show_context_menu(point):
         down_action = context_menu.addAction("Down")
         context_menu.addSeparator()
         delete_action = context_menu.addAction("Remove")
-        action = context_menu.exec_(tree_widget.mapToGlobal(point))
+        action = context_menu.exec(tree_widget.mapToGlobal(point))
         if action == delete_action:
             delete_parent_node(item)
         elif action == up_action:
@@ -1569,16 +1568,16 @@ def show_context_menu(point):
 def count_unsaved_ws():
     count = 0
     for ws_item in tree_widget.get_parents():
-        if ws_item.data(0, Qt.UserRole):
+        if ws_item.data(0, Qt.ItemDataRole.UserRole):
             count += 1
     return count
 
 #========================================================================================
 def is_item_in_ws(ws_item, child_item):
-    child_itemDict = child_item.data(0, Qt.UserRole)
+    child_itemDict = child_item.data(0, Qt.ItemDataRole.UserRole)
     for i in range(ws_item.childCount()):
         item = ws_item.child(i)
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
         if child_itemDict['Id'] == itemDict['Id']:
             return True
     return False
@@ -1586,7 +1585,7 @@ def is_item_in_ws(ws_item, child_item):
 #========================================================================================
 def mark_ws(ws_item):
     tree_widget.blockSignals(True)
-    ws_item.setData(0, Qt.UserRole, True)  # Mark ws_item as modified
+    ws_item.setData(0, Qt.ItemDataRole.UserRole, True)  # Mark ws_item as modified
     if not ws_item.text(0).endswith(' *'):
         ws_item.setText(0, f"{ws_item.text(0)} *") 
     tree_widget.blockSignals(False)
@@ -1594,14 +1593,14 @@ def mark_ws(ws_item):
 #========================================================================================
 def unmark_ws(ws_item):
     tree_widget.blockSignals(True)
-    ws_item.setData(0, Qt.UserRole, False)  # Reset modification state
+    ws_item.setData(0, Qt.ItemDataRole.UserRole, False)  # Reset modification state
     ws_item.setText(0, ws_item.text(0).replace(" *", ""))  # Remove visual cue
     tree_widget.blockSignals(False)
     
 #========================================================================================
 def remark_ws(ws_item):
     tree_widget.blockSignals(True)
-    if ws_item.data(0, Qt.UserRole) and not ws_item.text(0).endswith(' *'):
+    if ws_item.data(0, Qt.ItemDataRole.UserRole) and not ws_item.text(0).endswith(' *'):
         ws_item.setText(0, f"{ws_item.text(0)} *") 
     tree_widget.blockSignals(False)
 
@@ -1634,7 +1633,7 @@ def paste_items():
         if is_item_in_ws(ws_item, item):
             main_window.statusBar().showMessage('Item(s) already in', 5000)
             continue
-        itemDict = item.data(0, Qt.UserRole)
+        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
         add_item_tree_widget(ws_item, itemDict, position+1, update=False)
 
 #========================================================================================
@@ -1645,22 +1644,22 @@ def on_item_double_clicked(item, column):
     if not item.parent(): item_isWS = True
     else: item_isWS = False
 
-    itemDict = item.data(0, Qt.UserRole)
+    itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
     if column == 0:
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
         if item_isWS:
             item.setText(0, item.text(0).replace(" *", ""))  # Remove visual cue
     elif column == 1:
         tree_widget.custom_tooltip.hide()
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
     elif column == 3 and (itemDict['Type'].startswith('Series') or
                           itemDict['Type'] == "INTERPOLATION"): 
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
     elif column == 4 and itemDict['Type'].startswith('Series'):
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
     else:
-        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
     tree_widget.blockSignals(False)
 
@@ -1681,15 +1680,15 @@ def show_dialog(title, fileHTML, width, height):
     main_layout.addWidget(text_browser)
     
     button_layout = QHBoxLayout()
-    button_layout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+    button_layout.addItem(QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
     ok_button = QPushButton('OK')
     ok_button.clicked.connect(dialog.accept)
-    icon = QApplication.style().standardIcon(QStyle.SP_DialogApplyButton)
+    icon = QApplication.style().standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton)
     ok_button.setIcon(icon)
     button_layout.addWidget(ok_button)
     main_layout.addLayout(button_layout)
 
-    dialog.exec_()
+    dialog.exec()
 
 #========================================================================================
 def exit_confirm(parent):
@@ -1726,9 +1725,11 @@ def exit_confirm(parent):
 
 #========================================================================================
 class MainWindow(QMainWindow):
+
     def closeEvent(self, event):
         if exit_confirm(self):
             event.accept()
+            QApplication.instance().quit()
         else:
             event.ignore()
 
@@ -1778,7 +1779,7 @@ main_widget = QWidget()
 layout = QVBoxLayout()
 
 tree_widget = create_tree_widget()
-tree_widget.setContextMenuPolicy(Qt.CustomContextMenu)
+tree_widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 tree_widget.customContextMenuRequested.connect(show_context_menu)
 tree_widget.itemChanged.connect(on_item_changed)
 tree_widget.itemDoubleClicked.connect(on_item_double_clicked)
@@ -1948,4 +1949,4 @@ main_window.setStatusBar(QStatusBar())
 main_window.statusBar().showMessage('Application ready', 5000)
 main_window.show()
 
-sys.exit(app.exec_())
+sys.exit(app.exec())

@@ -5,7 +5,7 @@ import numpy as np
 
 from matplotlib import cm
 
-from PyQt5.QtGui import QColor 
+from PyQt6.QtGui import QColor 
 
 #========================================================================================
 def generate_Id():

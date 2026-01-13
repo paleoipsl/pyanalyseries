@@ -1,11 +1,11 @@
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 import matplotlib
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 from .misc import *
 from .interactivePlot import interactivePlot
@@ -67,7 +67,7 @@ class defineSampleWindow(QWidget):
         font = QFont("Courier New")
         self.series_combo.setFont(font)
         for n,item in enumerate(self.items):
-            seriesDict = item.data(0, Qt.UserRole)
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
             XName = seriesDict['X']
             YName = seriesDict['Y']
             Id = seriesDict['Id']
@@ -115,7 +115,7 @@ class defineSampleWindow(QWidget):
 
         if self.itemRef:
             self.xvalues_radio.setChecked(True)
-            self.seriesRefDict = self.itemRef.data(0, Qt.UserRole)
+            self.seriesRefDict = self.itemRef.data(0, Qt.ItemDataRole.UserRole)
             self.seriesRef_XName = self.seriesRefDict['X']
             self.seriesRef_YName = self.seriesRefDict['Y']
             self.seriesRef_Id = self.seriesRefDict['Id']
@@ -184,7 +184,7 @@ class defineSampleWindow(QWidget):
         style = "padding: 4px 12px;"
         self.saveSample_button = QPushButton("Save sample", self)
         self.saveSample_button.setStyleSheet(style)
-        self.saveSample_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.saveSample_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.saveSampleAndSeriesSampled_button = QPushButton("Save sample and series sampled", self)
         self.saveSampleAndSeriesSampled_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
@@ -252,7 +252,7 @@ class defineSampleWindow(QWidget):
         self.item = self.items[n]
         self.itemRef = self.items[n^1]
          
-        self.seriesRefDict = self.itemRef.data(0, Qt.UserRole)
+        self.seriesRefDict = self.itemRef.data(0, Qt.ItemDataRole.UserRole)
         self.seriesRef_XName = self.seriesRefDict['X']
         self.seriesRef_YName = self.seriesRefDict['Y']
         self.seriesRef_Id = self.seriesRefDict['Id']
@@ -266,14 +266,14 @@ class defineSampleWindow(QWidget):
 
         self.interactive_plot.reset()
 
-        self.seriesDict = self.item.data(0, Qt.UserRole)
+        self.seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
         self.xName = self.seriesDict['X']
         self.yName = self.seriesDict['Y']
         self.series = self.seriesDict['Series']
         self.series = self.series.groupby(self.series.index).mean()
 
         if self.sample_from_xvalues:
-            self.seriesRefDict = self.itemRef.data(0, Qt.UserRole)
+            self.seriesRefDict = self.itemRef.data(0, Qt.ItemDataRole.UserRole)
             self.seriesRef = self.seriesRefDict['Series']
             self.sample_index = self.seriesRef.index
         else:
@@ -511,7 +511,7 @@ if __name__ == "__main__":
             'Color': 'darkorange',
             'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item1 = QTreeWidgetItem()
-    item1.setData(0, Qt.UserRole, series1Dict)
+    item1.setData(0, Qt.ItemDataRole.UserRole, series1Dict)
 
     #---------------------------------
     series2 = pd.Series(y2, index=x2)
@@ -520,7 +520,7 @@ if __name__ == "__main__":
             'Color': 'darkorange',
             'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item2 = QTreeWidgetItem()
-    item2.setData(0, Qt.UserRole, series2Dict)
+    item2.setData(0, Qt.ItemDataRole.UserRole, series2Dict)
 
     #---------------------------------
     items = []
@@ -533,5 +533,5 @@ if __name__ == "__main__":
     open_sampleWindows[Id_sampleWindow] = sampleWindow
     sampleWindow.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 

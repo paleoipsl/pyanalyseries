@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 import sys
 import datetime
@@ -8,9 +8,9 @@ import pandas as pd
 import numpy as np
 
 import matplotlib
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 from .misc import *
 from .interactivePlot import interactivePlot
@@ -186,7 +186,7 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.ref.setFixedWidth(400)
         self.ref.setWordWrap(True)
         self.ref.setOpenExternalLinks(True)
-        self.ref.setTextInteractionFlags(Qt.TextSelectableByMouse | Qt.TextBrowserInteraction)
+        self.ref.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse | Qt.TextInteractionFlag.TextBrowserInteraction)
 
         self.range_Laskar2010 = 'From -249999 to 0 kyears'
         self.range_Laskar2004 = 'From -101000 to 21000 kyears'
@@ -197,7 +197,7 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.range.setText(f"Range : <br><br>{self.range_Laskar2004}")
         self.range.setFixedWidth(400)
         self.range.setWordWrap(True)
-        self.range.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.range.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
 
         col2_layout.addWidget(self.ref)
         col2_layout.addSpacing(50)
@@ -388,7 +388,7 @@ class defineInsolationAstroSeriesWindow(QWidget):
 
         def reinit_plotType_dropdow():
             for i in range(self.plotType_dropdown.count()):
-                self.plotType_dropdown.setItemData(i, Qt.ItemIsEnabled | Qt.ItemIsSelectable, Qt.UserRole - 1)
+                self.plotType_dropdown.setItemData(i, Qt.ItemIsEnabled | Qt.ItemIsSelectable, Qt.ItemDataRole.UserRole - 1)
 
         self.solutionAstro = self.solutionAstro_dropdown.currentText()
 
@@ -655,5 +655,5 @@ if __name__ == "__main__":
     open_insolationAstroSeriesWindow[Id_insolationAstroSeriesWindow] = defineInsolationAstroSeriesWindow
     insolationAstroSeriesWindow.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 

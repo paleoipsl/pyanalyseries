@@ -1,3 +1,8 @@
+ * 6.00 
+   * Fixed remaining windows not closing on application exit.
+   * Add Pyleoclim
+   * New conda environment
+   * PyQt5 to PyQt6
  * 5.45
    * Typo fix in defineSinusoidalSeriesWindow
  * 5.44

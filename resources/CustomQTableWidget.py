@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QBrush, QColor
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QBrush, QColor
 
 #===================================================================================
 class CustomQTableWidget(QTableWidget):
@@ -127,5 +127,5 @@ if __name__ == "__main__":
             table.setItem(row, col, QTableWidgetItem(f"R{row}C{col}"))
 
     table.show()
-    app.exec_()
+    app.exec()
 

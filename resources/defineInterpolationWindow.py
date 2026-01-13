@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 from .misc import *
 from .interactivePlot import interactivePlot
@@ -12,9 +12,9 @@ import numpy as np
 import pandas as pd
 
 import matplotlib
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.patches import ConnectionPatch
 
 from scipy import interpolate
@@ -122,7 +122,7 @@ class defineInterpolationWindow(QWidget):
         self.selectSeriesRef_combo.setFont(font)
 
         for n,item in enumerate(self.items):
-            seriesDict = item.data(0, Qt.UserRole)
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
             XName = seriesDict['X']
             YName = seriesDict['Y']
             Id = seriesDict['Id']
@@ -147,7 +147,7 @@ class defineInterpolationWindow(QWidget):
         self.selectSeriesDist_combo.setFont(font)
 
         for n,item in enumerate(self.items):
-            seriesDict = item.data(0, Qt.UserRole)
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
             XName = seriesDict['X']
             YName = seriesDict['Y']
             Id = seriesDict['Id']
@@ -183,7 +183,7 @@ class defineInterpolationWindow(QWidget):
         style = "padding: 4px 12px; text-align: left;"
         self.saveInterpolation_button = QPushButton("Save interpolation", self)
         self.saveInterpolation_button.setStyleSheet(style)
-        self.saveInterpolation_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.saveInterpolation_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.saveInterpolationAndSeriesInterpolated_button = QPushButton("Save interpolation and series interpolated", self)
         self.saveInterpolationAndSeriesInterpolated_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
@@ -204,8 +204,8 @@ class defineInterpolationWindow(QWidget):
         saveCloseLine_layout.addWidget(self.close_button)
         saveClose_layout.addLayout(saveCloseLine_layout)
         control_layout3.addLayout(saveClose_layout)
-        control_layout3.setAlignment(buttonsGroup1_layout, Qt.AlignBottom)
-        #control_layout3.setAlignment(saveClose_layout, Qt.AlignBottom)
+        control_layout3.setAlignment(buttonsGroup1_layout, Qt.AlignmentFlag.AlignBottom)
+        #control_layout3.setAlignment(saveClose_layout, Qt.AlignmentFlag.AlignBottom)
 
         main_layout.addLayout(control_layout3)
 
@@ -299,7 +299,7 @@ class defineInterpolationWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def readINTERPOLATION(self):
 
-        self.interpolationDict = self.itemINTERPOLATION.data(0, Qt.UserRole)
+        self.interpolationDict = self.itemINTERPOLATION.data(0, Qt.ItemDataRole.UserRole)
         self.X1Coords = self.interpolationDict['X1Coords']
         self.X2Coords = self.interpolationDict['X2Coords']
 
@@ -424,7 +424,7 @@ class defineInterpolationWindow(QWidget):
         #----------------------------------------------------
         self.itemRef = self.items[self.selectSeriesRef_combo.currentIndex()]
 
-        self.series1Dict = self.itemRef.data(0, Qt.UserRole)
+        self.series1Dict = self.itemRef.data(0, Qt.ItemDataRole.UserRole)
         self.X1Name = self.series1Dict['X']
         self.Y1Name = self.series1Dict['Y']
         self.series1 = self.series1Dict['Series']
@@ -449,7 +449,7 @@ class defineInterpolationWindow(QWidget):
         #----------------------------------------------------
         self.itemDist = self.items[self.selectSeriesDist_combo.currentIndex()]
 
-        self.series2Dict = self.itemDist.data(0, Qt.UserRole)
+        self.series2Dict = self.itemDist.data(0, Qt.ItemDataRole.UserRole)
         self.X2Name = self.series2Dict['X']
         self.Y2Name = self.series2Dict['Y']
         self.series2 = self.series2Dict['Series']
@@ -627,11 +627,11 @@ class defineInterpolationWindow(QWidget):
                 self, 
                 'Confirmation', 
                 'Are you sure you want to delete all pointers ?', 
-                QMessageBox.Yes | QMessageBox.No, 
-                QMessageBox.No
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, 
+                QMessageBox.StandardButton.No
             )
 
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 self.artistsList_LastId = None
                 self.removeAddLastConnect_button.setEnabled(False)
                 self.removeAddLastConnect_button.setText("Remove last connection")
@@ -918,21 +918,21 @@ if __name__ == "__main__":
             'Color': 'darkorange',
             'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item1 = QTreeWidgetItem()
-    item1.setData(0, Qt.UserRole, series1Dict)
+    item1.setData(0, Qt.ItemDataRole.UserRole, series1Dict)
 
     series2 = pd.Series(y2, index=x)
     series2Dict = {'Id': 'abcd', 'X': 'x2Name', 'Y': 'y2Name', 'Series': series2, 
             'Color': 'blue',
             'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item2 = QTreeWidgetItem()
-    item2.setData(0, Qt.UserRole, series2Dict)
+    item2.setData(0, Qt.ItemDataRole.UserRole, series2Dict)
 
     series3 = pd.Series(y3, index=x)
     series3Dict = {'Id': 'abcd', 'X': 'x3Name', 'Y': 'y3Name', 'Series': series3, 
             'Color': 'green',
             'Date': '', 'Comment': 'A text', 'History': 'command1 ; command2'}
     item3 = QTreeWidgetItem()
-    item3.setData(0, Qt.UserRole, series3Dict)
+    item3.setData(0, Qt.ItemDataRole.UserRole, series3Dict)
 
     open_interpolationWindows = {}
     Id_interpolationWindow = '1234'
@@ -941,4 +941,4 @@ if __name__ == "__main__":
     open_interpolationWindows[Id_interpolationWindow] = interpolationWindow
     interpolationWindow.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

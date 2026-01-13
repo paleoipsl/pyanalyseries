@@ -1,19 +1,19 @@
-from PyQt5.QtWidgets import * 
-from PyQt5.QtCore import * 
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import * 
+from PyQt6.QtCore import * 
+from PyQt6.QtGui import *
 
 import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.lines import Line2D
 
 from .interactivePlot import interactivePlot
 
 #=========================================================================================
 import matplotlib
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 
 #=========================================================================================
 for key in plt.rcParams.keys():
@@ -32,7 +32,7 @@ class displayTogetherSeriesWindow(QWidget):
 
         self.seriesWidth = 0.8
 
-        seriesDict = self.items[0].data(0, Qt.UserRole)
+        seriesDict = self.items[0].data(0, Qt.ItemDataRole.UserRole)
         self.xName = seriesDict['X']
         self.yName = seriesDict['Y']
         series = seriesDict['Series']
@@ -112,7 +112,7 @@ class displayTogetherSeriesWindow(QWidget):
         ax.autoscale()
 
         for item in self.items:
-            seriesDict = item.data(0, Qt.UserRole)
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
             series = seriesDict['Series']
             series = series.groupby(series.index).mean()
             seriesColor = seriesDict['Color']
@@ -144,7 +144,7 @@ class displayTogetherSeriesWindow(QWidget):
 
         #---------------------------------
         item = self.items[0]
-        seriesDict = item.data(0, Qt.UserRole)
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()
         seriesColor = seriesDict['Color']
@@ -167,7 +167,7 @@ class displayTogetherSeriesWindow(QWidget):
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
-            seriesDict = item.data(0, Qt.UserRole)
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
             series = seriesDict['Series']
             series = series.groupby(series.index).mean()
             seriesColor = seriesDict['Color']
@@ -220,7 +220,7 @@ class displayTogetherSeriesWindow(QWidget):
 
         #---------------------------------
         item = self.items[0]
-        seriesDict = item.data(0, Qt.UserRole)
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()
         seriesColor = seriesDict['Color']
@@ -243,7 +243,7 @@ class displayTogetherSeriesWindow(QWidget):
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
-            seriesDict = item.data(0, Qt.UserRole)
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
             series = seriesDict['Series']
             series = series.groupby(series.index).mean()
             seriesColor = seriesDict['Color']
@@ -316,7 +316,7 @@ if __name__ == "__main__":
         'History': 'command1 ; command2'
     }
     item1 = QTreeWidgetItem()
-    item1.setData(0, Qt.UserRole, series1Dict)
+    item1.setData(0, Qt.ItemDataRole.UserRole, series1Dict)
 
     x2 = np.linspace(5, 15, 100)
     y2 = np.cos(x2)*4
@@ -333,7 +333,7 @@ if __name__ == "__main__":
         'History': 'command1 ; command2'
     }
     item2 = QTreeWidgetItem()
-    item2.setData(0, Qt.UserRole, series2Dict)
+    item2.setData(0, Qt.ItemDataRole.UserRole, series2Dict)
 
     open_displayWindows = {}
     Id_displayWindow = tuple([series1Dict['Id'], series2Dict['Id']])
@@ -341,4 +341,4 @@ if __name__ == "__main__":
     open_displayWindows[Id_displayWindow] = displayWindow
     displayWindow.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
