@@ -60,7 +60,7 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
  * `conda env list`
  * `conda activate env_PyAnalySeries`
 
->  ***BREAKING CHANGE – CONDA ENVIRONMENT RESET REQUIRED**
+>  🚨 **BREAKING CHANGE – CONDA ENVIRONMENT RESET REQUIRED**
 >
 > The application now uses **PyQt6 (Qt6)** and **Pyleoclim**.
 > The existing Conda environment created with **PyQt5** is **not compatible**.
