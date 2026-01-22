@@ -1,3 +1,5 @@
+ * 6.01
+   * Fix PyQt6 breaking change: update key and modifier enums (Qt.Key.Key_C, Qt.KeyboardModifier.ControlModifier).
  * 6.00 
    * Fixed remaining windows not closing on application exit.
    * Add Pyleoclim
