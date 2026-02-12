@@ -2,6 +2,7 @@
 import uuid
 import random
 import numpy as np
+import pandas as pd
 
 from matplotlib import cm
 
@@ -34,7 +35,15 @@ def append_to_htmlText(text, new_value):
 
 #========================================================================================
 def addNanList(aList):
-    return [np.nan if x == '' else x for x in aList]        # Handle missing values
+    # replace empty strings by NaN
+    out = [np.nan if x == '' else x for x in aList]
+
+    # trim trailing NaNs
+    for i in range(len(out) - 1, -1, -1):
+        if not pd.isna(out[i]):
+            return out[:i + 1]
+
+    return []
 
 #========================================================================================
 def cleanSpaceList(aList):

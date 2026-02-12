@@ -53,7 +53,7 @@ class displaySingleSeriesWindow(QWidget):
         self.data_table.setRowCount(len(series))
         self.data_table.setColumnCount(2)
         self.data_table.setHorizontalHeaderLabels([self.xName, self.yName])
-        duplicates = series.index.duplicated()
+        replicates = series.index.duplicated()
         missing_values = series.isna().to_numpy()
         series = series.sort_index()
 
@@ -64,7 +64,7 @@ class displaySingleSeriesWindow(QWidget):
                 base = QColor('peachpuff')
                 alt = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
                 background_color = blend_colors(base, alt, ratio=0.6)
-            elif duplicates[i]:
+            elif replicates[i]:
                 base = QColor('lemonchiffon')
                 alt = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
                 background_color = blend_colors(base, alt, ratio=0.6)
@@ -82,16 +82,22 @@ class displaySingleSeriesWindow(QWidget):
         stats_tab = QWidget()
         stats_layout = QVBoxLayout()
         stats_table = CustomQTableWidget()
-        stats_table.setRowCount(6)
+        stats_table.setRowCount(12)
         stats_table.setColumnCount(2)
         stats_table.setHorizontalHeaderLabels(["Stat", "Value"])
         stats = {
             "Number of points": (len(series), 'd'),
-            "Number of duplicates": ((series.index.value_counts() > 1).sum(), 'd'),
+            "Number of replicates": ((series.index.value_counts() > 1).sum(), 'd'),
             "Number of missing": (series.isna().sum(), 'd'),
             "Mean": (series.mean(), '.2f'),
-            "Maximum": (series.max(), '.2f'),
+            "Median": (series.median(), '.2f'),
             "Minimum": (series.min(), '.2f'),
+            "Maximum": (series.max(), '.2f'),
+            "Standard deviation": (series.std(), '.2f'),
+            "Quantile 25%": (series.quantile(0.25), '.2f'),
+            "Quantile 50%": (series.quantile(0.50), '.2f'),
+            "Quantile 75%": (series.quantile(0.75), '.2f'),
+            "Inter quartile range (IQR)": (series.quantile(0.75) - series.quantile(0.25), '.2f'),
         }
         for i, (key, value) in enumerate(stats.items()):
             stats_table.setItem(i, 0, QTableWidgetItem(key))
