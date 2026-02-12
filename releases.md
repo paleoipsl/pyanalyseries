@@ -1,3 +1,9 @@
+ * 6.03
+   * Keep replicates in interpolation, filter
+ * 6.02
+   * Rename replicates formerly referred to as duplicates in displaySingleSerieWindow
+   * Add quantiles and other stats in displaySingleSerieWindow
+   * Fix reading WS with trim trailing NaNs when interpolation
  * 6.01
    * Fix PyQt6 breaking change: update key and modifier enums (Qt.Key.Key_C, Qt.KeyboardModifier.ControlModifier).
  * 6.00 

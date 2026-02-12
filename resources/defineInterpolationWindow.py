@@ -858,10 +858,16 @@ class defineInterpolationWindow(QWidget):
 
         f_1to2, f_2to1 = self.defineInterpolationFunctions(self.X1Coords, self.X2Coords, interpolationMode=self.interpolationMode)
 
+        #series_interpolated = pd.Series(self.Y2, index=f_2to1(self.X2))
+
+        # to keep replicates
+        series2 = self.series2Dict['Series']
+        series_interpolated = pd.Series(series2.values, index=f_2to1(series2.index))
+
         interpolated_Id = generate_Id()
         interpolated_seriesDict = self.series2Dict | {'Id': interpolated_Id, 
             'Type': 'Series interpolated', 
-            'Series': pd.Series(self.Y2, index=f_2to1(self.X2)),
+            'Series': series_interpolated,
             'InterpolationMode': self.interpolationMode,
             'X': self.X1Name,
             'XOriginal': self.X2Name,

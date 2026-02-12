@@ -213,10 +213,17 @@ class defineFilterWindow(QWidget):
     def saveFilterAndSeriesFiltered(self):
         filter_Id = self.saveFilter() 
 
+        #series_filtered = self.moving_average(self.series, self.window_size)
+
+        # to keep replicates
+        series_XMean = self.moving_average(self.series, self.window_size)
+        series = self.seriesDict['Series']
+        series_filtered = series_XMean.reindex(series.index)
+
         filtered_Id = generate_Id()
         filtered_seriesDict = self.seriesDict | {'Id': filtered_Id,
             'Type': 'Series filtered', 
-            'Series': self.moving_average(self.series, self.window_size),
+            'Series': series_filtered,
             'Color': generate_color(exclude_color=self.seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': append_to_htmlText(self.seriesDict['History'], 

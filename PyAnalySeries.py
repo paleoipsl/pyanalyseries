@@ -54,7 +54,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.00'
+version = 'v6.03'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -1214,12 +1214,14 @@ def apply_filter():
     for item in itemSeries_selected:
         seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
-        series = series.groupby(series.index).mean()
+
+        series_XMean = defineFilterWindow.moving_average(series, window_size=filter_window_size),
+        series_filtered = series_XMean.reindex(series.index)
 
         filtered_Id = generate_Id()
         filtered_seriesDict = seriesDict | {'Id': filtered_Id,
             'Type': 'Series filtered',
-            'Series': defineFilterWindow.moving_average(series, window_size=filter_window_size),
+            'Series': series_filtered,
             'Color': generate_color(exclude_color=seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': append_to_htmlText(seriesDict['History'], 
@@ -1458,12 +1460,16 @@ def apply_interpolation(interpolationMode):
     for item in itemSeries_selected:
         seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
-        series = series.groupby(series.index).mean()
+        
+        #series = series.groupby(series.index).mean()
+
+        # to keep replicates
+        series_interpolated = pd.Series(series.values, index=f_2to1(series.index))
 
         interpolated_Id = generate_Id()
         interpolated_seriesDict = seriesDict | {'Id': interpolated_Id,
             'Type': 'Series interpolated',
-            'Series': pd.Series(series.values, index=f_2to1(series.index)),
+            'Series': series_interpolated,
             'InterpolationMode': interpolationMode,
             'X': interpolationDict['X1Name'], 
             'XOriginal': seriesDict['X'], 
@@ -1725,7 +1731,6 @@ def exit_confirm(parent):
 
 #========================================================================================
 class MainWindow(QMainWindow):
-
     def closeEvent(self, event):
         if exit_confirm(self):
             event.accept()
