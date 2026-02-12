@@ -388,7 +388,7 @@ class defineInsolationAstroSeriesWindow(QWidget):
 
         def reinit_plotType_dropdow():
             for i in range(self.plotType_dropdown.count()):
-                self.plotType_dropdown.setItemData(i, Qt.ItemIsEnabled | Qt.ItemIsSelectable, Qt.ItemDataRole.UserRole - 1)
+                self.plotType_dropdown.setItemData(i, Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable, Qt.ItemDataRole.UserRole - 1)
 
         self.solutionAstro = self.solutionAstro_dropdown.currentText()
 
@@ -400,9 +400,9 @@ class defineInsolationAstroSeriesWindow(QWidget):
         if self.solutionAstro.startswith("Laskar2010"):
             for i in range(self.plotType_dropdown.count()):
                 if self.plotType_dropdown.itemText(i) != "Eccentricity":
-                    self.plotType_dropdown.model().item(i).setFlags(Qt.NoItemFlags)
+                    self.plotType_dropdown.model().item(i).setFlags(Qt.ItemFlag.NoItemFlags)
                 else:
-                    self.plotType_dropdown.model().item(i).setFlags(Qt.ItemIsEnabled)
+                    self.plotType_dropdown.model().item(i).setFlags(Qt.ItemFlag.ItemIsEnabled)
             self.plotType_dropdown.setCurrentText("Eccentricity")
             lim1 = -249999
             lim2 = 0
