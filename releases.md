@@ -1,3 +1,5 @@
+ * 6.04
+   * Implement per-plot horizontal axis grouping in displayStackedSeriesWindow
  * 6.03
    * Keep replicates in interpolation, filter
  * 6.02

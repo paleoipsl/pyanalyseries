@@ -38,7 +38,6 @@ class displayStackedSeriesWindow(QWidget):
         
         #----------------------------------------------
         self.interactive_plot = interactivePlot(rows=len(items), cols=1)
-        self.myplot()
         
         main_layout = QVBoxLayout()
 
@@ -46,34 +45,139 @@ class displayStackedSeriesWindow(QWidget):
         main_layout.addWidget(canvas)
 
         #----------------------------------------------
-        button_layout = QHBoxLayout()
+        # Grouping per plot
+        self.plot_to_group = {}  # {plot_index: group_id}
+        self._init_default_plot_groups()
+
+        controls_layout = QHBoxLayout()
 
         sharex_label = QLabel('Shared horizontal axis :')
         self.sharex_cb = QCheckBox()
         self.sharex_cb.setChecked(self.sharex)
 
-        self.close_button = QPushButton("Close", self)
+        self.axis_label = QLabel('Axis :')
+        self.axis_cb = QComboBox()
+        self.axis_cb.setFixedWidth(170)
+        self.axis_cb.view().setTextElideMode(Qt.TextElideMode.ElideRight)
+        self._fill_axis_cb_with_plots()
 
-        button_layout.addStretch()
-        button_layout.addWidget(sharex_label)
-        button_layout.addWidget(self.sharex_cb)
-        button_layout.addSpacing(50)
-        button_layout.addWidget(self.close_button)
+        self.in_group_label = QLabel('in group :')
+        self.group_cb = QComboBox()
+        self._fill_group_numbers()
 
-        main_layout.addLayout(button_layout)
+        self.reset_groups_btn = QPushButton('Reset default')
+        self.close_button = QPushButton('Close', self)
 
+        controls_layout.addWidget(sharex_label)
+        controls_layout.addWidget(self.sharex_cb)
+        controls_layout.addSpacing(20)
+        controls_layout.addWidget(self.axis_label)
+        controls_layout.addWidget(self.axis_cb)
+        controls_layout.addSpacing(10)
+        controls_layout.addWidget(self.in_group_label)
+        controls_layout.addWidget(self.group_cb)
+        controls_layout.addSpacing(10)
+        controls_layout.addWidget(self.reset_groups_btn)
+        controls_layout.addStretch()
+        controls_layout.addWidget(self.close_button)
+
+        main_layout.addLayout(controls_layout)
+
+        # signals
         self.sharex_cb.stateChanged.connect(self.update)
+        self.sharex_cb.toggled.connect(self._on_sharex_toggled)
+        self.axis_cb.currentIndexChanged.connect(self._sync_group_cb_with_plot)
+        self.group_cb.currentIndexChanged.connect(self._assign_plot_to_group_from_ui)
+        self.reset_groups_btn.clicked.connect(self._reset_default_groups)
         self.close_button.clicked.connect(self.close)
 
+        self._sync_group_cb_with_plot()
+        self._on_sharex_toggled(self.sharex_cb.isChecked())
         self.setLayout(main_layout)
 
         #----------------------------------------------
         exit_shortcut = QShortcut('q', self)
         exit_shortcut.activated.connect(self.close)
 
+        self.myplot()
         self.interactive_plot.fig.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
+    def _fill_axis_cb_with_plots(self):
+        """Combo shows each plot, even if X axis name is identical."""
+        self.axis_cb.blockSignals(True)
+        self.axis_cb.clear()
+        for n, item in enumerate(self.items):
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
+            xname = seriesDict.get('X', '')
+            self.axis_cb.addItem(f"{n+1} : {xname}", n)  # data = plot index
+        self.axis_cb.blockSignals(False)
+
+    #---------------------------------------------------------------------------------------------
+    def _fill_group_numbers(self):
+        import string
+        self.group_cb.blockSignals(True)
+        self.group_cb.clear()
+    
+        letters = list(string.ascii_lowercase)
+        n = len(self.items)
+    
+        for k in range(n):
+            label = letters[k] if k < len(letters) else f"g{k+1}"
+            self.group_cb.addItem(label, k+1)  # backend still int
+    
+        self.group_cb.blockSignals(False)
+
+    #---------------------------------------------------------------------------------------------
+    def _init_default_plot_groups(self):
+        """Default behavior: same X axis name => same group."""
+        self.plot_to_group = {}
+        xname_to_gid = {}
+        next_gid = 1
+        for n, item in enumerate(self.items):
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
+            xname = seriesDict.get('X', '')
+            if xname not in xname_to_gid:
+                xname_to_gid[xname] = next_gid
+                next_gid += 1
+            self.plot_to_group[n] = xname_to_gid[xname]
+
+    #---------------------------------------------------------------------------------------------
+    def _reset_default_groups(self):
+        self._init_default_plot_groups()
+        self._sync_group_cb_with_plot()
+        self.myplot()
+
+    #---------------------------------------------------------------------------------------------
+    def _sync_group_cb_with_plot(self):
+        plot_index = self.axis_cb.currentData()
+        if plot_index is None:
+            return
+        gid = int(self.plot_to_group.get(int(plot_index), 1))
+        for i in range(self.group_cb.count()):
+            if int(self.group_cb.itemData(i)) == gid:
+                self.group_cb.blockSignals(True)
+                self.group_cb.setCurrentIndex(i)
+                self.group_cb.blockSignals(False)
+                break
+
+    #---------------------------------------------------------------------------------------------
+    def _assign_plot_to_group_from_ui(self):
+        plot_index = self.axis_cb.currentData()
+        gid = self.group_cb.currentData()
+        if plot_index is None or gid is None:
+            return
+        self.plot_to_group[int(plot_index)] = int(gid)
+        self.myplot()
+
+    #---------------------------------------------------------------------------------------------
+    def _on_sharex_toggled(self, checked: bool):
+        # Disable/enable grouping UI when sharex is off
+        self.axis_label.setEnabled(checked)
+        self.axis_cb.setEnabled(checked)
+        self.in_group_label.setEnabled(checked)
+        self.group_cb.setEnabled(checked)
+        self.reset_groups_btn.setEnabled(checked)
     def update(self):
 
         self.sharex = self.sharex_cb.isChecked()
@@ -114,21 +218,17 @@ class displayStackedSeriesWindow(QWidget):
 
         #-----------------------------------
         if self.sharex:
-            XDict = {}
-            for n, item in enumerate(self.items):
-                seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
-                if seriesDict['X'] not in XDict:
-                    XDict[seriesDict['X']] = []
-                XDict[seriesDict['X']].append(n)
+            group_to_indices = {}
+            for n in range(len(self.items)):
+                gid = int(self.plot_to_group.get(n, 1))
+                group_to_indices.setdefault(gid, []).append(n)
 
-            sharexLists = [n for n in XDict.values() if len(n) > 1]
-            #print(sharexLists)
-            for sharexList in sharexLists:
-                base_ax = self.interactive_plot.axs[sharexList[0]]
-                for n in sharexList[1:]:
-                    #print("sharex", sharexList[0], n)
-                    self.interactive_plot.axs[n].sharex(base_ax) 
-
+            for idxs in group_to_indices.values():
+                if len(idxs) <= 1:
+                    continue
+                base_ax = self.interactive_plot.axs[idxs[0]]
+                for j in idxs[1:]:
+                    self.interactive_plot.axs[j].sharex(base_ax)
         #-----------------------------------
         self.interactive_plot.fig.canvas.draw()
         self.interactive_plot.fig.canvas.setFocus()
