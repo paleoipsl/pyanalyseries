@@ -1,3 +1,5 @@
+ * 6.05
+   * Fix keep replicates in apply Filter
  * 6.04
    * Implement per-plot horizontal axis grouping in displayStackedSeriesWindow
  * 6.03

@@ -54,7 +54,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.04'
+version = 'v6.05'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -1214,8 +1214,11 @@ def apply_filter():
     for item in itemSeries_selected:
         seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
+        series = series.groupby(series.index).mean()
 
-        series_XMean = defineFilterWindow.moving_average(series, window_size=filter_window_size),
+        # to keep replicates
+        series_XMean = defineFilterWindow.moving_average(series, window_size=filter_window_size)
+        series = seriesDict['Series']
         series_filtered = series_XMean.reindex(series.index)
 
         filtered_Id = generate_Id()
