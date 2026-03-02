@@ -1,3 +1,5 @@
+* 6.06
+  * Fix series reading: length now determined from X column only, preventing X/Y misalignment caused by separate trailing trimming
  * 6.05
    * Fix keep replicates in apply Filter
  * 6.04

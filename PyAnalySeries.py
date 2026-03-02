@@ -54,7 +54,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.05'
+version = 'v6.06'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -369,7 +369,7 @@ def load_WorkSheet(fileName):
     for sheetName in sheetNames:
 
         #-------------------------------------
-        if sheetName.startswith('Serie Id-') or sheetName.startswith('Series Id-'):
+        if sheetName.startswith(('Serie Id-', 'Series Id-')):
 
             try:
                 df = pd.read_excel(fileName, sheet_name=sheetName, na_filter=False)
@@ -388,6 +388,10 @@ def load_WorkSheet(fileName):
                 type = df['Type'][0] 
                 type = re.sub(r'\bSerie\b', 'Series',  type)                            # to correct Serie to Series
 
+                n = effective_length_from_index(df.iloc[:, 0])
+                x = addNanList(df.iloc[:, 0], length=n)
+                y = addNanList(df.iloc[:, 1], length=n)
+
                 aDict = {
                     'Id': 'Id-' + sheetName.split('Id-')[1],
                     'Type': type,
@@ -398,7 +402,7 @@ def load_WorkSheet(fileName):
                     'Date': df['Date'][0] if 'Date' in df.columns else '',
                     'Comment': df['Comment'][0],
                     'History': history,
-                    'Series': pd.Series(addNanList(df.iloc[:,1]), index=addNanList(df.iloc[:,0]))
+                    'Series': pd.Series(y, index=x)
                 }
 
                 if 'InterpolationMode' in df.columns:
@@ -419,7 +423,7 @@ def load_WorkSheet(fileName):
                 QApplication.processEvents()
 
         #-------------------------------------
-        elif sheetName.startswith('FILTER Id-') or sheetName.startswith('SAMPLE Id-'):
+        elif sheetName.startswith(('FILTER Id-', 'SAMPLE Id-')):
             
             try:
                 df = pd.read_excel(fileName, sheet_name=sheetName, na_filter=False)
@@ -568,11 +572,7 @@ def save_WorkSheet(ws_item):
     #----------------------------------
     for sheetName in wb.sheetnames:
         # remove sheetname 'Serie Idxxxxxxxx' (wrong spell)
-        if sheetName.startswith('Serie Id') or \
-           sheetName.startswith('Series Id') or \
-           sheetName.startswith('SAMPLE Id') or \
-           sheetName.startswith('FILTER Id') or \
-           sheetName.startswith('INTERPOLATION Id') or \
+        if sheetName.startswith(('Serie Id', 'Series Id', 'SAMPLE Id', 'FILTER Id', 'INTERPOLATION Id')) or \
            sheetName == 'Information' or \
            sheetName == 'Sheet':
             del wb[sheetName]

@@ -34,16 +34,31 @@ def append_to_htmlText(text, new_value):
     return text 
 
 #========================================================================================
-def addNanList(aList):
-    # replace empty strings by NaN
+def addNanList(aList, length=None):
+    """
+    - Replace '' by np.nan
+    - If length is provided: truncate to that length (no trimming logic here)
+    - Else: trim trailing NaNs (legacy behavior)
+    """
     out = [np.nan if x == '' else x for x in aList]
 
-    # trim trailing NaNs
+    if length is not None:
+        return out[:length]
+
+    # legacy: trim trailing NaNs
     for i in range(len(out) - 1, -1, -1):
         if not pd.isna(out[i]):
             return out[:i + 1]
-
     return []
+
+#========================================================================================
+def effective_length_from_index(index_list):
+    """
+    Compute the useful length from index column:
+    last row where index is not ''/NaN.
+    """
+    idx = addNanList(index_list)  # uses legacy trim
+    return len(idx)
 
 #========================================================================================
 def cleanSpaceList(aList):
