@@ -192,12 +192,8 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     buttonColor.setFixedWidth(40)
     buttonColor.setStyleSheet(f"background-color: {itemDict['Color']};")
     buttonColor.clicked.connect(lambda: selectColor(buttonColor, item))
-    container = QWidget()
-    layout = QHBoxLayout(container)
-    layout.setContentsMargins(0, 0, 0, 0)
-    layout.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
-    layout.addWidget(buttonColor)
-    tree_widget.setItemWidget(item, 5, container)
+    tree_widget.setItemWidget(item, 5, buttonColor)
+    item.setTextAlignment(5, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
 
     if update: update_items_from_data(item)
 

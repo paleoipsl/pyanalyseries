@@ -1,3 +1,5 @@
+ * 6.07
+   * Fix series color button rendering in tree
  * 6.06
    * Fix series reading: length now determined from X column only, preventing X/Y misalignment caused by separate trailing trimming
  * 6.05
