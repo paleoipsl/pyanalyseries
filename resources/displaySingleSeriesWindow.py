@@ -10,6 +10,7 @@ import matplotlib
 matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.ticker import LogLocator, FuncFormatter
 
 from .misc import *
 from .CustomQTableWidget import CustomQTableWidget 
@@ -228,6 +229,13 @@ class displaySingleSeriesWindow(QWidget):
         if limits:
             ax.set_xlim(limits[0])
             ax.set_ylim(limits[1])
+
+        if seriesDict['Type'] == 'Series PSD' :
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+            ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+            ax.invert_xaxis()
 
         ax.figure.canvas.draw()
         ax.figure.canvas.setFocus()

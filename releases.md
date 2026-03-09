@@ -1,3 +1,7 @@
+ * 6.1O
+   * Pyleoclim Detrend, Spectral Estmation, Frequency Filter
+   * Change icons
+   * Intervert Type, Id columns in tree 
  * 6.07
    * Fix series color button rendering in tree
  * 6.06

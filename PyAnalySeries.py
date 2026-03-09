@@ -44,6 +44,10 @@ from resources.defineRandomSeriesWindow import defineRandomSeriesWindow
 from resources.defineInsolationAstroSeriesWindow import defineInsolationAstroSeriesWindow
 from resources.defineSinusoidalSeriesWindow import defineSinusoidalSeriesWindow
 
+from resources.computeAggregateWindow import computeAggregateWindow
+from resources.computeDetrendWindow import computeDetrendWindow
+from resources.computeSpectralEstimationWindow import computeSpectralEstimationWindow
+
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
 
@@ -54,17 +58,22 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.07'
+version = 'v6.10'
 
 open_ws = {}
 open_displayWindows = {} 
 open_filterWindows = {} 
 open_sampleWindows = {} 
 open_interpolationWindows = {} 
+
 open_importWindow = {}
 open_randomSeriesWindow = {}
 open_insolationAstroSeriesWindow = {}
 open_sinusoidalSeriesWindow = {}
+
+open_aggregateWindows = {}
+open_detrendWindows = {}
+open_spectralEstimationWindows = {}
 
 #========================================================================================
 def colorize_item(item, color_name, alpha=100):
@@ -123,26 +132,27 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     tree_widget.blockSignals(True)
 
     icon_series = QIcon(str(app_dir / 'resources' / 'icon_series.png'))
-    icon_seriesDuplicated = QIcon(str(app_dir / 'resources' / 'icon_seriesDuplicated.png'))
-    icon_filter = QIcon(str(app_dir / 'resources' / 'icon_filter.png'))
-    icon_sample = QIcon(str(app_dir / 'resources' / 'icon_sample.png'))
-    icon_interpolate = QIcon(str(app_dir / 'resources' / 'icon_interpolate.png'))
+    icon_seriesReplicates = QIcon(str(app_dir / 'resources' / 'icon_seriesReplicates.png'))
+    icon_seriesPSD = QIcon(str(app_dir / 'resources' / 'icon_seriesPSD.png'))
+    icon_apply = QIcon(str(app_dir / 'resources' / 'icon_apply.png'))
 
     item = QTreeWidgetItem()
     item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
 
     if itemDict['Type'].startswith('Series'):            # to be backward compatible with Serie and now Series
         Series = itemDict['Series']
-        if Series.index.duplicated().any():
-            item.setIcon(0, icon_seriesDuplicated)
+        if itemDict['Type'] == 'Series PSD':
+            item.setIcon(0, icon_seriesPSD)
+        elif Series.index.duplicated().any():
+            item.setIcon(0, icon_seriesReplicates)
         else:
             item.setIcon(0, icon_series)
     elif itemDict['Type'] == 'FILTER':
-            item.setIcon(0, icon_filter)
+            item.setIcon(0, icon_apply)
     elif itemDict['Type'] == 'SAMPLE':
-            item.setIcon(0, icon_sample)
+            item.setIcon(0, icon_apply)
     elif itemDict['Type'] == 'INTERPOLATION':
-            item.setIcon(0, icon_interpolate)
+            item.setIcon(0, icon_apply)
     else:
         #print("Error: Type unknown")
         return
@@ -169,11 +179,11 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
 
     item.setText(0, itemDict['Name'])
     item.setToolTip(0, itemDict['Name'])
-    item.setText(1, itemDict['Id'])
-    item.setText(2, itemDict['Type'])
+    item.setText(1, itemDict['Type'])
+    item.setText(2, itemDict['Id'])
 
     font = QFont('Courier New')
-    item.setFont(1, font)             # format Id
+    item.setFont(2, font)             # format Id
 
     if itemDict['Type'] == 'INTERPOLATION':
         item.setText(3, itemDict['X1Name'])
@@ -809,6 +819,102 @@ def define_randomSeries():
         randomSeriesWindow.show()
 
 #========================================================================================
+def compute_aggregate():
+    global open_aggregateWindows
+
+    items = get_unique_selected_items(tree_widget)
+    items_selected = []                             # select only series
+    for item in items:
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
+        if  seriesDict['Type'].startswith('Series'): 
+            items_selected.append(item)
+
+    if len(items_selected) != 1 : 
+        main_window.statusBar().showMessage('Please select only 1 series', 5000)
+        return
+
+    #-------------------------------------------------------------
+    Id_aggregateWindow = generate_Id()
+
+    if Id_aggregateWindow in open_aggregateWindows:
+        aggregateWindow = open_aggregateWindows[Id_aggregateWindow]
+        aggregateWindow.raise_()
+        aggregateWindow.activateWindow()
+    else:
+        aggregateWindow = computeAggregateWindow(Id_aggregateWindow, open_aggregateWindows, item, add_item_tree_widget)
+        open_aggregateWindows[Id_aggregateWindow] = aggregateWindow
+        aggregateWindow.show()
+
+    #-------------------------------------------------------------
+    main_window.setFocus()                  # replace selection
+    tree_widget.clearSelection()
+    item.setSelected(True)
+
+#========================================================================================
+def compute_detrend():
+    global open_detrendWindows
+
+    items = get_unique_selected_items(tree_widget)
+    items_selected = []                             # select only series
+    for item in items:
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
+        if  seriesDict['Type'].startswith('Series'): 
+            items_selected.append(item)
+
+    if len(items_selected) != 1 : 
+        main_window.statusBar().showMessage('Please select only 1 series', 5000)
+        return
+
+    #-------------------------------------------------------------
+    Id_detrendWindow = generate_Id()
+
+    if Id_detrendWindow in open_detrendWindows:
+        detrendWindow = open_detrendWindows[Id_detrendWindow]
+        detrendWindow.raise_()
+        detrendWindow.activateWindow()
+    else:
+        detrendWindow = computeDetrendWindow(Id_detrendWindow, open_detrendWindows, item, add_item_tree_widget)
+        open_detrendWindows[Id_detrendWindow] = detrendWindow
+        detrendWindow.show()
+
+    #-------------------------------------------------------------
+    main_window.setFocus()                  # replace selection
+    tree_widget.clearSelection()
+    item.setSelected(True)
+
+#========================================================================================
+def compute_spectralEstimation():
+    global open_spectralEstimationWindows
+
+    items = get_unique_selected_items(tree_widget)
+    items_selected = []                             # select only series
+    for item in items:
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
+        if  seriesDict['Type'].startswith('Series'): 
+            items_selected.append(item)
+
+    if len(items_selected) != 1 : 
+        main_window.statusBar().showMessage('Please select only 1 series', 5000)
+        return
+
+    #-------------------------------------------------------------
+    Id_spectralEstimationWindow = generate_Id()
+
+    if Id_spectralEstimationWindow in open_spectralEstimationWindows:
+        spectralEstimationWindow = open_spectralEstimationWindows[Id_spectralEstimationWindow]
+        spectralEstimationWindow.raise_()
+        spectralEstimationWindow.activateWindow()
+    else:
+        spectralEstimationWindow = computeSpectralEstimationWindow(Id_spectralEstimationWindow, open_spectralEstimationWindows, item, add_item_tree_widget)
+        open_spectralEstimationWindows[Id_spectralEstimationWindow] = spectralEstimationWindow
+        spectralEstimationWindow.show()
+
+    #-------------------------------------------------------------
+    main_window.setFocus()                  # replace selection
+    tree_widget.clearSelection()
+    item.setSelected(True)
+
+#========================================================================================
 def create_tree_widget():
 
     size = QApplication.instance().font().pointSize()
@@ -816,7 +922,7 @@ def create_tree_widget():
 
     tree_widget = CustomTreeWidget()
     tree_widget.setColumnCount(6)
-    tree_widget.setHeaderLabels(["Name", "Id", "Type", "X", "Y", "Color"])
+    tree_widget.setHeaderLabels(["Name", "Type", "Id", "X", "Y", "Color"])
     tree_widget.setColumnWidth(0, 400)
     tree_widget.setColumnWidth(1, 150)
     tree_widget.setColumnWidth(2, 150)
@@ -833,7 +939,7 @@ def create_tree_widget():
         }
     """)
     tree_widget.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
-    tree_widget.headerItem().setFont(1, font)
+    tree_widget.headerItem().setFont(2, font)
     tree_widget.headerItem().setFont(3, font)
     tree_widget.headerItem().setFont(4, font)
 
@@ -862,7 +968,7 @@ def create_tree_widget():
         return editor
     
     tree_widget.readonly_delegate.createEditor = create_readonly_editor
-    tree_widget.setItemDelegateForColumn(1, tree_widget.readonly_delegate)
+    tree_widget.setItemDelegateForColumn(2, tree_widget.readonly_delegate)
 
     #---------------------------------------------
     tree_widget.setDragEnabled(True)
@@ -991,7 +1097,7 @@ class CustomTreeWidget(QTreeWidget):
             item = self.itemAt(pos)
             col = self.columnAt(pos.x())
 
-            if item and col == 1:  # Tooltip only for column 1
+            if item and col == 2:  # Tooltip only for column 1
                 data = item.data(0, Qt.ItemDataRole.UserRole)
                 if isinstance(data, dict):
                     tooltip_text = '''<style> 
@@ -1067,13 +1173,13 @@ def displaySingleSeries_selected_series():
             displayWindow.raise_()
             displayWindow.activateWindow()
         else:
-            if itemDict['Type'].startswith('Series'): 
+            if itemDict['Type'].startswith('Series') : 
                 displayWindow = displaySingleSeriesWindow(Id_displayWindow, open_displayWindows, item)
-            elif itemDict['Type'] == 'FILTER':
+            elif itemDict['Type'] == 'FILTER' :
                 displayWindow = displayFilterWindow(Id_displayWindow, open_displayWindows, item)
             elif itemDict['Type'] == 'SAMPLE':
                 displayWindow = displaySampleWindow(Id_displayWindow, open_displayWindows, item)
-            elif itemDict['Type'] == 'INTERPOLATION':
+            elif itemDict['Type'] == 'INTERPOLATION' :
                 displayWindow = displayInterpolationWindow(Id_displayWindow, open_displayWindows, item)
             open_displayWindows[Id_displayWindow] = displayWindow
             displayWindow.show()
@@ -1655,7 +1761,7 @@ def on_item_double_clicked(item, column):
         item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
         if item_isWS:
             item.setText(0, item.text(0).replace(" *", ""))  # Remove visual cue
-    elif column == 1:
+    elif column == 2:
         tree_widget.custom_tooltip.hide()
         item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
     elif column == 3 and (itemDict['Type'].startswith('Series') or
@@ -1886,39 +1992,99 @@ display_menu.addAction(displayTogetherSeries_action)
 display_menu.addAction(displayStackedSeries_action)
 display_menu.addAction(close_all_action)
 
+def add_section(menu, text, first=False):
+    container = QWidget()
+    layout = QVBoxLayout(container)
+    layout.setContentsMargins(12, 6, 12, 6)
+    layout.setSpacing(4)
+
+    # --- Top line (only if not first section) ---
+    if not first:
+        top_line = QFrame()
+        top_line.setFrameShape(QFrame.Shape.HLine)
+        top_line.setFrameShadow(QFrame.Shadow.Plain)
+        top_line.setFixedHeight(1)
+        top_line.setStyleSheet("background-color: #555;")
+        layout.addWidget(top_line)
+
+    # --- Label ---
+    label = QLabel(text)
+    #label.setStyleSheet("font-weight: bold;")
+    layout.addWidget(label)
+
+    action = QWidgetAction(menu)
+    action.setDefaultWidget(container)
+    menu.addAction(action)
+
 #----------------------------------------------
 process_menu = menu_bar.addMenu("Process")
 
-defineFilter_action = QAction("Define Filter smoothing average", main_window)
-defineFilter_action.setShortcut('Ctrl+f')
-defineFilter_action.triggered.connect(define_filter)
-applyFilter_action = QAction("Apply Filter smoothing average", main_window)
-applyFilter_action.triggered.connect(apply_filter)
+# ----------------
+add_section(process_menu, "Transforms", first=True)
 
-defineSample_action = QAction('Define Sampling', main_window)
-defineSample_action.setShortcut('Ctrl+a')
+computeAggregate_action = QAction("Aggregate / Clean ...", main_window)
+computeAggregate_action.triggered.connect(compute_aggregate)
+process_menu.addAction(computeAggregate_action)
+
+process_menu.addSeparator()
+
+computeDetrend_action = QAction("Detrend ...", main_window)
+computeDetrend_action.triggered.connect(compute_detrend)
+process_menu.addAction(computeDetrend_action)
+
+process_menu.addSeparator()
+
+defineSample_action = QAction("Define Sampling ...", main_window)
+defineSample_action.setShortcut("Ctrl+a")
 defineSample_action.triggered.connect(define_sample)
+process_menu.addAction(defineSample_action)
+
 applySample_action = QAction("Apply Sampling", main_window)
 applySample_action.triggered.connect(apply_sample)
+process_menu.addAction(applySample_action)
 
-defineInterpolation_action = QAction("Define Interpolation", main_window)
-defineInterpolation_action.setShortcut('Ctrl+i')
+# ----------------
+add_section(process_menu, "Interpolation")
+
+defineInterpolation_action = QAction("Define Interpolation ...", main_window)
+defineInterpolation_action.setShortcut("Ctrl+i")
 defineInterpolation_action.triggered.connect(define_interpolation)
-applyInterpolationLinear_action = QAction("Apply Interpolation linear", main_window)
-applyInterpolationLinear_action.triggered.connect(lambda: apply_interpolation('Linear'))
+process_menu.addAction(defineInterpolation_action)
+
+applyInterpolationLinear_action = QAction("Apply Interpolation Linear", main_window)
+applyInterpolationLinear_action.triggered.connect(lambda: apply_interpolation("Linear"))
+process_menu.addAction(applyInterpolationLinear_action)
+
 applyInterpolationPCHIP_action = QAction("Apply Interpolation PCHIP", main_window)
 applyInterpolationPCHIP_action.setToolTip("This action applies PCHIP interpolation to the selected data.")
-applyInterpolationPCHIP_action.triggered.connect(lambda: apply_interpolation('PCHIP'))
-
-process_menu.addAction(defineFilter_action)
-process_menu.addAction(applyFilter_action)
-process_menu.addSeparator()
-process_menu.addAction(defineSample_action)
-process_menu.addAction(applySample_action)
-process_menu.addSeparator()
-process_menu.addAction(defineInterpolation_action)
-process_menu.addAction(applyInterpolationLinear_action)
+applyInterpolationPCHIP_action.triggered.connect(lambda: apply_interpolation("PCHIP"))
 process_menu.addAction(applyInterpolationPCHIP_action)
+
+# ----------------
+add_section(process_menu, "X-Domain Filter")
+
+defineFilter_action = QAction("Define Smoothing Average ...", main_window)
+defineFilter_action.setShortcut("Ctrl+f")
+defineFilter_action.triggered.connect(define_filter)
+process_menu.addAction(defineFilter_action)
+
+applyFilter_action = QAction("Apply Smoothing Average", main_window)
+applyFilter_action.triggered.connect(apply_filter)
+process_menu.addAction(applyFilter_action)
+
+# ----------------
+add_section(process_menu, "Frequency-Domain Filter")
+
+computeFreqFilter_action = QAction("Frequency Filter ...", main_window)
+#computeFreqFilter_action.triggered.connect(define_frequencyFilter)
+process_menu.addAction(computeFreqFilter_action)
+
+# ----------------
+add_section(process_menu, "Spectral Estimation")
+
+computeSpectralEstimation_action = QAction("Spectral Estimation ...", main_window)
+computeSpectralEstimation_action.triggered.connect(compute_spectralEstimation)
+process_menu.addAction(computeSpectralEstimation_action)
 
 #----------------------------------------------
 settings_menu = menu_bar.addMenu('Settings')
