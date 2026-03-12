@@ -9,6 +9,8 @@ dependencies:
   - scipy=1.16.3
   - shapely=2.1.2
   - openpyxl=3.1.5
+  - numba
+  - llvmlite
   - pip
   - pip:
     - pyqt6==6.10.2

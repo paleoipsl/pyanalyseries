@@ -1,3 +1,6 @@
+ * 6.08
+   * Simplify icons
+   * Added numba and llvmlite to environment.yml to avoid pip build issues when installing pyleoclim
  * 6.07
    * Fix series color button rendering in tree
  * 6.06

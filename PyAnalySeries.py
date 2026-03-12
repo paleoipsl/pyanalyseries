@@ -54,7 +54,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.07'
+version = 'v6.08'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -123,26 +123,27 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     tree_widget.blockSignals(True)
 
     icon_series = QIcon(str(app_dir / 'resources' / 'icon_series.png'))
-    icon_seriesDuplicated = QIcon(str(app_dir / 'resources' / 'icon_seriesDuplicated.png'))
-    icon_filter = QIcon(str(app_dir / 'resources' / 'icon_filter.png'))
-    icon_sample = QIcon(str(app_dir / 'resources' / 'icon_sample.png'))
-    icon_interpolate = QIcon(str(app_dir / 'resources' / 'icon_interpolate.png'))
+    icon_seriesReplicates = QIcon(str(app_dir / 'resources' / 'icon_seriesReplicates.png'))
+    icon_seriesPSD = QIcon(str(app_dir / 'resources' / 'icon_seriesPSD.png'))
+    icon_apply = QIcon(str(app_dir / 'resources' / 'icon_apply.png'))
 
     item = QTreeWidgetItem()
     item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
 
     if itemDict['Type'].startswith('Series'):            # to be backward compatible with Serie and now Series
         Series = itemDict['Series']
-        if Series.index.duplicated().any():
-            item.setIcon(0, icon_seriesDuplicated)
+        if itemDict['Type'] == 'Series PSD':
+            item.setIcon(0, icon_seriesPSD)
+        elif Series.index.duplicated().any():
+            item.setIcon(0, icon_seriesReplicates)
         else:
             item.setIcon(0, icon_series)
     elif itemDict['Type'] == 'FILTER':
-            item.setIcon(0, icon_filter)
+            item.setIcon(0, icon_apply)
     elif itemDict['Type'] == 'SAMPLE':
-            item.setIcon(0, icon_sample)
+            item.setIcon(0, icon_apply)
     elif itemDict['Type'] == 'INTERPOLATION':
-            item.setIcon(0, icon_interpolate)
+            item.setIcon(0, icon_apply)
     else:
         #print("Error: Type unknown")
         return
