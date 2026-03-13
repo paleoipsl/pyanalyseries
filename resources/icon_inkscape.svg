@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg2"
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   sodipodi:docname="icon_inkscape.svg"
+   inkscape:export-filename="/home/brock/PyAnalySeries-6.10/resources/icon_interpolate.png"
+   inkscape:export-xdpi="512"
+   inkscape:export-ydpi="512"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="9.0625"
+     inkscape:cx="0.77241379"
+     inkscape:cy="4.8"
+     inkscape:window-width="1858"
+     inkscape:window-height="1016"
+     inkscape:window-x="62"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g8" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g8">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:21.7246px;line-height:1.25;font-family:Sans;-inkscape-font-specification:'Sans Bold';font-variant-ligatures:none;fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:1.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-dasharray:none;stroke-opacity:1"
+       x="0.63737941"
+       y="16.81678"
+       id="text2435-7-8-1"
+       transform="scale(0.73251089,1.3651674)"
+       inkscape:export-filename="/home/brock/PyAnalySeries-6.10/resources/icon_frequency_filter.png"
+       inkscape:export-xdpi="512"
+       inkscape:export-ydpi="512"><tspan
+         sodipodi:role="line"
+         id="tspan2433-7-5-3"
+         x="0.63737941"
+         y="16.81678"
+         style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:1.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-dasharray:none;stroke-opacity:1" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:22.887px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial Bold';font-variant-ligatures:none;fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="3.1147885"
+       y="-12.563028"
+       id="text2435-7-8-9-0"
+       transform="scale(0.79547704,1.2571073)"
+       inkscape:export-filename="/home/brock/PyAnalySeries-6.10/resources/icon_frequency_filter.png"
+       inkscape:export-xdpi="512"
+       inkscape:export-ydpi="512"><tspan
+         sodipodi:role="line"
+         id="tspan2433-7-5-6-4"
+         x="3.1147885"
+         y="-12.563028"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#000000;fill-opacity:0;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none">i </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:22.887px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial Bold';font-variant-ligatures:none;fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="-62.909077"
+       y="-11.219056"
+       id="text2435-7-8-9-5"
+       transform="scale(0.79547704,1.2571073)"
+       inkscape:export-filename="/home/brock/PyAnalySeries-6.10/resources/icon_frequency_filter.png"
+       inkscape:export-xdpi="512"
+       inkscape:export-ydpi="512"><tspan
+         sodipodi:role="line"
+         id="tspan2433-7-5-6-9"
+         x="-62.909077"
+         y="-11.219056"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#000000;fill-opacity:0;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none">F </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:22.887px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial Bold';font-variant-ligatures:none;fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="-20.559219"
+       y="-12.436603"
+       id="text2435-7-8-9-5-9"
+       transform="scale(0.79547704,1.2571073)"
+       inkscape:export-filename="/home/brock/PyAnalySeries-6.10/resources/icon_frequency_filter.png"
+       inkscape:export-xdpi="512"
+       inkscape:export-ydpi="512"><tspan
+         sodipodi:role="line"
+         id="tspan2433-7-5-6-9-1"
+         x="-20.559219"
+         y="-12.436603"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#000000;fill-opacity:0;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none">D </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:22.887px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial Bold';font-variant-ligatures:none;fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="-65.271439"
+       y="8.634306"
+       id="text2435-7-8-9-5-9-1"
+       transform="scale(0.79547704,1.2571073)"
+       inkscape:export-filename="/home/brock/PyAnalySeries-6.10/resources/icon_frequency_filter.png"
+       inkscape:export-xdpi="512"
+       inkscape:export-ydpi="512"><tspan
+         sodipodi:role="line"
+         id="tspan2433-7-5-6-9-1-0"
+         x="-65.271439"
+         y="8.634306"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#000000;fill-opacity:0;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none">FF </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:22.887px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial Bold';font-variant-ligatures:none;fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="-64.688797"
+       y="29.050261"
+       id="text2435-7-8-9-5-9-1-7"
+       transform="scale(0.79547704,1.2571073)"
+       inkscape:export-filename="/home/brock/PyAnalySeries-6.10/resources/icon_frequency_filter.png"
+       inkscape:export-xdpi="512"
+       inkscape:export-ydpi="512"><tspan
+         sodipodi:role="line"
+         id="tspan2433-7-5-6-9-1-0-5"
+         x="-64.688797"
+         y="29.050261"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#000000;fill-opacity:0;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none">SE </tspan></text>
+    <g
+       aria-label="SE "
+       transform="matrix(0.79547704,0,0,1.2571073,0.52604456,-1.1575962)"
+       id="text2435-7-8-9-5-9-1-7-1"
+       style="font-weight:bold;font-size:22.887px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial Bold';font-variant-ligatures:none;fill-opacity:0;stroke:#000000;stroke-width:0.8"
+       inkscape:export-filename="/home/brock/PyAnalySeries-6.10/resources/icon_spectral_estimation.png"
+       inkscape:export-xdpi="512"
+       inkscape:export-ydpi="512">
+      <path
+         d="M 0.16449237,13.321853 3.3829766,13.008945 q 0.2905576,1.620417 1.1734057,2.380337 0.8940234,0.75992 2.4026879,0.75992 1.5980669,0 2.4026879,-0.670517 0.8157959,-0.681693 0.8157959,-1.586892 0,-0.581115 -0.3464336,-0.983426 Q 9.4958616,12.494882 8.6465394,12.193149 8.0654242,11.991993 5.9979951,11.47793 3.3382754,10.818588 2.2654474,9.8575125 0.75678287,8.5053021 0.75678287,6.5608012 q 0,-1.2516328 0.70404343,-2.3356361 0.7152187,-1.0951787 2.0450785,-1.6651186 1.3410351,-0.56994 3.2296596,-0.56994 3.0843807,0 4.6377466,1.3522104 1.564541,1.3522104 1.642768,3.6096195 L 9.7081922,7.0972152 Q 9.4958616,5.8344072 8.7918182,5.2868178 8.0989501,4.7280532 6.7020385,4.7280532 q -1.4416127,0 -2.2574091,0.5922905 -0.5252387,0.37996 -0.5252387,1.0169516 0,0.5811153 0.4917128,0.9946011 0.6258164,0.5252387 3.0396796,1.0951786 2.4138632,0.56994 3.5649179,1.1845811 1.162231,0.6034659 1.810398,1.6651189 0.659342,1.050477 0.659342,2.603843 0,1.408087 -0.78227,2.637369 -0.782271,1.229282 -2.212708,1.832748 -1.4304378,0.59229 -3.5649186,0.59229 -3.1067314,0 -4.77185,-1.430437 -1.66511855,-1.441613 -1.98920203,-4.190735 z"
+         id="path100824" />
+      <path
+         d="M 16.268089,18.652468 V 2.2694889 h 12.147543 v 2.7714725 h -8.839657 v 3.6319701 h 8.225016 v 2.7602975 h -8.225016 v 4.458941 h 9.152565 v 2.760298 z"
+         id="path100826" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:22.887px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial Bold';font-variant-ligatures:none;fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="-42.46529"
+       y="-11.870553"
+       id="text2435-7-8-9-5-9-4"
+       transform="scale(0.79547704,1.2571073)"
+       inkscape:export-filename="/home/brock/PyAnalySeries-6.10/resources/icon_frequency_filter.png"
+       inkscape:export-xdpi="512"
+       inkscape:export-ydpi="512"><tspan
+         sodipodi:role="line"
+         id="tspan2433-7-5-6-9-1-9"
+         x="-42.46529"
+         y="-11.870553"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#000000;fill-opacity:0;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none">S </tspan></text>
+  </g>
+</svg>
