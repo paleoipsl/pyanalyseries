@@ -16,6 +16,7 @@ matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.patches import ConnectionPatch
+from matplotlib.lines import Line2D
 
 from scipy import interpolate
 
@@ -76,9 +77,18 @@ class defineInterpolationWindow(QWidget):
         pointersPlot_layout = QVBoxLayout()
 
         self.interactive_pointersPlot = interactivePlot()
-        self.interactive_pointersPlot.right_margin = 100
+        self.interactive_pointersPlot.left_margin = 200 
         self.pointersPlot_ax = self.interactive_pointersPlot.axs[0]
+        self.pointersPlot_ax.twins = []
+        self.pointersPlot_ax.twins_orientation = 'vertical'
         self.pointersPlot_axGradient = self.pointersPlot_ax.twinx()
+        self.pointersPlot_axGradient.spine_left_position = -100
+        self.pointersPlot_axGradient.yaxis.set_label_position('left')
+        self.pointersPlot_axGradient.yaxis.set_ticks_position('left')
+        self.pointersPlot_axGradient.spines['right'].set_visible(False)
+        self.pointersPlot_axGradient.spines['top'].set_visible(False)
+        self.pointersPlot_axGradient.spines['bottom'].set_visible(False)
+        self.pointersPlot_axGradient.set_zorder(-10)
 
         canvas1 = FigureCanvas(self.interactive_pointersPlot.fig)
         pointersPlot_layout.addWidget(canvas1)
@@ -218,6 +228,9 @@ class defineInterpolationWindow(QWidget):
 
         #----------------------------------------------
         self.status_bar = QStatusBar()
+        self.status_bar.setFixedHeight(20)
+        self.status_bar.setSizeGripEnabled(False)
+
         main_layout.addWidget(self.status_bar)
 
         #----------------------------------------------
@@ -346,46 +359,54 @@ class defineInterpolationWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def updatePointersPlot(self):
 
-        self.pointersPlot_ax.set_visible(False)
-        self.pointersPlot_axGradient.set_visible(False)
+        self.pointersPlot_ax.set_visible(True)
         self.pointersPlot_ax.clear()
-        self.pointersPlot_axGradient.clear()
         self.interactive_pointersPlot.fig.canvas.draw()
 
         if len(self.X1Coords) < 2: return
 
         #------------------------------------------------
-        self.pointersPlot_ax.set_visible(True)
-        self.pointersPlot_axGradient.set_visible(True)
+        legendHandles = []
 
-        line, = self.pointersPlot_ax.plot(self.X2Coords, self.X1Coords, color='steelblue', linewidth=1, label='aaaa')
-        points = self.pointersPlot_ax.scatter(self.X2Coords, self.X1Coords, s=10, marker='o', color='steelblue')
+        line, = self.pointersPlot_ax.plot(self.X2Coords, self.X1Coords, color='steelblue', linewidth=1, label='Pointers')
+        points = self.pointersPlot_ax.scatter(self.X2Coords, self.X1Coords, s=10, marker='o', color='steelblue', visible=False)
 
+        self.pointersPlot_ax.patch.set_visible(False)
         self.pointersPlot_ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=1)
         self.pointersPlot_ax.set_xlabel(self.X2Name)
-        self.pointersPlot_ax.set_ylabel(self.X1Name)
+        self.pointersPlot_ax.set_ylabel(self.X1Name, color='steelblue')
+        legendHandle = Line2D([0], [0], color='steelblue', label='Pointers')
+        legendHandles.append(legendHandle)
+        self.pointersPlot_ax.line_points_pairs.append((line, points))
 
         self.pointersPlot_axGradient.set_ylabel('Gradients (dx/dy)', color='darkorange')
-        self.pointersPlot_axGradient.yaxis.set_label_position('right') 
+        self.pointersPlot_axGradient.line_points_pairs = []
+        self.interactive_pointersPlot.axs.append(self.pointersPlot_axGradient)
 
         X2CoordsValues = np.linspace(self.X2Coords[0], self.X2Coords[-1], 100)
 
         f_1to2, f_2to1 = self.defineInterpolationFunctions(self.X1Coords, self.X2Coords, interpolationMode='Linear')
         gradientLinear = np.gradient(X2CoordsValues, f_2to1(X2CoordsValues)).astype(np.float32)      # to avoid unnecessary precision
         line1, = self.pointersPlot_axGradient.plot(X2CoordsValues, gradientLinear, color='darkorange', lw=1, label='Linear')
+        legendHandle = Line2D([0], [0], color='darkorange', label='Linear')
+        legendHandles.append(legendHandle)
 
         f_1to2, f_2to1 = self.defineInterpolationFunctions(self.X1Coords, self.X2Coords, interpolationMode='PCHIP')
         gradientPCHIP = np.gradient(X2CoordsValues, f_2to1(X2CoordsValues)).astype(np.float32)       # to avoid unnecessary precision
         line2, = self.pointersPlot_axGradient.plot(X2CoordsValues, gradientPCHIP, color='darkorange', linestyle='dashed', lw=1, label='PCHIP')
+        legendHandle = Line2D([0], [0], color='darkorange', linestyle='dashed', label='PCHIP')
+        legendHandles.append(legendHandle)
 
-        lines = [line1, line2]
-        labels = [line.get_label() for line in lines]
-        self.pointersPlot_ax.legend(lines, labels)
-
-        self.pointersPlot_axGradient.autoscale(axis='y', tight=False)
-
-        self.pointersPlot_ax.patch.set_alpha(0)
-        self.pointersPlot_axGradient.set_zorder(self.pointersPlot_ax.get_zorder() - 1)
+        legend = self.pointersPlot_ax.legend(handles=legendHandles)
+        line_map = {
+            "Pointers": line,
+            "Linear": line1,
+            "PCHIP": line2,
+        }
+        for legend_line in legend.get_lines():
+            label = legend_line.get_label()
+            legend_line.set_picker(5)
+            self.pointersPlot_ax.map_legend_to_line[legend_line] = line_map[label]
 
         self.interactive_pointersPlot.fig.canvas.draw()
 
@@ -842,6 +863,10 @@ class defineInterpolationWindow(QWidget):
             'History': f'INTERPOLATION <i><b>{interpolation_Id}</i></b>',
             'Comment': ''
         }
+
+        # Fixed sync issue causing stale pointer reload by resetting self.itemINTERPOLATION
+        self.itemINTERPOLATION = None
+
         try:
             self.add_item_tree_widget(self.itemRef.parent(), interpolationDict)
         except:

@@ -134,13 +134,7 @@ class displaySingleSeriesWindow(QWidget):
         self.textHistory.setFixedHeight(self.textHistory.fontMetrics().lineSpacing() * 10)
         self.textHistory.setText(self.seriesDict['History'])
         self.textHistory.setReadOnly(True)
-        self.textHistory.setStyleSheet("""
-            QTextEdit[readOnly="true"] {
-                background-color: #f8f8f8;
-                border: 1px solid lightgray;
-                font-family: Courier New;
-            }
-        """)
+        self.textHistory.setFont(QFont("Courier New"))
 
         labelComment = QLabel("Comment :")
         self.textComment = QTextEdit()

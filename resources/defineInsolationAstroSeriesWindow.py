@@ -255,6 +255,8 @@ class defineInsolationAstroSeriesWindow(QWidget):
 
         self.status_bar = QStatusBar()
         self.status_bar.setFixedHeight(20)
+        self.status_bar.setSizeGripEnabled(False)
+
         main_layout.addWidget(self.status_bar)
 
         #----------------------------------------------

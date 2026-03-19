@@ -54,7 +54,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.08'
+version = 'v6.09'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -170,11 +170,11 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
 
     item.setText(0, itemDict['Name'])
     item.setToolTip(0, itemDict['Name'])
-    item.setText(1, itemDict['Id'])
-    item.setText(2, itemDict['Type'])
+    item.setText(1, itemDict['Type'])
+    item.setText(2, itemDict['Id'])
 
     font = QFont('Courier New')
-    item.setFont(1, font)             # format Id
+    item.setFont(2, font)             # format Id
 
     if itemDict['Type'] == 'INTERPOLATION':
         item.setText(3, itemDict['X1Name'])
@@ -817,7 +817,7 @@ def create_tree_widget():
 
     tree_widget = CustomTreeWidget()
     tree_widget.setColumnCount(6)
-    tree_widget.setHeaderLabels(["Name", "Id", "Type", "X", "Y", "Color"])
+    tree_widget.setHeaderLabels(["Name", "Type", "Id", "X", "Y", "Color"])
     tree_widget.setColumnWidth(0, 400)
     tree_widget.setColumnWidth(1, 150)
     tree_widget.setColumnWidth(2, 150)
@@ -834,7 +834,7 @@ def create_tree_widget():
         }
     """)
     tree_widget.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
-    tree_widget.headerItem().setFont(1, font)
+    tree_widget.headerItem().setFont(2, font)
     tree_widget.headerItem().setFont(3, font)
     tree_widget.headerItem().setFont(4, font)
 
@@ -863,7 +863,7 @@ def create_tree_widget():
         return editor
     
     tree_widget.readonly_delegate.createEditor = create_readonly_editor
-    tree_widget.setItemDelegateForColumn(1, tree_widget.readonly_delegate)
+    tree_widget.setItemDelegateForColumn(2, tree_widget.readonly_delegate)
 
     #---------------------------------------------
     tree_widget.setDragEnabled(True)
@@ -992,7 +992,7 @@ class CustomTreeWidget(QTreeWidget):
             item = self.itemAt(pos)
             col = self.columnAt(pos.x())
 
-            if item and col == 1:  # Tooltip only for column 1
+            if item and col == 2:  # Tooltip only for column 1
                 data = item.data(0, Qt.ItemDataRole.UserRole)
                 if isinstance(data, dict):
                     tooltip_text = '''<style> 
@@ -1656,7 +1656,7 @@ def on_item_double_clicked(item, column):
         item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
         if item_isWS:
             item.setText(0, item.text(0).replace(" *", ""))  # Remove visual cue
-    elif column == 1:
+    elif column == 2:
         tree_widget.custom_tooltip.hide()
         item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
     elif column == 3 and (itemDict['Type'].startswith('Series') or
@@ -1773,7 +1773,7 @@ enabled = settings.value("ui/customTooltipEnabled", True, type=bool)
 fontArial = QFont('Arial', fontSize)
 app.setFont(fontArial)
 
-icon = QIcon(str(app_dir / 'resources' / 'PyAnalySeries_icon.png'))
+icon = QIcon(str(app_dir / 'resources' / 'PyAnalySeries_icon.svg'))
 app.setWindowIcon(icon)
 
 main_window = MainWindow()

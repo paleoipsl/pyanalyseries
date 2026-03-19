@@ -162,8 +162,7 @@ class displayTogetherSeriesWindow(QWidget):
         legendHandles.append(legendHandle)
         ax.line_points_pairs.append((line, points))
         ax.set_xlabel(self.xName)
-        ax.set_ylabel(seriesDict['Y'])
-        ax.yaxis.label.set_color(seriesColor)
+        ax.set_ylabel(seriesDict['Y'], color=seriesColor)
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
@@ -185,8 +184,7 @@ class displayTogetherSeriesWindow(QWidget):
             points = twin.scatter(series.index, series.values, s=5, marker='o', color=seriesColor, visible=False)
             legendHandle = Line2D([0], [0], color=seriesColor, label=seriesDict['Y'])
             legendHandles.append(legendHandle)
-            twin.set(ylabel=seriesDict['Y'])
-            twin.yaxis.label.set_color(seriesColor)
+            twin.set_ylabel(seriesDict['Y'], color=seriesColor)
             twin.line_points_pairs = []
             twin.line_points_pairs.append((line, points))
             self.interactive_plot.axs.append(twin)
@@ -237,9 +235,8 @@ class displayTogetherSeriesWindow(QWidget):
         legendHandle = Line2D([0], [0], color=seriesColor, label=seriesDict['Y'])
         legendHandles.append(legendHandle)
         ax.line_points_pairs.append((line, points))
-        ax.set_xlabel(self.xName)
+        ax.set_xlabel(self.xName, color=seriesColor)
         ax.set_ylabel('')
-        ax.xaxis.label.set_color(seriesColor)
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
@@ -261,8 +258,7 @@ class displayTogetherSeriesWindow(QWidget):
             points = twin.scatter(series.index, series.values, s=5, marker='o', color=seriesColor, visible=False)
             legendHandle = Line2D([0], [0], color=seriesColor, label=seriesDict['Y'])
             legendHandles.append(legendHandle)
-            twin.set(xlabel=seriesDict['X'])
-            twin.xaxis.label.set_color(seriesColor)
+            twin.set_xlabel(seriesDict['X'], color=seriesColor)
             twin.line_points_pairs = []
             twin.line_points_pairs.append((line, points))
             self.interactive_plot.axs.append(twin)
