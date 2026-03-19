@@ -81,7 +81,7 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
 
 ##### Icon and shortcuts 
 
- * Icon : <img src="resources/PyAnalySeries_icon.png" alt="shortcut icon" width="80" />
+ * Icon : <img src="resources/PyAnalySeries_icon.svg" alt="shortcut icon" width="80" />
  * Shortcut on Linux :
  	* Copy the `misc/PyAnalySeries.desktop` file to your Desktop, and make change to specify YOURLOGIN
  	* Make change in the `PyAnalySeries.sh` file to specify the anaconda installation directory
