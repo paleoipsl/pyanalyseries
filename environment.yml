@@ -11,8 +11,10 @@ dependencies:
   - openpyxl=3.1.5
   - numba
   - llvmlite
+  - proj
+  - pyproj
   - pip
   - pip:
     - pyqt6==6.10.2
     - inso==0.7.0
-    - pyleoclim==1.2.1
+    - pyleoclim==1.3.0
