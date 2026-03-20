@@ -1,3 +1,5 @@
+ * 6.10
+   * Fix defineInterpolation gradients plot update by removing lines instead of clearing
  * 6.09
    * Fix sync issue causing stale pointer reload by resetting self.itemINTERPOLATION before save
    * Disable SizeGrid in StatusBar

@@ -361,6 +361,8 @@ class defineInterpolationWindow(QWidget):
 
         self.pointersPlot_ax.set_visible(True)
         self.pointersPlot_ax.clear()
+        for line in self.pointersPlot_axGradient.lines:     # do no use clear() to keep settings
+            line.remove()
         self.interactive_pointersPlot.fig.canvas.draw()
 
         if len(self.X1Coords) < 2: return
