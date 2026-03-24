@@ -359,12 +359,6 @@ def sync_window_with_item(item):
     for key in open_aggregateWindows.keys():
         aggregateWindow = open_aggregateWindows[key]
         aggregateWindow.sync_with_item(item)
-    for key in open_detrendWindows.keys():
-        detrendWindow = open_detrendWindows[key]
-        detrendWindow.sync_with_item(item)
-    for key in open_frequencyFilterWindows.keys():
-        frequencyFilterWindow = open_frequencyFilterWindows[key]
-        frequencyFilterWindow.sync_with_item(item)
 
 #========================================================================================
 def load_WorkSheet(fileName):
