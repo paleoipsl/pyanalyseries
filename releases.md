@@ -1,4 +1,4 @@
- * 6.2O
+ * 6.20
    * Add Transforms / Detrend based on Pyleoclim
    * Add Frequency-Domain Filter / Frequency Filter based on Pyleoclim
    * Add Spectral Estimation / Power Spectrum (PSD) based on Pyleoclim
