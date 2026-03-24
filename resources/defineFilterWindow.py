@@ -167,17 +167,6 @@ class defineFilterWindow(QWidget):
         self.interactive_plot.fig.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
-    def sync_with_item(self, item):
-        if item != self.item: return
-
-        self.raise_()
-
-        xlim = self.interactive_plot.axs[0].get_xlim()
-        ylim = self.interactive_plot.axs[0].get_ylim()
-        self.interactive_plot.axs[0].clear()
-        self.myplot(limits=[xlim,ylim])
-
-    #---------------------------------------------------------------------------------------------
     @staticmethod
     def moving_average(series, window_size=5):
         if window_size == 1:

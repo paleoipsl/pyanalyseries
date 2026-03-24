@@ -235,23 +235,6 @@ class displaySingleSeriesWindow(QWidget):
         ax.figure.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
-    def sync_with_item(self, item):
-        if item != self.item: return
-
-        self.raise_()
-
-        self.seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
-        self.textName.setText(f"Name : <b>{self.seriesDict['Name']}</b>")
-        self.xName = self.seriesDict['X']
-        self.yName = self.seriesDict['Y']
-        self.data_table.setHorizontalHeaderLabels([self.xName, self.yName])
-        self.data_table.resizeColumnsToContents()
-        xlim = self.interactive_plot.axs[0].get_xlim()
-        ylim = self.interactive_plot.axs[0].get_ylim()
-        self.interactive_plot.axs[0].clear()
-        self.myplot(limits=[xlim,ylim])
-
-    #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
         plt.close()
         self.seriesDict['Comment'] = self.textComment.toPlainText()

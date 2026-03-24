@@ -915,18 +915,6 @@ class defineInterpolationWindow(QWidget):
             pass
 
     #---------------------------------------------------------------------------------------------
-    def sync_with_item(self, item):
-        if not item in self.items: return
-
-        self.raise_()
-
-        self.deleteConnections()
-        self.axs[0].clear()
-        self.axs[1].clear()
-        self.axsInterp.clear()
-        self.myplot()
-
-    #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
         plt.close()
         self.open_interpolationWindows.pop(self.Id, None)

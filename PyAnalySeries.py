@@ -303,11 +303,6 @@ def update_items_from_data(ref_item):
 
         itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
-        if item.parent() == ref_item.parent():
-            if  itemDict['Type'].startswith('Series'):
-                sync_window_with_item(item)
-            continue
-
         itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
         if itemDict['Id'] == ref_itemDict['Id']:
@@ -324,7 +319,6 @@ def update_items_from_data(ref_item):
             if  itemDict['Type'].startswith('Series'):
                 buttonColor = tree_widget.itemWidget(item, 5)
                 buttonColor.setStyleSheet(f"background-color: {ref_itemDict['Color']}; border: none; border-radius: 3px;")
-                sync_window_with_item(item)
       
             # Mark if item has changed
             itemDict = item.data(0, Qt.ItemDataRole.UserRole)
@@ -334,31 +328,6 @@ def update_items_from_data(ref_item):
             tree_widget.blockSignals(True)
                 
     tree_widget.blockSignals(False)
-
-#========================================================================================
-def sync_window_with_item(item):
-
-    itemDict = item.data(0, Qt.ItemDataRole.UserRole)
-    Id_window = itemDict['Id']
-    for key in open_displayWindows.keys():
-        displayWindow = open_displayWindows[key]
-        try:
-            displayWindow.sync_with_item(item)
-        except:
-            # Some open_displayWindows do not need to be updated (no sync_with_item function)
-            pass
-    for key in open_filterWindows.keys():
-        filterWindow = open_filterWindows[key]
-        filterWindow.sync_with_item(item)
-    for key in open_samplingWindows.keys():
-        samplingWindow = open_samplingWindows[key]
-        samplingWindow.sync_with_item(item)
-    for key in open_interpolationWindows.keys():
-        interpolationWindow = open_interpolationWindows[key]
-        interpolationWindow.sync_with_item(item)
-    for key in open_aggregateWindows.keys():
-        aggregateWindow = open_aggregateWindows[key]
-        aggregateWindow.sync_with_item(item)
 
 #========================================================================================
 def load_WorkSheet(fileName):

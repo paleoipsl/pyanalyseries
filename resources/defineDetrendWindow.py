@@ -175,17 +175,6 @@ class defineDetrendWindow(QWidget):
         self.interactive_plot.fig.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
-    def sync_with_item(self, item):
-        if item != self.item: return
-
-        self.raise_()
-
-        xlim = self.interactive_plot.axs[0].get_xlim()
-        ylim = self.interactive_plot.axs[0].get_ylim()
-        self.interactive_plot.axs[0].clear()
-        self.myplot(limits=[xlim,ylim])
-
-    #---------------------------------------------------------------------------------------------
     def saveDetrend(self):
         detrend_Id = generate_Id()
         detrendDict = {

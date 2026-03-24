@@ -334,13 +334,6 @@ class displayTogetherSeriesWindow(QWidget):
         ax.figure.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
-    def sync_with_item(self, item):
-        if not item in self.items: return
-
-        self.raise_()
-        self.combo_axis_change()
-
-    #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
         plt.close()
         self.open_displayWindows.pop(self.Ids, None)

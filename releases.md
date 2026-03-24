@@ -1,4 +1,7 @@
+ * 6.21
+   * Remove synchronisation from tree to windows (sync_with_item, sync_window_with_item)
  * 6.20
+   * Add Transforms / Detrend based on Pyleoclim
    * Add Transforms / Detrend based on Pyleoclim
    * Add Frequency-Domain Filter / Frequency Filter based on Pyleoclim
    * Add Spectral Estimation / Power Spectrum (PSD) based on Pyleoclim

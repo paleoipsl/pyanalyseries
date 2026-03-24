@@ -234,14 +234,6 @@ class displayStackedSeriesWindow(QWidget):
         self.interactive_plot.fig.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
-    def sync_with_item(self, item):
-        if not item in self.items: return
-
-        self.raise_()
-
-        self.myplot()
-
-    #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
         plt.close()
         self.open_displayWindows.pop(self.Ids, None)
