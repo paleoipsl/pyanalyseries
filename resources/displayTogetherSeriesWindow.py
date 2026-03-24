@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.lines import Line2D
+from matplotlib.ticker import LogLocator, FuncFormatter
 
 from .interactivePlot import interactivePlot
 
@@ -126,6 +127,21 @@ class displayTogetherSeriesWindow(QWidget):
             legend_line.set_picker(5)
             ax.map_legend_to_line[legend_line] = ax_line
 
+        #---------------------------------
+        all_psd = True
+        for item in self.items:
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
+            if seriesDict['Type'] != 'Series PSD':
+                all_psd = False
+                break
+        if all_psd:
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+            ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+            ax.invert_xaxis()
+
+        #---------------------------------
         self.interactive_plot.on_resize(None)
         ax.figure.canvas.draw()
         ax.figure.canvas.setFocus()
@@ -162,8 +178,21 @@ class displayTogetherSeriesWindow(QWidget):
         legendHandles.append(legendHandle)
         ax.line_points_pairs.append((line, points))
         ax.set_xlabel(self.xName)
-        ax.set_ylabel(seriesDict['Y'])
-        ax.yaxis.label.set_color(seriesColor)
+        ax.set_ylabel(seriesDict['Y'], color=seriesColor)
+
+        #---------------------------------
+        all_psd = True
+        for item in self.items:
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
+            if seriesDict['Type'] != 'Series PSD':
+                all_psd = False
+                break
+        if all_psd:
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+            ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+            ax.invert_xaxis()
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
@@ -185,11 +214,15 @@ class displayTogetherSeriesWindow(QWidget):
             points = twin.scatter(series.index, series.values, s=5, marker='o', color=seriesColor, visible=False)
             legendHandle = Line2D([0], [0], color=seriesColor, label=seriesDict['Y'])
             legendHandles.append(legendHandle)
-            twin.set(ylabel=seriesDict['Y'])
-            twin.yaxis.label.set_color(seriesColor)
+            twin.set_ylabel(seriesDict['Y'], color=seriesColor)
             twin.line_points_pairs = []
             twin.line_points_pairs.append((line, points))
             self.interactive_plot.axs.append(twin)
+
+            if all_psd:
+                twin.set_yscale('log')
+                twin.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+                twin.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
 
             ax.twins.append(twin)
 
@@ -237,9 +270,22 @@ class displayTogetherSeriesWindow(QWidget):
         legendHandle = Line2D([0], [0], color=seriesColor, label=seriesDict['Y'])
         legendHandles.append(legendHandle)
         ax.line_points_pairs.append((line, points))
-        ax.set_xlabel(self.xName)
+        ax.set_xlabel(self.xName, color=seriesColor)
         ax.set_ylabel('')
-        ax.xaxis.label.set_color(seriesColor)
+
+        #---------------------------------
+        all_psd = True
+        for item in self.items:
+            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
+            if seriesDict['Type'] != 'Series PSD':
+                all_psd = False
+                break
+        if all_psd:
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+            ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+            ax.invert_xaxis()
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
@@ -261,11 +307,16 @@ class displayTogetherSeriesWindow(QWidget):
             points = twin.scatter(series.index, series.values, s=5, marker='o', color=seriesColor, visible=False)
             legendHandle = Line2D([0], [0], color=seriesColor, label=seriesDict['Y'])
             legendHandles.append(legendHandle)
-            twin.set(xlabel=seriesDict['X'])
-            twin.xaxis.label.set_color(seriesColor)
+            twin.set_xlabel(seriesDict['X'], color=seriesColor)
             twin.line_points_pairs = []
             twin.line_points_pairs.append((line, points))
             self.interactive_plot.axs.append(twin)
+
+            if all_psd:
+                twin.set_xscale('log')
+                twin.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+                twin.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+                twin.invert_xaxis()
 
             ax.twins.append(twin)
 

@@ -1,7 +1,24 @@
- * 6.1O
-   * Pyleoclim Detrend, Spectral Estmation, Frequency Filter
-   * Change icons
-   * Intervert Type, Id columns in tree 
+ * 6.2O
+   * Add Transforms / Detrend based on Pyleoclim
+   * Add Frequency-Domain Filter / Frequency Filter based on Pyleoclim
+   * Add Spectral Estimation / Power Spectrum (PSD) based on Pyleoclim
+   * Add Edit / Aggregate / Clean
+   * Improve numeric import: automatic detection of . or , as decimal separators
+   * Improve replicate detection: use duplicated(keep=False) so all replicated values are highlighted
+   * Change SAMPLE to SAMPLING in interface, dialogs and code
+   * Align series import with pointers import: use displayed column order instead of fixed indices
+ * 6.10
+   * Fix defineInterpolation gradients plot update by removing lines instead of clearing
+ * 6.09
+   * Fix sync issue causing stale pointer reload by resetting self.itemINTERPOLATION before save
+   * Disable SizeGrid in StatusBar
+   * Pointers plot now allows independent vertical zooming of pointers and gradients on the secondary axis
+   * Fix History text rendering so it correctly follows application font size changes
+   * Change application icon now as SVG
+   * Swap Type, Id columns in the tree 
+ * 6.08
+   * Simplify icons
+   * Add numba and llvmlite to environment.yml to avoid pip build issues when installing pyleoclim
  * 6.07
    * Fix series color button rendering in tree
  * 6.06
@@ -19,10 +36,10 @@
  * 6.01
    * Fix PyQt6 breaking change: update key and modifier enums (Qt.Key.Key_C, Qt.KeyboardModifier.ControlModifier).
  * 6.00 
-   * Fixed remaining windows not closing on application exit.
+   * Fix remaining windows not closing on application exit.
    * Add Pyleoclim
    * New conda environment
-   * PyQt5 to PyQt6
+   * PyQt5 to PyQt6 (macOS ≥ 13 required; older macOS systems unsupported)
  * 5.45
    * Typo fix in defineSinusoidalSeriesWindow
  * 5.44

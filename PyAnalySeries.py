@@ -33,8 +33,8 @@ from resources.displayFilterWindow import displayFilterWindow
 from resources.defineInterpolationWindow import defineInterpolationWindow
 from resources.displayInterpolationWindow import displayInterpolationWindow
 
-from resources.defineSampleWindow import defineSampleWindow
-from resources.displaySampleWindow import displaySampleWindow
+from resources.defineSamplingWindow import defineSamplingWindow
+from resources.displaySamplingWindow import displaySamplingWindow
 
 from resources.CustomQTableWidget import CustomQTableWidget
 
@@ -46,7 +46,8 @@ from resources.defineSinusoidalSeriesWindow import defineSinusoidalSeriesWindow
 
 from resources.computeAggregateWindow import computeAggregateWindow
 from resources.computeDetrendWindow import computeDetrendWindow
-from resources.computeSpectralEstimationWindow import computeSpectralEstimationWindow
+from resources.computePowerSpectrumWindow import computePowerSpectrumWindow
+from resources.computeFrequencyFilterWindow import computeFrequencyFilterWindow
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
@@ -58,12 +59,12 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.10'
+version = 'v6.20'
 
 open_ws = {}
 open_displayWindows = {} 
 open_filterWindows = {} 
-open_sampleWindows = {} 
+open_samplingWindows = {} 
 open_interpolationWindows = {} 
 
 open_importWindow = {}
@@ -73,7 +74,8 @@ open_sinusoidalSeriesWindow = {}
 
 open_aggregateWindows = {}
 open_detrendWindows = {}
-open_spectralEstimationWindows = {}
+open_powerSpectrumWindows = {}
+open_frequencyFilterWindows = {}
 
 #========================================================================================
 def colorize_item(item, color_name, alpha=100):
@@ -133,6 +135,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
 
     icon_series = QIcon(str(app_dir / 'resources' / 'icon_series.png'))
     icon_seriesReplicates = QIcon(str(app_dir / 'resources' / 'icon_seriesReplicates.png'))
+
     icon_seriesPSD = QIcon(str(app_dir / 'resources' / 'icon_seriesPSD.png'))
     icon_apply = QIcon(str(app_dir / 'resources' / 'icon_apply.png'))
 
@@ -149,7 +152,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
             item.setIcon(0, icon_series)
     elif itemDict['Type'] == 'FILTER':
             item.setIcon(0, icon_apply)
-    elif itemDict['Type'] == 'SAMPLE':
+    elif itemDict['Type'] in ['SAMPLE', 'SAMPLING']:
             item.setIcon(0, icon_apply)
     elif itemDict['Type'] == 'INTERPOLATION':
             item.setIcon(0, icon_apply)
@@ -347,12 +350,21 @@ def sync_window_with_item(item):
     for key in open_filterWindows.keys():
         filterWindow = open_filterWindows[key]
         filterWindow.sync_with_item(item)
-    for key in open_sampleWindows.keys():
-        sampleWindow = open_sampleWindows[key]
-        sampleWindow.sync_with_item(item)
+    for key in open_samplingWindows.keys():
+        samplingWindow = open_samplingWindows[key]
+        samplingWindow.sync_with_item(item)
     for key in open_interpolationWindows.keys():
         interpolationWindow = open_interpolationWindows[key]
         interpolationWindow.sync_with_item(item)
+    for key in open_aggregateWindows.keys():
+        aggregateWindow = open_aggregateWindows[key]
+        aggregateWindow.sync_with_item(item)
+    for key in open_detrendWindows.keys():
+        detrendWindow = open_detrendWindows[key]
+        detrendWindow.sync_with_item(item)
+    for key in open_frequencyFilterWindows.keys():
+        frequencyFilterWindow = open_frequencyFilterWindows[key]
+        frequencyFilterWindow.sync_with_item(item)
 
 #========================================================================================
 def load_WorkSheet(fileName):
@@ -429,7 +441,7 @@ def load_WorkSheet(fileName):
                 QApplication.processEvents()
 
         #-------------------------------------
-        elif sheetName.startswith(('FILTER Id-', 'SAMPLE Id-')):
+        elif sheetName.startswith(('FILTER Id-', 'SAMPLE Id-', 'SAMPLING Id-')):
             
             try:
                 df = pd.read_excel(fileName, sheet_name=sheetName, na_filter=False)
@@ -438,10 +450,14 @@ def load_WorkSheet(fileName):
                 history = re.sub(r'^(<br\s*/?>)', '', history, flags=re.IGNORECASE)     # to correct old comments
                 history = re.sub(r'\bserie\b', 'series', history)                       # to correct serie to series
                 history = re.sub(r'\bSerie\b', 'Series', history)                       # to correct Serie to Series
+                history = re.sub(r'\bSAMPLE\b', 'SAMPLING', history)                    # to correct SAMPLE to SAMPLING
+
+                type = df['Type'][0] 
+                type = re.sub(r'\bSAMPLE\b', 'SAMPLING',  type)                            # to correct SAMPLE to SAMPLING
 
                 aDict = {
                         'Id': 'Id-' + sheetName.split('Id-')[1],
-                        'Type': df['Type'][0],
+                        'Type': type,
                         'Name': df['Name'][0],
                         'Parameters': str(df['Parameters'][0]),
                         'Date': df['Date'][0] if 'Date' in df.columns else '',
@@ -449,7 +465,7 @@ def load_WorkSheet(fileName):
                         'History': history
                 }
 
-                if 'XCoords' in df.columns:                 # for SAMPLE
+                if 'XCoords' in df.columns:                 # for SAMPLING
                     aDict = aDict | {
                         'XCoords': addNanList(df['XCoords'])
                     }
@@ -457,7 +473,7 @@ def load_WorkSheet(fileName):
                 itemDict_list.append(aDict)
 
             except:
-                msg = f"The file '{fileName}' contains a FILTER/SAMPLE that is wrongly formatted in {sheetName} sheet."
+                msg = f"The file '{fileName}' contains a FILTER/SAMPLING that is wrongly formatted in {sheetName} sheet."
                 QMessageBox.critical(main_window, "Load file", msg)
                 main_window.statusBar().showMessage(msg, 5000)
                 QApplication.processEvents()
@@ -578,7 +594,7 @@ def save_WorkSheet(ws_item):
     #----------------------------------
     for sheetName in wb.sheetnames:
         # remove sheetname 'Serie Idxxxxxxxx' (wrong spell)
-        if sheetName.startswith(('Serie Id', 'Series Id', 'SAMPLE Id', 'FILTER Id', 'INTERPOLATION Id')) or \
+        if sheetName.startswith(('Serie Id', 'Series Id', 'SAMPLE Id', 'SAMPLING Id', 'FILTER Id', 'INTERPOLATION Id')) or \
            sheetName == 'Information' or \
            sheetName == 'Sheet':
             del wb[sheetName]
@@ -643,7 +659,7 @@ def save_WorkSheet(ws_item):
                         ws.cell(row=i, column=12, value=value)
 
             #-----------------------
-            elif itemDict["Type"] in ['FILTER', 'SAMPLE']:
+            elif itemDict["Type"] in ['FILTER', 'SAMPLE', 'SAMPLING']:
 
                 sheetName = f'{itemDict["Type"]} {itemDict["Id"]}'
                 ws = wb.create_sheet(title=sheetName)
@@ -883,8 +899,8 @@ def compute_detrend():
     item.setSelected(True)
 
 #========================================================================================
-def compute_spectralEstimation():
-    global open_spectralEstimationWindows
+def compute_powerSpectrum():
+    global open_powerSpectrumWindows
 
     items = get_unique_selected_items(tree_widget)
     items_selected = []                             # select only series
@@ -898,16 +914,48 @@ def compute_spectralEstimation():
         return
 
     #-------------------------------------------------------------
-    Id_spectralEstimationWindow = generate_Id()
+    Id_powerSpectrumWindow = generate_Id()
 
-    if Id_spectralEstimationWindow in open_spectralEstimationWindows:
-        spectralEstimationWindow = open_spectralEstimationWindows[Id_spectralEstimationWindow]
-        spectralEstimationWindow.raise_()
-        spectralEstimationWindow.activateWindow()
+    if Id_powerSpectrumWindow in open_powerSpectrumWindows:
+        powerSpectrumWindow = open_powerSpectrumWindows[Id_powerSpectrumWindow]
+        powerSpectrumWindow.raise_()
+        powerSpectrumWindow.activateWindow()
     else:
-        spectralEstimationWindow = computeSpectralEstimationWindow(Id_spectralEstimationWindow, open_spectralEstimationWindows, item, add_item_tree_widget)
-        open_spectralEstimationWindows[Id_spectralEstimationWindow] = spectralEstimationWindow
-        spectralEstimationWindow.show()
+        powerSpectrumWindow = computePowerSpectrumWindow(Id_powerSpectrumWindow, open_powerSpectrumWindows, item, add_item_tree_widget)
+        open_powerSpectrumWindows[Id_powerSpectrumWindow] = powerSpectrumWindow
+        powerSpectrumWindow.show()
+
+    #-------------------------------------------------------------
+    main_window.setFocus()                  # replace selection
+    tree_widget.clearSelection()
+    item.setSelected(True)
+
+#========================================================================================
+def compute_frequencyFilter():
+    global open_frequencyFilterWindows
+
+    items = get_unique_selected_items(tree_widget)
+    items_selected = []                             # select only series
+    for item in items:
+        seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
+        if  seriesDict['Type'].startswith('Series'): 
+            items_selected.append(item)
+
+    if len(items_selected) != 1 : 
+        main_window.statusBar().showMessage('Please select only 1 series', 5000)
+        return
+
+    #-------------------------------------------------------------
+    Id_frequencyFilterWindow = generate_Id()
+
+    if Id_frequencyFilterWindow in open_frequencyFilterWindows:
+        frequencyFilterWindow = open_frequencyFilterWindows[Id_frequencyFilterWindow]
+        frequencyFilterWindow.raise_()
+        frequencyFilterWindow.activateWindow()
+    else:
+        frequencyFilterWindow = computeFrequencyFilterWindow(Id_frequencyFilterWindow, open_frequencyFilterWindows, item, add_item_tree_widget)
+        open_frequencyFilterWindows[Id_frequencyFilterWindow] = frequencyFilterWindow
+        frequencyFilterWindow.show()
 
     #-------------------------------------------------------------
     main_window.setFocus()                  # replace selection
@@ -1173,13 +1221,13 @@ def displaySingleSeries_selected_series():
             displayWindow.raise_()
             displayWindow.activateWindow()
         else:
-            if itemDict['Type'].startswith('Series') : 
+            if itemDict['Type'].startswith('Series'): 
                 displayWindow = displaySingleSeriesWindow(Id_displayWindow, open_displayWindows, item)
-            elif itemDict['Type'] == 'FILTER' :
+            elif itemDict['Type'] == 'FILTER':
                 displayWindow = displayFilterWindow(Id_displayWindow, open_displayWindows, item)
-            elif itemDict['Type'] == 'SAMPLE':
-                displayWindow = displaySampleWindow(Id_displayWindow, open_displayWindows, item)
-            elif itemDict['Type'] == 'INTERPOLATION' :
+            elif itemDict['Type'] == 'SAMPLING':
+                displayWindow = displaySamplingWindow(Id_displayWindow, open_displayWindows, item)
+            elif itemDict['Type'] == 'INTERPOLATION':
                 displayWindow = displayInterpolationWindow(Id_displayWindow, open_displayWindows, item)
             open_displayWindows[Id_displayWindow] = displayWindow
             displayWindow.show()
@@ -1345,8 +1393,8 @@ def apply_filter():
         item.setSelected(True)
 
 #========================================================================================
-def define_sample():
-    global open_sampleWindows
+def define_sampling():
+    global open_samplingWindows
 
     items = get_unique_selected_items(tree_widget)
     items_selected = []                             # select only series
@@ -1360,16 +1408,16 @@ def define_sample():
         return
 
     #-------------------------------------------------------------
-    Id_sampleWindow = generate_Id()
+    Id_samplingWindow = generate_Id()
 
-    if Id_sampleWindow in open_sampleWindows:
-        sampleWindow = open_sampleWindows[Id_sampleWindow]
-        sampleWindow.raise_()
-        sampleWindow.activateWindow()
+    if Id_samplingWindow in open_samplingWindows:
+        samplingWindow = open_samplingWindows[Id_samplingWindow]
+        samplingWindow.raise_()
+        samplingWindow.activateWindow()
     else:
-        sampleWindow = defineSampleWindow(Id_sampleWindow, open_sampleWindows, items_selected, add_item_tree_widget)
-        open_sampleWindows[Id_sampleWindow] = sampleWindow
-        sampleWindow.show()
+        samplingWindow = defineSamplingWindow(Id_samplingWindow, open_samplingWindows, items_selected, add_item_tree_widget)
+        open_samplingWindows[Id_samplingWindow] = samplingWindow
+        samplingWindow.show()
 
     #-------------------------------------------------------------
     main_window.setFocus()                  # replace selection
@@ -1377,7 +1425,7 @@ def define_sample():
     item.setSelected(True)
 
 #========================================================================================
-def apply_sample():
+def apply_sampling():
 
     items = get_unique_selected_items(tree_widget)
     itemSeries_selected = []
@@ -1386,11 +1434,11 @@ def apply_sample():
         itemDict = item.data(0, Qt.ItemDataRole.UserRole)
         if  itemDict['Type'].startswith('Series'): 
             itemSeries_selected.append(item)
-        elif itemDict['Type'] == 'SAMPLE':
+        elif itemDict['Type'] == 'SAMPLING':
             itemSamples_selected.append(item)
 
     if len(itemSamples_selected) != 1 or len(itemSeries_selected) < 1:
-        main_window.statusBar().showMessage('Please select 1 SAMPLE and at least 1 series', 5000)
+        main_window.statusBar().showMessage('Please select 1 SAMPLING and at least 1 series', 5000)
         return
        
     #-------------------------------------------------------------
@@ -1402,8 +1450,8 @@ def apply_sample():
 
     reply = QMessageBox.question(
         main_window, 
-        "Apply sample confirmation",
-        "Do you want to apply sample on selected series ?",
+        "Apply sampling confirmation",
+        "Do you want to apply sampling on selected series ?",
         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         QMessageBox.StandardButton.No
     )
@@ -1415,7 +1463,7 @@ def apply_sample():
         return
 
     #-------------------------------------------------------------
-    sampleDict = itemFilter.data(0, Qt.ItemDataRole.UserRole)
+    samplingDict = itemFilter.data(0, Qt.ItemDataRole.UserRole)
 
     for item in itemSeries_selected:
         seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
@@ -1423,38 +1471,38 @@ def apply_sample():
         series = series.groupby(series.index).mean()
 
         try:
-            if 'XCoords' in sampleDict.keys():
-                param1_str, param2_str = sampleDict['Parameters'].split(';')
-                sample_kind = param1_str.strip()
-                sample_integrated = str_to_bool(param2_str.strip())
-                sample_index =  sampleDict['XCoords']
-                if sample_integrated: 
-                    textHistory = f'using x values and {sample_kind} interpolation with integration'
+            if 'XCoords' in samplingDict.keys():
+                param1_str, param2_str = samplingDict['Parameters'].split(';')
+                sampling_kind = param1_str.strip()
+                sampling_integrated = str_to_bool(param2_str.strip())
+                sampling_index =  samplingDict['XCoords']
+                if sampling_integrated: 
+                    textHistory = f'using x values and {sampling_kind} interpolation with integration'
                 else:
-                    textHistory = f'using x values and {sample_kind} interpolation'
+                    textHistory = f'using x values and {sampling_kind} interpolation'
             else:
-                param1_str, param2_str, param3_str = sampleDict['Parameters'].split(';')
-                sample_step = float(param1_str.strip())
-                sample_kind = param2_str.strip()
-                sample_integrated = str_to_bool(param3_str.strip())
+                param1_str, param2_str, param3_str = samplingDict['Parameters'].split(';')
+                sampling_step = float(param1_str.strip())
+                sampling_kind = param2_str.strip()
+                sampling_integrated = str_to_bool(param3_str.strip())
                 index_min = series.index.min()
                 index_max = series.index.max()
-                index_min = np.ceil(index_min / sample_step) * sample_step
-                index_max = np.floor(index_max / sample_step) * sample_step
-                sample_index = np.arange(index_min, index_max + sample_step, sample_step)
-                if sample_integrated: 
-                    textHistory = f'every {sample_step} and {sample_kind} interpolation with integration'
+                index_min = np.ceil(index_min / sampling_step) * sampling_step
+                index_max = np.floor(index_max / sampling_step) * sampling_step
+                sampling_index = np.arange(index_min, index_max + sampling_step, sampling_step)
+                if sampling_integrated: 
+                    textHistory = f'every {sampling_step} and {sampling_kind} interpolation with integration'
                 else:
-                    textHistory = f'every {sample_step} and {sample_kind} interpolation'
+                    textHistory = f'every {sampling_step} and {sampling_kind} interpolation'
 
             sampled_Id = generate_Id()
             sampled_seriesDict = seriesDict | {'Id': sampled_Id,
                 'Type': 'Series sampled',
-                'Series': defineSampleWindow.sample(series, sample_index, kind=sample_kind, integrated=sample_integrated),
+                'Series': defineSamplingWindow.sampling(series, sampling_index, kind=sampling_kind, integrated=sampling_integrated),
                 'Color': generate_color(exclude_color=seriesDict['Color']),
                 'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
                 'History': append_to_htmlText(seriesDict['History'], 
-                    f'Series <i><b>{seriesDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sampleDict["Id"]}</i></b><BR>---> series <i><b>{sampled_Id}</b></i>'),
+                    f'Series <i><b>{seriesDict["Id"]}</i></b> sampled {textHistory} with SAMPLING <i><b>{samplingDict["Id"]}</i></b><BR>---> series <i><b>{sampled_Id}</b></i>'),
                 'Comment': ''
             }
             ws_item = item.parent()
@@ -1878,7 +1926,7 @@ enabled = settings.value("ui/customTooltipEnabled", True, type=bool)
 fontArial = QFont('Arial', fontSize)
 app.setFont(fontArial)
 
-icon = QIcon(str(app_dir / 'resources' / 'PyAnalySeries_icon.png'))
+icon = QIcon(str(app_dir / 'resources' / 'PyAnalySeries_icon.svg'))
 app.setWindowIcon(icon)
 
 main_window = MainWindow()
@@ -2022,7 +2070,8 @@ process_menu = menu_bar.addMenu("Process")
 # ----------------
 add_section(process_menu, "Transforms", first=True)
 
-computeAggregate_action = QAction("Aggregate / Clean ...", main_window)
+computeAggregate_action = QAction("Edit / Aggregate / Clean ...", main_window)
+computeAggregate_action.setShortcut("Ctrl+e")
 computeAggregate_action.triggered.connect(compute_aggregate)
 process_menu.addAction(computeAggregate_action)
 
@@ -2034,14 +2083,14 @@ process_menu.addAction(computeDetrend_action)
 
 process_menu.addSeparator()
 
-defineSample_action = QAction("Define Sampling ...", main_window)
-defineSample_action.setShortcut("Ctrl+a")
-defineSample_action.triggered.connect(define_sample)
-process_menu.addAction(defineSample_action)
+defineSampling_action = QAction("Define Sampling ...", main_window)
+defineSampling_action.setShortcut("Ctrl+a")
+defineSampling_action.triggered.connect(define_sampling)
+process_menu.addAction(defineSampling_action)
 
-applySample_action = QAction("Apply Sampling", main_window)
-applySample_action.triggered.connect(apply_sample)
-process_menu.addAction(applySample_action)
+applySampling_action = QAction("Apply Sampling", main_window)
+applySampling_action.triggered.connect(apply_sampling)
+process_menu.addAction(applySampling_action)
 
 # ----------------
 add_section(process_menu, "Interpolation")
@@ -2076,15 +2125,15 @@ process_menu.addAction(applyFilter_action)
 add_section(process_menu, "Frequency-Domain Filter")
 
 computeFreqFilter_action = QAction("Frequency Filter ...", main_window)
-#computeFreqFilter_action.triggered.connect(define_frequencyFilter)
+computeFreqFilter_action.triggered.connect(compute_frequencyFilter)
 process_menu.addAction(computeFreqFilter_action)
 
 # ----------------
 add_section(process_menu, "Spectral Estimation")
 
-computeSpectralEstimation_action = QAction("Spectral Estimation ...", main_window)
-computeSpectralEstimation_action.triggered.connect(compute_spectralEstimation)
-process_menu.addAction(computeSpectralEstimation_action)
+computePowerSpectrum_action = QAction("Power Spectrum (PSD) ...", main_window)
+computePowerSpectrum_action.triggered.connect(compute_powerSpectrum)
+process_menu.addAction(computePowerSpectrum_action)
 
 #----------------------------------------------
 settings_menu = menu_bar.addMenu('Settings')

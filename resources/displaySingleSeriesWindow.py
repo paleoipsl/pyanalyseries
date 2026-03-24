@@ -35,10 +35,9 @@ class displaySingleSeriesWindow(QWidget):
         self.seriesWidth = 0.8
 
         self.seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
-
         self.xName = self.seriesDict['X']
         self.yName = self.seriesDict['Y']
-        series = self.seriesDict['Series']
+        self.series = self.seriesDict['Series']
 
         title = 'Display series : ' + self.Id
         self.setWindowTitle(title)
@@ -51,16 +50,16 @@ class displaySingleSeriesWindow(QWidget):
         data_tab = QWidget()
         data_layout = QVBoxLayout()
         self.data_table = CustomQTableWidget()
-        self.data_table.setRowCount(len(series))
+        self.data_table.setRowCount(len(self.series))
         self.data_table.setColumnCount(2)
         self.data_table.setHorizontalHeaderLabels([self.xName, self.yName])
-        replicates = series.index.duplicated()
-        missing_values = series.isna().to_numpy()
-        series = series.sort_index()
+        replicates = self.series.index.duplicated(keep=False)
+        missing_values = self.series.isna().to_numpy()
+        self.series = self.series.sort_index()
 
-        for i in range(len(series)):
-            self.data_table.setItem(i, 0, QTableWidgetItem(str(f'{series.index[i]:.6f}')))
-            self.data_table.setItem(i, 1, QTableWidgetItem(str(f'{series.values[i]:.6f}')))
+        for i in range(len(self.series)):
+            self.data_table.setItem(i, 0, QTableWidgetItem(str(f'{self.series.index[i]:.6f}')))
+            self.data_table.setItem(i, 1, QTableWidgetItem(str(f'{self.series.values[i]:.6f}')))
             if missing_values[i]:
                 base = QColor('peachpuff')
                 alt = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
@@ -75,6 +74,7 @@ class displaySingleSeriesWindow(QWidget):
             self.data_table.item(i, 1).setBackground(background_color)
         self.data_table.resizeColumnsToContents()
         self.data_table.set_italic_headers()
+        self.data_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
 
         data_layout.addWidget(self.data_table)
         data_tab.setLayout(data_layout)
@@ -87,18 +87,18 @@ class displaySingleSeriesWindow(QWidget):
         stats_table.setColumnCount(2)
         stats_table.setHorizontalHeaderLabels(["Stat", "Value"])
         stats = {
-            "Number of points": (len(series), 'd'),
-            "Number of replicates": ((series.index.value_counts() > 1).sum(), 'd'),
-            "Number of missing": (series.isna().sum(), 'd'),
-            "Mean": (series.mean(), '.2f'),
-            "Median": (series.median(), '.2f'),
-            "Minimum": (series.min(), '.2f'),
-            "Maximum": (series.max(), '.2f'),
-            "Standard deviation": (series.std(), '.2f'),
-            "Quantile 25%": (series.quantile(0.25), '.2f'),
-            "Quantile 50%": (series.quantile(0.50), '.2f'),
-            "Quantile 75%": (series.quantile(0.75), '.2f'),
-            "Inter quartile range (IQR)": (series.quantile(0.75) - series.quantile(0.25), '.2f'),
+            "Number of points": (len(self.series), 'd'),
+            "Number of replicates": ((self.series.index.value_counts() > 1).sum(), 'd'),
+            "Number of missing": (self.series.isna().sum(), 'd'),
+            "Mean": (self.series.mean(), '.2f'),
+            "Median": (self.series.median(), '.2f'),
+            "Minimum": (self.series.min(), '.2f'),
+            "Maximum": (self.series.max(), '.2f'),
+            "Standard deviation": (self.series.std(), '.2f'),
+            "Quantile 25%": (self.series.quantile(0.25), '.2f'),
+            "Quantile 50%": (self.series.quantile(0.50), '.2f'),
+            "Quantile 75%": (self.series.quantile(0.75), '.2f'),
+            "Inter quartile range (IQR)": (self.series.quantile(0.75) - self.series.quantile(0.25), '.2f'),
         }
         for i, (key, value) in enumerate(stats.items()):
             stats_table.setItem(i, 0, QTableWidgetItem(key))
@@ -135,13 +135,7 @@ class displaySingleSeriesWindow(QWidget):
         self.textHistory.setFixedHeight(self.textHistory.fontMetrics().lineSpacing() * 10)
         self.textHistory.setText(self.seriesDict['History'])
         self.textHistory.setReadOnly(True)
-        self.textHistory.setStyleSheet("""
-            QTextEdit[readOnly="true"] {
-                background-color: #f8f8f8;
-                border: 1px solid lightgray;
-                font-family: Courier New;
-            }
-        """)
+        self.textHistory.setFont(QFont("Courier New"))
 
         labelComment = QLabel("Comment :")
         self.textComment = QTextEdit()

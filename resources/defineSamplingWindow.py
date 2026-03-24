@@ -24,13 +24,13 @@ for key in plt.rcParams.keys():
         plt.rcParams[key] = []
 
 #=========================================================================================
-class defineSampleWindow(QWidget):
+class defineSamplingWindow(QWidget):
     #---------------------------------------------------------------------------------------------
-    def __init__(self, Id, open_sampleWindows, items, add_item_tree_widget):
+    def __init__(self, Id, open_samplingWindows, items, add_item_tree_widget):
         super().__init__()
 
         self.Id = Id
-        self.open_sampleWindows = open_sampleWindows
+        self.open_samplingWindows = open_samplingWindows
         self.items = items
         self.add_item_tree_widget = add_item_tree_widget
 
@@ -44,7 +44,7 @@ class defineSampleWindow(QWidget):
         self.kind = 'linear' 
         self.integrated = False
 
-        title = 'Define SAMPLE : ' + self.Id
+        title = 'Define SAMPLING : ' + self.Id
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)
@@ -61,7 +61,7 @@ class defineSampleWindow(QWidget):
         # ===== 
         series_layout = QHBoxLayout()
 
-        self.series_combo_label = QLabel("Sample series :")
+        self.series_combo_label = QLabel("Sampled series :")
         self.series_combo_label.setFixedWidth(120)
         self.series_combo = QComboBox()
         font = QFont("Courier New")
@@ -120,12 +120,12 @@ class defineSampleWindow(QWidget):
             self.seriesRef_YName = self.seriesRefDict['Y']
             self.seriesRef_Id = self.seriesRefDict['Id']
             self.xvalues_label.setText(f'2 with {self.seriesRef_Id} : {self.seriesRef_XName} / {self.seriesRef_YName}')
-            self.sample_from_xvalues = True 
+            self.sampling_from_xvalues = True 
         else:
             self.step_radio.setChecked(True)
             self.xvalues_radio.setEnabled(False)
             self.xvalues_label.setEnabled(False)
-            self.sample_from_xvalues = False
+            self.sampling_from_xvalues = False
 
         # ===== 
         kind_layout = QHBoxLayout()
@@ -182,31 +182,33 @@ class defineSampleWindow(QWidget):
         button_layout = QHBoxLayout()
 
         style = "padding: 4px 12px;"
-        self.saveSample_button = QPushButton("Save sample", self)
-        self.saveSample_button.setStyleSheet(style)
-        self.saveSample_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        self.saveSampleAndSeriesSampled_button = QPushButton("Save sample and series sampled", self)
-        self.saveSampleAndSeriesSampled_button.setStyleSheet(style)
+        self.saveSampling_button = QPushButton("Save sampling", self)
+        self.saveSampling_button.setStyleSheet(style)
+        self.saveSampling_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.saveSamplingAndSeriesSampled_button = QPushButton("Save sampling and series sampled", self)
+        self.saveSamplingAndSeriesSampled_button.setStyleSheet(style)
         self.close_button = QPushButton("Close", self)
         self.close_button.setStyleSheet(style)
         button_layout.addStretch()
 
         saveClose_layout = QVBoxLayout()
-        saveClose_layout.addWidget(self.saveSample_button)
+        saveClose_layout.addWidget(self.saveSampling_button)
         saveCloseLine_layout = QHBoxLayout()
-        saveCloseLine_layout.addWidget(self.saveSampleAndSeriesSampled_button)
+        saveCloseLine_layout.addWidget(self.saveSamplingAndSeriesSampled_button)
         saveCloseLine_layout.addWidget(self.close_button)
         saveClose_layout.addLayout(saveCloseLine_layout)
         button_layout.addLayout(saveClose_layout)
 
         main_layout.addLayout(button_layout)
 
-        self.saveSample_button.clicked.connect(self.saveSample)
-        self.saveSampleAndSeriesSampled_button.clicked.connect(self.saveSampleAndSeriesSampled)
+        self.saveSampling_button.clicked.connect(self.saveSampling)
+        self.saveSamplingAndSeriesSampled_button.clicked.connect(self.saveSamplingAndSeriesSampled)
         self.close_button.clicked.connect(self.close)
 
         self.status_bar = QStatusBar()
         self.status_bar.setFixedHeight(20)
+        self.status_bar.setSizeGripEnabled(False)
+
         main_layout.addWidget(self.status_bar)
 
         #----------------------------------------------
@@ -236,7 +238,7 @@ class defineSampleWindow(QWidget):
 
         self.step = self.step_spinbox.value()
         self.kind = self.kind_dropdown.currentText()
-        self.sample_from_xvalues = self.xvalues_radio.isChecked()
+        self.sampling_from_xvalues = self.xvalues_radio.isChecked()
         self.integrated = self.integrated_checkbox.isChecked()
 
         xlim = self.interactive_plot.axs[0].get_xlim()
@@ -272,16 +274,16 @@ class defineSampleWindow(QWidget):
         self.series = self.seriesDict['Series']
         self.series = self.series.groupby(self.series.index).mean()
 
-        if self.sample_from_xvalues:
+        if self.sampling_from_xvalues:
             self.seriesRefDict = self.itemRef.data(0, Qt.ItemDataRole.UserRole)
             self.seriesRef = self.seriesRefDict['Series']
-            self.sample_index = self.seriesRef.index
+            self.sampling_index = self.seriesRef.index
         else:
             index_min = self.series.index.min()
             index_max = self.series.index.max()
             index_min = np.ceil(index_min / self.step) * self.step
             index_max = np.floor(index_max / self.step) * self.step
-            self.sample_index = np.arange(index_min, index_max + self.step, self.step)
+            self.sampling_index = np.arange(index_min, index_max + self.step, self.step)
 
         ax = self.interactive_plot.axs[0]
 
@@ -290,7 +292,7 @@ class defineSampleWindow(QWidget):
         ax.set_ylabel(self.yName)
         ax.autoscale()
 
-        seriesSampled = self.sample(self.series, self.sample_index, self.kind, integrated=self.integrated, ax=ax)
+        seriesSampled = self.sampling(self.series, self.sampling_index, self.kind, integrated=self.integrated, ax=ax)
         seriesColor = self.seriesDict['Color']
 
         line1, = ax.plot(self.series.index, self.series.values, color=seriesColor, linewidth=self.seriesWidth, label='Original')
@@ -327,13 +329,13 @@ class defineSampleWindow(QWidget):
 
     #----------------------------------------------------------------------------------
     @staticmethod
-    def sample(series, sample_index, kind="linear", integrated=False, ax=None, quad_points=20):
+    def sampling(series, sampling_index, kind="linear", integrated=False, ax=None, quad_points=20):
         """
-        Interpolates or integrates a time series on specified sample points.
+        Interpolates or integrates a time series on specified sampled points.
     
         Parameters:
             series (pd.Series): Time series with index as x-values.
-            sample_index (np.ndarray): Points where values are interpolated or integrated.
+            sampling_index (np.ndarray): Points where values are interpolated or integrated.
             kind (str): Interpolation type ('linear', 'cubic', etc.).
             integrated (bool): If True, use integration-based sampling.
             ax (matplotlib axis, optional): For visualizing integration intervals.
@@ -348,29 +350,29 @@ class defineSampleWindow(QWidget):
     
         # Restrict to range of data
         x_min, x_max = series.index.min(), series.index.max()
-        sample_index = np.array(sample_index)                           # convert list to numpy array
-        valid_sample_index = sample_index[(sample_index >= x_min) & (sample_index <= x_max)]
+        sampling_index = np.array(sampling_index)                           # convert list to numpy array
+        valid_sampling_index = sampling_index[(sampling_index >= x_min) & (sampling_index <= x_max)]
     
         if not integrated:
             # Standard interpolation
-            result_series = pd.Series(index=valid_sample_index, dtype=float)
+            result_series = pd.Series(index=valid_sampling_index, dtype=float)
             result_series = result_series.combine_first(series).sort_index()
             result_series = result_series.interpolate(method=kind, limit_direction="both")
-            return result_series.loc[valid_sample_index]
+            return result_series.loc[valid_sampling_index]
         else:
             # Integrated interpolation using fixed_quad
             interpolator = interpolate.interp1d(series.index, series.values, kind=kind, fill_value="extrapolate")
   
-            # Compute midpoints between valid sample points
-            mids = (valid_sample_index[1:] + valid_sample_index[:-1]) / 2
+            # Compute midpoints between valid sampled points
+            mids = (valid_sampling_index[1:] + valid_sampling_index[:-1]) / 2
 
             # Compute extended edges for first and last interval
-            first_edge = valid_sample_index[0] - (mids[0] - valid_sample_index[0])
-            last_edge = valid_sample_index[-1] + (valid_sample_index[-1] - mids[-1])
+            first_edge = valid_sampling_index[0] - (mids[0] - valid_sampling_index[0])
+            last_edge = valid_sampling_index[-1] + (valid_sampling_index[-1] - mids[-1])
             
             # Combine all edges
             edges = [first_edge] + list(mids) + [last_edge]
-            result_index = valid_sample_index  # Each interval is associated with a sample point
+            result_index = valid_sampling_index  # Each interval is associated with a sampled point
  
             # Create full list of intervals and associated result index
             intervals = []
@@ -399,17 +401,17 @@ class defineSampleWindow(QWidget):
             return pd.Series(data=integrated_values, index=filtered_index)
 
     #---------------------------------------------------------------------------------------------
-    def saveSample(self):
-        sample_Id = generate_Id()
-        if not self.sample_from_xvalues:
-            sampleDict = {
-                'Id': sample_Id,
-                'Type': 'SAMPLE', 
-                'Name': f'Sample every {self.step}' if not self.integrated else f'Sample every {self.step} with integration',
+    def saveSampling(self):
+        sampling_Id = generate_Id()
+        if not self.sampling_from_xvalues:
+            samplingDict = {
+                'Id': sampling_Id,
+                'Type': 'SAMPLING', 
+                'Name': f'Sampling every {self.step}' if not self.integrated else f'Sampling every {self.step} with integration',
                 'Parameters': f'{self.step} ; {self.kind}; {self.integrated}',
                 'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
                 'Comment': '',
-                'History': f'SAMPLE <i><b>{sample_Id}</i></b> with parameters :' + \
+                'History': f'SAMPLING <i><b>{sampling_Id}</i></b> with parameters :' + \
                         '<ul>' + \
                         f'<li>Step : {self.step}' + \
                         f'<li>Kind of interpolation : {self.kind}' + \
@@ -417,34 +419,34 @@ class defineSampleWindow(QWidget):
                         '</ul>'
             }
         else:
-            sampleDict = {
-                'Id': sample_Id,
-                'Type': 'SAMPLE', 
-                'Name': f'Sample using x values of {self.seriesRef_YName}',
+            samplingDict = {
+                'Id': sampling_Id,
+                'Type': 'SAMPLING', 
+                'Name': f'Sampling using x values of {self.seriesRef_YName}',
                 'Parameters': f'{self.kind} ; {self.integrated}',
                 'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-                'History': f'SAMPLE <i><b>{sample_Id}</i></b> with parameters :' + \
+                'History': f'SAMPLING <i><b>{sampling_Id}</i></b> with parameters :' + \
                         '<ul>' + \
                         f'<li>X values from {self.seriesRef_Id} : {self.seriesRef_XName} / {self.seriesRef_YName}' + \
                         f'<li>Kind of interpolation : {self.kind}' + \
                         f'<li>Integrated : {self.integrated}' + \
                         '</ul>',
                 'Comment': '',
-                'XCoords': self.sample_index
+                'XCoords': self.sampling_index
             }
         try:
-            self.add_item_tree_widget(self.item.parent(), sampleDict)
+            self.add_item_tree_widget(self.item.parent(), samplingDict)
         except:
             pass 
 
-        return sample_Id
+        return sampling_Id
 
     #---------------------------------------------------------------------------------------------
-    def saveSampleAndSeriesSampled(self):
-        sample_Id = self.saveSample()
+    def saveSamplingAndSeriesSampled(self):
+        sampling_Id = self.saveSampling()
 
         sampled_Id = generate_Id()
-        if not self.sample_from_xvalues:
+        if not self.sampling_from_xvalues:
             if self.integrated:
                 textHistory = f'every {self.step} and {self.kind} interpolation with integration'
             else:
@@ -457,11 +459,11 @@ class defineSampleWindow(QWidget):
 
         sampled_seriesDict = self.seriesDict | {'Id': sampled_Id, 
             'Type': 'Series sampled', 
-            'Series': self.sample(self.series, self.sample_index, kind=self.kind, integrated=self.integrated),
+            'Series': self.sampling(self.series, self.sampling_index, kind=self.kind, integrated=self.integrated),
             'Color': generate_color(exclude_color=self.seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': append_to_htmlText(self.seriesDict['History'], 
-                f'Series <i><b>{self.seriesDict["Id"]}</i></b> sampled {textHistory} with SAMPLE <i><b>{sample_Id}</i></b><BR>---> series <i><b>{sampled_Id}</b></i>'),
+                f'Series <i><b>{self.seriesDict["Id"]}</i></b> sampled {textHistory} with SAMPLING <i><b>{sampling_Id}</i></b><BR>---> series <i><b>{sampled_Id}</b></i>'),
             'Comment': '',
         }
 
@@ -474,7 +476,7 @@ class defineSampleWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
         plt.close()
-        self.open_sampleWindows.pop(self.Id, None)
+        self.open_samplingWindows.pop(self.Id, None)
         event.accept()
 
 #=========================================================================================
@@ -527,11 +529,11 @@ if __name__ == "__main__":
     items.append(item1)
     items.append(item2)
 
-    open_sampleWindows = {}
-    Id_sampleWindow = '1234'
-    sampleWindow = defineSampleWindow(Id_sampleWindow, open_sampleWindows, items, handle_item)
-    open_sampleWindows[Id_sampleWindow] = sampleWindow
-    sampleWindow.show()
+    open_samplingWindows = {}
+    Id_samplingWindow = '1234'
+    samplingWindow = defineSamplingWindow(Id_samplingWindow, open_samplingWindows, items, handle_item)
+    open_samplingWindows[Id_samplingWindow] = samplingWindow
+    samplingWindow.show()
 
     sys.exit(app.exec())
 

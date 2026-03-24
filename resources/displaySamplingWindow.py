@@ -8,7 +8,7 @@ from .misc import *
 from .CustomQTableWidget import CustomQTableWidget
 
 #=========================================================================================
-class displaySampleWindow(QWidget):
+class displaySamplingWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def __init__(self, Id, open_displayWindows, item):
         super().__init__()
@@ -17,9 +17,9 @@ class displaySampleWindow(QWidget):
         self.open_displayWindows = open_displayWindows
         self.item = item
 
-        self.sampleDict = self.item.data(0, Qt.ItemDataRole.UserRole)
+        self.samplingDict = self.item.data(0, Qt.ItemDataRole.UserRole)
 
-        title = 'Display SAMPLE : ' + self.Id
+        title = 'Display SAMPLING : ' + self.Id
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 600, 300)
         
@@ -30,7 +30,7 @@ class displaySampleWindow(QWidget):
         parameters_layout = QVBoxLayout()
 
         layout_s1 = QHBoxLayout()
-        label_s1 = QLabel(f"{self.sampleDict['Parameters']}")
+        label_s1 = QLabel(f"{self.samplingDict['Parameters']}")
         layout_s1.addWidget(label_s1)
         layout_s1.addStretch()
 
@@ -41,16 +41,16 @@ class displaySampleWindow(QWidget):
         self.tabs.addTab(parameters_tab, "Parameters")
 
         #----------------------------------------------
-        if 'XCoords' in self.sampleDict.keys():
+        if 'XCoords' in self.samplingDict.keys():
 
             data_tab = QWidget()
             data_layout = QVBoxLayout()
             data_table = CustomQTableWidget()
-            data_table.setRowCount(len(self.sampleDict['XCoords']))
+            data_table.setRowCount(len(self.samplingDict['XCoords']))
             data_table.setColumnCount(1)
             data_table.setHorizontalHeaderLabels(['X coordinates'])
-            for i in range(len(self.sampleDict['XCoords'])):
-                data_table.setItem(i, 0, QTableWidgetItem(str(f"{self.sampleDict['XCoords'][i]:.6f}")))
+            for i in range(len(self.samplingDict['XCoords'])):
+                data_table.setItem(i, 0, QTableWidgetItem(str(f"{self.samplingDict['XCoords'][i]:.6f}")))
                 background_color = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
                 data_table.item(i, 0).setBackground(background_color)
             data_table.resizeColumnsToContents()
@@ -65,27 +65,21 @@ class displaySampleWindow(QWidget):
         info_tab = QWidget()
         info_layout = QVBoxLayout()
 
-        self.textName = QLabel(f"Name : <b>{self.sampleDict['Name']}</b>")
+        self.textName = QLabel(f"Name : <b>{self.samplingDict['Name']}</b>")
 
-        self.textDate = QLabel(f"Date : {self.sampleDict['Date']}")
+        self.textDate = QLabel(f"Date : {self.samplingDict['Date']}")
 
         labelHistory = QLabel("History :")
         self.textHistory = QTextEdit()
         self.textHistory.setFixedHeight(self.textHistory.fontMetrics().lineSpacing() * 10)
-        self.textHistory.setText(self.sampleDict['History'])
+        self.textHistory.setText(self.samplingDict['History'])
         self.textHistory.setReadOnly(True)
-        self.textHistory.setStyleSheet("""
-            QTextEdit[readOnly="true"] {
-                background-color: #f8f8f8;
-                border: 1px solid lightgray;
-                font-family: Courier New;
-            }
-        """)
+        self.textHistory.setFont(QFont("Courier New"))
 
         labelComment = QLabel("Comment :")
         self.textComment = QTextEdit()
         self.textComment.setFixedHeight(self.textComment.fontMetrics().lineSpacing() * 10)
-        self.textComment.setText(self.sampleDict['Comment'])
+        self.textComment.setText(self.samplingDict['Comment'])
 
         info_layout.addWidget(self.textName)
         info_layout.addWidget(self.textDate)
@@ -123,10 +117,10 @@ class displaySampleWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
-        self.sampleDict['Comment'] = self.textComment.toPlainText()
+        self.samplingDict['Comment'] = self.textComment.toPlainText()
         # if WS has been removed while a Display is active 
         try:
-            self.item.setData(0, Qt.ItemDataRole.UserRole, self.sampleDict)
+            self.item.setData(0, Qt.ItemDataRole.UserRole, self.samplingDict)
         except:
             #print("item not available to be updated")
             pass 
@@ -142,7 +136,7 @@ if __name__ == "__main__":
     itemDict = {
         'Id': 'abcd',
         'Name': 'A name',
-        'Type': 'SAMPLE', 
+        'Type': 'SAMPLING', 
         'Parameters': '5 ; linear',
         'XCoords': [3, 7, 8.3, 9.4, 10],
         'Date': '',
@@ -155,7 +149,7 @@ if __name__ == "__main__":
 
     open_displayWindows = {}
     Id_displayWindow = '1234'
-    displayWindow = displaySampleWindow(Id_displayWindow, open_displayWindows, item)
+    displayWindow = displaySamplingWindow(Id_displayWindow, open_displayWindows, item)
     open_displayWindows[Id_displayWindow] = displayWindow
     displayWindow.show()
 

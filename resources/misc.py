@@ -115,3 +115,33 @@ def str_to_bool(s: str) -> bool:
     raise ValueError(f"Invalid boolean string: {s!r}")
 
 #========================================================================================
+def parse_real(value):
+
+    if value is None:
+        raise ValueError
+
+    s = str(value).strip()
+
+    if s == "":
+        raise ValueError
+
+    # Remove spaces used as thousands separators
+    s = s.replace(" ", "").replace("\u00A0", "")
+
+    # Case 1: both separators are present
+    if "," in s and "." in s:
+        if s.rfind(",") > s.rfind("."):
+            # Example: 1.234,56 → 1234.56
+            s = s.replace(".", "")
+            s = s.replace(",", ".")
+        else:
+            # Example: 1,234.56 → 1234.56
+            s = s.replace(",", "")
+
+    # Case 2: only comma present
+    elif "," in s:
+        s = s.replace(",", ".")
+
+    return float(s)
+
+#========================================================================================

@@ -25,6 +25,9 @@ for key in plt.rcParams.keys():
 
 #=========================================================================================
 class computeDetrendWindow(QWidget):
+
+    DOC_DETREND = "https://pyleoclim-util.readthedocs.io/en/latest/core/api.html#pyleoclim.core.series.Series.detrend"
+
     #---------------------------------------------------------------------------------------------
     def __init__(self, Id, open_detrendWindows, item, add_item_tree_widget):
         super().__init__()
@@ -39,16 +42,29 @@ class computeDetrendWindow(QWidget):
         title = 'Compute DETREND : ' + self.Id
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(900, 650)
         
         main_layout = QVBoxLayout()
 
         #----------------------------------------------
         groupbox1 = QGroupBox('Parameters')
-        #groupbox1.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
-        groupbox1.setFixedHeight(100)
 
         groupbox1_layout = QVBoxLayout()
+
+        #----------------------------------------------
+        self.method_info_browser = QTextBrowser(self)
+        self.method_info_browser.setOpenExternalLinks(True)
+        self.method_info_browser.setMinimumHeight(100)
+        self.method_info_browser.setStyleSheet("""
+            QTextBrowser {
+                background: #fafafa;
+                border: 1px solid #d0d0d0;
+                padding: 6px;
+            }
+        """)
+
+        groupbox1_layout.addWidget(self.method_info_browser)
+        groupbox1_layout.addSpacing(8)
 
         #-------------------------------
         
@@ -107,13 +123,13 @@ class computeDetrendWindow(QWidget):
 
         #-------------------------------
         groupbox1.setLayout(groupbox1_layout)
-        main_layout.addWidget(groupbox1)
+        main_layout.addWidget(groupbox1, stretch=1)
 
         #----------------------------------------------
         self.interactive_plot = interactivePlot()
 
         canvas = FigureCanvas(self.interactive_plot.fig)
-        main_layout.addWidget(canvas)
+        main_layout.addWidget(canvas, stretch=3)
 
         #----------------------------------------------
         button_layout = QHBoxLayout()
@@ -153,6 +169,73 @@ class computeDetrendWindow(QWidget):
         self.status_bar.showMessage('Ready', 5000)
 
     #---------------------------------------------------------------------------------------------
+    def update_method_info(self):
+
+        method = self.method_dropdown.currentText()
+        preserve_mean = self.preserve_mean_checkbox.isChecked()
+
+        if method == "linear":
+            html = f"""
+            <b>linear</b><br>
+            Subtracts the result of an ordinary least-squares straight-line fit from the series.<br><br>
+
+            <b>PyAnalySeries call</b><br>
+            <code>ts.detrend(method="linear", preserve_mean={preserve_mean})</code><br><br>
+
+            <b>Documentation</b><br>
+            <a href="{self.DOC_DETREND}">pyleoclim.core.series.Series.detrend</a>
+            """
+
+        elif method == "constant":
+            html = f"""
+            <b>constant</b><br>
+            Subtracts only the mean of the data.<br><br>
+
+            <b>PyAnalySeries call</b><br>
+            <code>ts.detrend(method="constant", preserve_mean={preserve_mean})</code><br><br>
+
+            <b>Documentation</b><br>
+            <a href="{self.DOC_DETREND}">pyleoclim.core.series.Series.detrend</a>
+            """
+
+        elif method == "savitzky-golay":
+            html = f"""
+            <b>savitzky-golay</b><br>
+            Filters the series with a Savitzky-Golay filter, then subtracts the filtered series from the original data.<br><br>
+
+            <b>PyAnalySeries call</b><br>
+            <code>ts.detrend(method="savitzky-golay", preserve_mean={preserve_mean}, ...)</code><br><br>
+
+            <b>UI note</b><br>
+            This window does not currently expose the additional Savitzky-Golay keyword arguments.<br><br>
+
+            <b>Documentation</b><br>
+            <a href="{self.DOC_DETREND}">pyleoclim.core.series.Series.detrend</a>
+            """
+
+        elif method == "emd":
+            n = self.emd_n_spinbox.value()
+            html = f"""
+            <b>emd</b><br>
+            Empirical Mode Decomposition detrending.<br>
+            Pyleoclim documents this method as removing the last mode, assumed to be the trend.<br><br>
+
+            <b>PyAnalySeries call</b><br>
+            <code>ts.detrend(method="emd", preserve_mean={preserve_mean}, n={n})</code><br><br>
+
+            <b>UI parameter</b><br>
+            <code>n={n}</code>: number of slowest IMFs removed in this interface.<br><br>
+
+            <b>Documentation</b><br>
+            <a href="{self.DOC_DETREND}">pyleoclim.core.series.Series.detrend</a>
+            """
+
+        else:
+            html = ""
+
+        self.method_info_browser.setHtml(html)
+
+    #---------------------------------------------------------------------------------------------
     def update_method(self):
     
         method = self.method_dropdown.currentText()
@@ -161,7 +244,9 @@ class computeDetrendWindow(QWidget):
     
         self.emd_n_spinbox.setVisible(is_emd)
         self.emd_n_label.setVisible(is_emd)
-    
+   
+        self.update_method_info()
+
         self.interactive_plot.axs[0].clear()
         self.myplot()
 
@@ -199,8 +284,6 @@ class computeDetrendWindow(QWidget):
         
         # Final parameter string
         self.parameters = "; ".join(params)
-
-        print(self.method, self.parameters)
 
         ts_dt = ts.detrend(
             method=self.method,
@@ -246,13 +329,16 @@ class computeDetrendWindow(QWidget):
     def saveSeriesDetrended(self):
 
         detrended_Id = generate_Id()
+
+        history = f'Series <i><b>{self.seriesDict["Id"]}</i></b> detrended with method {self.method} ({self.parameters})'
+        history += f'<BR>---> series <i><b>{detrended_Id}</b></i>'
+
         detrended_seriesDict = self.seriesDict | {'Id': detrended_Id,
             'Type': 'Series detrended', 
             'Series': self.seriesDetrended,
             'Color': generate_color(exclude_color=self.seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-            'History': append_to_htmlText(self.seriesDict['History'], 
-                f'Series <i><b>{self.seriesDict["Id"]}</i></b> detrended with method {self.method}<BR>---> series <i><b>{detrended_Id}</b></i>'),
+            "History": history,
             'Comment': '',
         }
 

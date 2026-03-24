@@ -43,7 +43,7 @@ class defineSinusoidalSeriesWindow(QWidget):
         main_layout.addWidget(groupbox1)
 
         validator = QDoubleValidator()
-        validator.setDecimals(2)
+        validator.setDecimals(4)
         validator.setLocale(QLocale("en_US"))
 
         #==== Column 1 : X-domain and noise
@@ -73,28 +73,28 @@ class defineSinusoidalSeriesWindow(QWidget):
 
         #==== Column 2 : Sinusoid #1
         box1 = QFormLayout()
-        self.freq1_input = QLineEdit("10") 
+        self.period1_input = QLineEdit("200") 
         self.amp1_input = QLineEdit("3.0") 
         self.phase1_input = QLineEdit("0.0")
-        for w in [self.freq1_input, self.amp1_input, self.phase1_input]:
+        for w in [self.period1_input, self.amp1_input, self.phase1_input]:
             w.setValidator(validator); w.setFixedWidth(100); w.editingFinished.connect(self.delayed_update)
         box1.addRow(QLabel("<b>Sinusoid #1</b>"))
-        box1.addRow("Freq1 (Hz):", self.freq1_input)
-        box1.addRow("Amp1:", self.amp1_input)
-        box1.addRow("Phase1 (rad):", self.phase1_input)
+        box1.addRow("Period1 :", self.period1_input)
+        box1.addRow("Amp1 :", self.amp1_input)
+        box1.addRow("Phase1 (rad) :", self.phase1_input)
         groupbox1_layout.addLayout(box1)
 
         #==== Column 3 : Sinusoid #2
         box2 = QFormLayout()
-        self.freq2_input = QLineEdit("200") 
+        self.period2_input = QLineEdit("10") 
         self.amp2_input = QLineEdit("0.5") 
         self.phase2_input = QLineEdit("0.0")
-        for w in [self.freq2_input, self.amp2_input, self.phase2_input]:
+        for w in [self.period2_input, self.amp2_input, self.phase2_input]:
             w.setValidator(validator); w.setFixedWidth(100); w.editingFinished.connect(self.delayed_update)
         box2.addRow(QLabel("<b>Sinusoid #2</b>"))
-        box2.addRow("Freq2 (Hz):", self.freq2_input)
-        box2.addRow("Amp2:", self.amp2_input)
-        box2.addRow("Phase2 (rad):", self.phase2_input)
+        box2.addRow("Prediod2 :", self.period2_input)
+        box2.addRow("Amp2 :", self.amp2_input)
+        box2.addRow("Phase2 (rad) :", self.phase2_input)
         groupbox1_layout.addLayout(box2)
 
         main_layout.addWidget(groupbox1)
@@ -104,11 +104,11 @@ class defineSinusoidalSeriesWindow(QWidget):
         #========================================================
         self.formula_label = QLabel()
         self.formula_label.setStyleSheet("""
-            font-family: 'Courier New';
             color: #222;
             padding: 6px;
             border-top: 1px solid #ccc;
         """)
+        self.formula_label.setFont(QFont("Courier New"))
         self.formula_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         main_layout.addWidget(self.formula_label)
 
@@ -141,6 +141,8 @@ class defineSinusoidalSeriesWindow(QWidget):
         #========================================================
         self.status_bar = QStatusBar()
         self.status_bar.setFixedHeight(20)
+        self.status_bar.setSizeGripEnabled(False)
+
         main_layout.addWidget(self.status_bar)
 
         #========================================================
@@ -168,15 +170,23 @@ class defineSinusoidalSeriesWindow(QWidget):
         self.xend   = self.xend_sb.value()
         self.nbPts  = self.nbPts_sb.value()
 
-        QLineEdit_check(self.freq1_input, 10)
-        f1 = float(self.freq1_input.text())
+        QLineEdit_check(self.period1_input, 200)
+        period1 = float(self.period1_input.text())
+        if period1 <= 0:
+            raise ValueError("Period1 must be > 0.")
+        f1 = 1.0 / period1
+        
         QLineEdit_check(self.amp1_input, 3.0)
         a1 = float(self.amp1_input.text())
         QLineEdit_check(self.phase1_input, 0.0)
         p1 = float(self.phase1_input.text())
-
-        QLineEdit_check(self.freq2_input, 200)
-        f2 = float(self.freq2_input.text())
+        
+        QLineEdit_check(self.period2_input, 10)
+        period2 = float(self.period2_input.text())
+        if period2 <= 0:
+            raise ValueError("Period2 must be > 0.")
+        f2 = 1.0 / period2
+        
         QLineEdit_check(self.amp2_input, 0.5)
         a2 = float(self.amp2_input.text())
         QLineEdit_check(self.phase2_input, 0.0)
@@ -196,12 +206,12 @@ class defineSinusoidalSeriesWindow(QWidget):
         #=== Update HTML formula
         self.formula_label.setText(
             f"<b>Formula:</b><br>"
-            f"y = A<sub>1</sub>·sin(2π·f<sub>1</sub>·x + φ<sub>1</sub>)"
-            f" + A<sub>2</sub>·sin(2π·f<sub>2</sub>·x + φ<sub>2</sub>)"
+            f"y = A<sub>1</sub>·sin(2π·x / P<sub>1</sub> + φ<sub>1</sub>)"
+            f" + A<sub>2</sub>·sin(2π·x / P<sub>2</sub> + φ<sub>2</sub>)"
             f" + N(0,σ)"
             f"<br>"
-            f"&nbsp; = {a1:.2f}·sin(2π·{f1:.2f}·x + {p1:.2f})"
-            f" + {a2:.2f}·sin(2π·{f2:.2f}·x + {p2:.2f})"
+            f"&nbsp; = {a1:.2f}·sin(2π·x / {period1:.2f} + {p1:.2f})"
+            f" + {a2:.2f}·sin(2π·x / {period2:.2f} + {p2:.2f})"
             f" + N(0,{noise:.2f})"
         )
 
@@ -209,7 +219,6 @@ class defineSinusoidalSeriesWindow(QWidget):
         ax = self.interactive_plot.axs[0]
         ax.clear()
         self.interactive_plot.reset()
-
 
         ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
 
@@ -225,17 +234,42 @@ class defineSinusoidalSeriesWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def import_series(self):
+    
+        series_Id = generate_Id()
+    
+        xstart = self.xstart_sb.value()
+        xend = self.xend_sb.value()
+        nbPts = self.nbPts_sb.value()
+        noise = float(self.noise_input.text())
+    
+        period1 = float(self.period1_input.text())
+        a1 = float(self.amp1_input.text())
+        p1 = float(self.phase1_input.text())
+    
+        period2 = float(self.period2_input.text())
+        a2 = float(self.amp2_input.text())
+        p2 = float(self.phase2_input.text())
+    
+        #----------------------------------------------
+        # Short, user-friendly name
+        name = f"Sinusoidal | P=[{period1:g},{period2:g}] | A=[{a1:g},{a2:g}] | noise={noise:g}"
+    
+        #----------------------------------------------
+        # Detailed history (traceability)
+        history = (
+            "Sinusoidal series generated with parameters: "
+            f"x_start={xstart}; x_end={xend}; nb_points={nbPts}; noise_sigma={noise}; "
+            f"period1={period1}; amp1={a1}; phase1={p1}; "
+            f"period2={period2}; amp2={a2}; phase2={p2}"
+        )
+        history += f"<BR>---> series <i><b>{series_Id}</b></i>"
 
-        series_Id = generate_Id() 
-
-        history = f'Sinusoidal series generated with parameters displayed above.'
-        history += f'<BR>---> series <i><b>{series_Id}</b></i>'
-
+        #----------------------------------------------
         seriesDict = {
-            'Id': series_Id, 
-            'Type': 'Series', 
-            'Name': '', 
-            'X': 'X', 
+            'Id': series_Id,
+            'Type': 'Series',
+            'Name': name,
+            'X': 'X',
             'Y': 'Y',
             'Color': generate_color(),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
@@ -243,6 +277,7 @@ class defineSinusoidalSeriesWindow(QWidget):
             'Comment': '',
             'Series': pd.Series(self.values, index=self.index),
         }
+    
         try:
             self.add_item_tree_widget(None, seriesDict)
         except:

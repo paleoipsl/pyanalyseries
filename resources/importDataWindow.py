@@ -67,6 +67,9 @@ class importDataWindow(QWidget):
         self.close_button.clicked.connect(self.close)
 
         self.status_bar = QStatusBar()
+        self.status_bar.setFixedHeight(20)
+        self.status_bar.setSizeGripEnabled(False)
+
         main_layout.addWidget(self.status_bar)
 
         #----------------------------------------------
@@ -94,7 +97,6 @@ class importDataWindow(QWidget):
             return
 
         rows = text.split("\n")
-        #clean_rows = [row.strip() for row in rows if row.strip()]
         clean_rows = [row for row in rows if row.strip('\n')]
 
         if not clean_rows:
@@ -159,7 +161,7 @@ class importDataWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def is_numeric(self, value):
         try:
-            float(value)
+            parse_real(value)
             return True
         except ValueError:
             return False
@@ -169,10 +171,9 @@ class importDataWindow(QWidget):
 
         for col in range(self.data_table.columnCount()):
             header = self.data_table.horizontalHeaderItem(col).text()
-            if not self.is_numeric(header):
-                return True
-            else:
+            if self.is_numeric(header):
                 return False
+        return True
 
     #---------------------------------------------------------------------------------------------
     def data_table_values_check(self, allow_empty_cells=False):
@@ -221,58 +222,70 @@ class importDataWindow(QWidget):
     def import_series(self):
     
         if self.data_table.columnCount() < 2:
-            QMessageBox.warning(self, "Import series", "Import not possible. Expected format is at least 2 columns (X,Y) or (X,Y1,Y2,...)")
+            QMessageBox.warning(
+                self,
+                "Import series",
+                "Import not possible. Expected format is at least 2 columns (X,Y) or (X,Y1,Y2,...)"
+            )
             return
     
-        if not self.data_table_check(allow_empty_cells=True): 
+        if not self.data_table_check(allow_empty_cells=True):
             return
+    
+        # Column order may have been changed by the user
+        header = self.data_table.horizontalHeader()
+        column_order = [header.logicalIndex(i) for i in range(self.data_table.columnCount())]
+    
+        x_col = column_order[0]
     
         valid_rows = []
         index = []
         for row in range(self.data_table.rowCount()):
-            item = self.data_table.item(row, 0)
+            item = self.data_table.item(row, x_col)
             if item is not None:
                 text = item.text().strip()
                 if text != '':
                     try:
-                        val = float(text)
+                        val = parse_real(text)
                         index.append(val)
                         valid_rows.append(row)
                     except ValueError:
                         pass
     
         if not index:
-            QMessageBox.warning(self, "Import series", "No valid index values found in the first column.")
+            QMessageBox.warning(self, "Import series", "No valid index values found in the first displayed column.")
             return
     
-        X = self.data_table.horizontalHeaderItem(0).text()
+        X = self.data_table.horizontalHeaderItem(x_col).text()
     
-        for col in range(1, self.data_table.columnCount()):
+        for visual_col in range(1, self.data_table.columnCount()):
     
+            y_col = column_order[visual_col]
             values = []
+    
             for row in valid_rows:
-                item = self.data_table.item(row, col)
+                item = self.data_table.item(row, y_col)
                 valueText = item.text().strip() if item is not None else ''
                 if valueText == '':
                     value = np.nan
                 else:
                     try:
-                        value = float(valueText)
+                        value = parse_real(valueText)
                     except ValueError:
                         value = np.nan
                 values.append(value)
     
-            Y = self.data_table.horizontalHeaderItem(col).text()
+            Y = self.data_table.horizontalHeaderItem(y_col).text()
     
             series_Id = generate_Id()
             history = 'Imported series'
             history += f'<BR>---> series <i><b>{series_Id}</b></i>'
-
+    
             if self.dropNA.isChecked():
-                series = pd.Series(values, index=index).sort_index().dropna()           # sort_index and dropna
+                series = pd.Series(values, index=index).sort_index().dropna()
             else:
-                series = pd.Series(values, index=index).sort_index()                    # sort_index
-
+                series = pd.Series(values, index=index).sort_index()
+    
             seriesDict = {
                 'Id': series_Id,
                 'Type': 'Series',
@@ -285,6 +298,7 @@ class importDataWindow(QWidget):
                 'Comment': '',
                 'Series': series
             }
+    
             try:
                 self.add_item_tree_widget(None, seriesDict)
             except:
@@ -307,8 +321,8 @@ class importDataWindow(QWidget):
         column_order = [header.logicalIndex(i) for i in range(self.data_table.columnCount())]
 
         # Distorded (X2Coords), Reference (X1Coords) as columns
-        X2Coords = [float(self.data_table.item(row, column_order[0]).text()) for row in range(self.data_table.rowCount())] 
-        X1Coords = [float(self.data_table.item(row, column_order[1]).text()) for row in range(self.data_table.rowCount())] 
+        X2Coords = [parse_real(self.data_table.item(row, column_order[0]).text()) for row in range(self.data_table.rowCount())] 
+        X1Coords = [parse_real(self.data_table.item(row, column_order[1]).text()) for row in range(self.data_table.rowCount())] 
         X2Name = self.data_table.horizontalHeaderItem(column_order[0]).text()
         X1Name = self.data_table.horizontalHeaderItem(column_order[1]).text()
 

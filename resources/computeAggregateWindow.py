@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 from .misc import *
+from .CustomQTableWidget import CustomQTableWidget
 from .interactivePlot import interactivePlot
 
 import sys
@@ -35,14 +36,64 @@ class computeAggregateWindow(QWidget):
 
         self.seriesWidth = 0.8
 
-        title = 'Compute AGGREGATE : ' + self.Id
+        self.seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
+        self.xName = self.seriesDict["X"]
+        self.yName = self.seriesDict["Y"]
+        self.series = self.seriesDict["Series"]
+   
+        self.series_original = self.series.copy()
+        self.data_modified = False
+
+        title = 'Compute Edit / Aggregate / Clean : ' + self.Id
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)
-        
-        main_layout = QVBoxLayout()
+       
+        self.tabs = QTabWidget()
 
         #----------------------------------------------
+        data_tab = QWidget()
+        data_layout = QVBoxLayout()
+        self.data_table = CustomQTableWidget()
+        self.data_table.setRowCount(len(self.series))
+        self.data_table.setColumnCount(2)
+        self.data_table.setHorizontalHeaderLabels([self.xName, self.yName])
+        replicates = self.series.index.duplicated(keep=False)
+        missing_values = self.series.isna().to_numpy()
+        self.series = self.series.sort_index()
+
+        for i in range(len(self.series)):
+
+            item_x = QTableWidgetItem(f'{self.series.index[i]:.6f}')
+            item_x.setFlags(item_x.flags() & ~Qt.ItemFlag.ItemIsEditable)  # column X not editable
+            self.data_table.setItem(i, 0, item_x)
+
+            item_y = QTableWidgetItem(f'{self.series.values[i]:.6f}')      # column Y editable
+            self.data_table.setItem(i, 1, item_y)           
+
+            if missing_values[i]:
+                base = QColor('peachpuff')
+                alt = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
+                background_color = blend_colors(base, alt, ratio=0.6)
+            elif replicates[i]:
+                base = QColor('lemonchiffon')
+                alt = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
+                background_color = blend_colors(base, alt, ratio=0.6)
+            else:
+                background_color = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
+            self.data_table.item(i, 0).setBackground(background_color)
+            self.data_table.item(i, 1).setBackground(background_color)
+        self.data_table.resizeColumnsToContents()
+        self.data_table.set_italic_headers()
+        self.data_table.itemChanged.connect(self.on_item_changed)
+
+        data_layout.addWidget(self.data_table)
+        data_tab.setLayout(data_layout)
+
+        #----------------------------------------------
+        agg_tab = QWidget()
+        agg_layout = QVBoxLayout()
+
         groupbox1 = QGroupBox("Parameters")
         groupbox1.setFixedHeight(130)
         
@@ -96,13 +147,23 @@ class computeAggregateWindow(QWidget):
         groupbox1_layout.addLayout(options_layout)
         
         groupbox1.setLayout(groupbox1_layout)
-        main_layout.addWidget(groupbox1) 
+        agg_layout.addWidget(groupbox1) 
 
         #----------------------------------------------
         self.interactive_plot = interactivePlot()
 
         canvas = FigureCanvas(self.interactive_plot.fig)
-        main_layout.addWidget(canvas)
+        agg_layout.addWidget(canvas)
+
+        agg_tab.setLayout(agg_layout)
+
+        #----------------------------------------------
+        self.tabs.addTab(data_tab, "Edit data")
+        self.tabs.addTab(agg_tab, "Aggregate / Clean")
+        self.tabs.setCurrentIndex(1)
+
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(self.tabs)
 
         #----------------------------------------------
         button_layout = QHBoxLayout()
@@ -121,11 +182,12 @@ class computeAggregateWindow(QWidget):
         saveClose_layout.addLayout(saveCloseLine_layout)
         button_layout.addLayout(saveClose_layout)
         
-        main_layout.addLayout(button_layout)
-
         self.saveSeriesAggregated_button.clicked.connect(self.saveSeriesAggregated)
         self.close_button.clicked.connect(self.close)
 
+        main_layout.addLayout(button_layout)
+
+        #----------------------------------------------
         self.status_bar = QStatusBar()
         self.status_bar.setFixedHeight(20)
         main_layout.addWidget(self.status_bar)
@@ -137,7 +199,7 @@ class computeAggregateWindow(QWidget):
         exit_shortcut.activated.connect(self.close)
 
         self.interactive_plot.fig.canvas.setFocus()
-        self.update_method()
+        self.myplot()
 
         self.status_bar.showMessage('Ready', 5000)
 
@@ -164,18 +226,43 @@ class computeAggregateWindow(QWidget):
     
         method = self.method_dropdown.currentText()
     
+        xlim = self.interactive_plot.axs[0].get_xlim()
+        ylim = self.interactive_plot.axs[0].get_ylim()
         self.interactive_plot.axs[0].clear()
-        self.myplot()
+        self.myplot(limits=[xlim,ylim])
+
+        self.status_bar.showMessage('Updated', 2000)
+
+    #---------------------------------------------------------------------------------------------
+    def on_item_changed(self, item):
+    
+        if item.column() != 1:
+            return
+    
+        row = item.row()
+        text = item.text()
+    
+        try:
+            value = parse_real(text)
+        except ValueError:
+            return
+    
+        #print(f"Row={row}, Value={value}")
+
+        self.data_table.blockSignals(True)
+        item.setText(f"{value:.6f}")
+        self.data_table.blockSignals(False)
+    
+        self.series.iloc[row] = value
+
+        self.data_modified = not self.series.equals(self.series_original)
+
+        self.update_method()
 
     #---------------------------------------------------------------------------------------------
     def myplot(self, limits=None):
     
         self.interactive_plot.reset()
-    
-        self.seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
-        self.xName = self.seriesDict["X"]
-        self.yName = self.seriesDict["Y"]
-        self.series = self.seriesDict["Series"]
     
         ax = self.interactive_plot.axs[0]
     
@@ -194,13 +281,14 @@ class computeAggregateWindow(QWidget):
         params = [f"method={self.method}"]
         params.append(f"trim_edges={trim_edges}")
         params.append(f"drop_internal_nan={drop_internal_nan}")
+        params.append(f"data_modified={self.data_modified}")
         self.parameters = "; ".join(params)
     
         # -----------------------------
         # Prepare input series
         # -----------------------------
         series_to_aggregate = self.series.copy()
-    
+
         if trim_edges:
             series_to_aggregate = self.trim_edge_nan(series_to_aggregate)
     

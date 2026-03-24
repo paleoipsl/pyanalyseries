@@ -44,6 +44,17 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
 
 #### Installation
 
+#### Requirements
+
+- Conda / Miniconda
+
+The provided environment file installs all dependencies, including:
+- Python 3.12
+- PyQt6
+
+⚠️ macOS:
+PyQt6 requires macOS ≥ 13 (Ventura).
+
 ##### Get the application
 
  * `git clone https://github.com/PaleoIPSL/PyAnalySeries`
@@ -81,7 +92,7 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
 
 ##### Icon and shortcuts 
 
- * Icon : <img src="resources/PyAnalySeries_icon.png" alt="shortcut icon" width="80" />
+ * Icon : <img src="resources/PyAnalySeries_icon.svg" alt="shortcut icon" width="80" />
  * Shortcut on Linux :
  	* Copy the `misc/PyAnalySeries.desktop` file to your Desktop, and make change to specify YOURLOGIN
  	* Make change in the `PyAnalySeries.sh` file to specify the anaconda installation directory
@@ -91,7 +102,7 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
  	* Use Automator tool to set a shortcut (choose new application and execute shell)
 	* Copy in the shell the PyAnalySeries.sh file content with correct anaconda path
 	* Save as an application in your Desktop directory
-	* Set an icon by pressing **⌘ + I** on the shorcut created and drag the `resources/PyAnalySeries_icon.icns` file on the top icon 
+	* Set an icon by pressing **⌘ + I** on the shorcut created and drag the `resources/PyAnalySeries_icon.svg` file on the top icon 
 
  * Shortcut on Windows :
 	* ...

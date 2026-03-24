@@ -10,6 +10,7 @@ import matplotlib
 matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.lines import Line2D
 
 from .misc import *
 from .CustomQTableWidget import CustomQTableWidget 
@@ -34,7 +35,7 @@ class displayInterpolationWindow(QWidget):
 
         title = 'Display INTERPOLATION : ' + self.Id
         self.setWindowTitle(title)
-        self.setGeometry(200, 200, 800, 300)
+        self.setGeometry(200, 200, 1000, 600)
         
         self.tabs = QTabWidget()
        
@@ -66,38 +67,60 @@ class displayInterpolationWindow(QWidget):
         pointersPlot_layout = QVBoxLayout()
 
         self.interactive_pointersPlot = interactivePlot()
-        self.interactive_pointersPlot.right_margin = 100
+        self.interactive_pointersPlot.left_margin = 200 
+        self.pointersPlot_ax = self.interactive_pointersPlot.axs[0]
+        self.pointersPlot_ax.twins = []
+        self.pointersPlot_ax.twins_orientation = 'vertical'
+        self.pointersPlot_axGradient = self.pointersPlot_ax.twinx()
+        self.pointersPlot_axGradient.spine_left_position = -100
+        self.pointersPlot_axGradient.yaxis.set_label_position('left')
+        self.pointersPlot_axGradient.yaxis.set_ticks_position('left')
+        self.pointersPlot_axGradient.spines['right'].set_visible(False)
+        self.pointersPlot_axGradient.spines['top'].set_visible(False)
+        self.pointersPlot_axGradient.spines['bottom'].set_visible(False)
+        self.pointersPlot_axGradient.set_zorder(-10)
 
-        pointersPlot_ax = self.interactive_pointersPlot.axs[0]
+        legendHandles = []
 
-        line, = pointersPlot_ax.plot(self.X2Coords, self.X1Coords, color='steelblue', linewidth=1, label='aaaa')
-        points = pointersPlot_ax.scatter(self.X2Coords, self.X1Coords, s=10, marker='o', color='steelblue')
+        line, = self.pointersPlot_ax.plot(self.X2Coords, self.X1Coords, color='steelblue', linewidth=1, label='Pointers')
+        points = self.pointersPlot_ax.scatter(self.X2Coords, self.X1Coords, s=10, marker='o', color='steelblue')
 
-        pointersPlot_ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=1)
-        pointersPlot_ax.set_xlabel('X')
-        pointersPlot_ax.set_ylabel(self.X1Name)
+        self.pointersPlot_ax.patch.set_visible(False)
+        self.pointersPlot_ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=1)
+        self.pointersPlot_ax.set_xlabel('X')
+        self.pointersPlot_ax.set_ylabel(self.X1Name, color='steelblue')
+        legendHandle = Line2D([0], [0], color='steelblue', label='Pointers')
+        legendHandles.append(legendHandle)
+        self.pointersPlot_ax.line_points_pairs.append((line, points))
 
-        pointersPlot_axGradient = pointersPlot_ax.twinx()
-        pointersPlot_axGradient.set_ylabel('Gradients (dx/dy)', color='darkorange')
+        self.pointersPlot_axGradient.set_ylabel('Gradients (dx/dy)', color='darkorange')
+        self.pointersPlot_axGradient.line_points_pairs = []
+        self.interactive_pointersPlot.axs.append(self.pointersPlot_axGradient)
 
         X2CoordsValues = np.linspace(self.X2Coords[0], self.X2Coords[-1], 100)
 
         (f_1to2, f_2to1) = defineInterpolationWindow.defineInterpolationFunctions(self.X1Coords, self.X2Coords, interpolationMode='Linear')
         gradientLinear = np.gradient(X2CoordsValues, f_2to1(X2CoordsValues)).astype(np.float32)      # to avoid unnecessary precision
-        line1, = pointersPlot_axGradient.plot(X2CoordsValues, gradientLinear, color='darkorange', lw=1, label='Linear')
+        line1, = self.pointersPlot_axGradient.plot(X2CoordsValues, gradientLinear, color='darkorange', lw=1, label='Linear')
+        legendHandle = Line2D([0], [0], color='darkorange', label='Linear')
+        legendHandles.append(legendHandle)
 
         (f_1to2, f_2to1) = defineInterpolationWindow.defineInterpolationFunctions(self.X1Coords, self.X2Coords, interpolationMode='PCHIP')
         gradientPCHIP = np.gradient(X2CoordsValues, f_2to1(X2CoordsValues)).astype(np.float32)       # to avoid unnecessary precision
-        line2, = pointersPlot_axGradient.plot(X2CoordsValues, gradientPCHIP, color='darkorange', linestyle='dashed', lw=1, label='PCHIP')
+        line2, = self.pointersPlot_axGradient.plot(X2CoordsValues, gradientPCHIP, color='darkorange', linestyle='dashed', lw=1, label='PCHIP')
+        legendHandle = Line2D([0], [0], color='darkorange', linestyle='dashed', label='PCHIP')
+        legendHandles.append(legendHandle)
 
-        lines = [line1, line2]
-        labels = [line.get_label() for line in lines]
-        pointersPlot_ax.legend(lines, labels)
-        
-        pointersPlot_axGradient.autoscale(axis='y', tight=False)
-
-        pointersPlot_ax.patch.set_alpha(0)
-        pointersPlot_axGradient.set_zorder(pointersPlot_ax.get_zorder() - 1)
+        legend = self.pointersPlot_ax.legend(handles=legendHandles)
+        line_map = {
+            "Pointers": line,
+            "Linear": line1,
+            "PCHIP": line2,
+        }
+        for legend_line in legend.get_lines():
+            label = legend_line.get_label()
+            legend_line.set_picker(5)
+            self.pointersPlot_ax.map_legend_to_line[legend_line] = line_map[label]
 
         self.interactive_pointersPlot.fig.canvas.draw()
 
@@ -119,13 +142,7 @@ class displayInterpolationWindow(QWidget):
         self.textHistory.setFixedHeight(self.textHistory.fontMetrics().lineSpacing() * 10)
         self.textHistory.setText(self.interpolationDict['History'])
         self.textHistory.setReadOnly(True)
-        self.textHistory.setStyleSheet("""
-            QTextEdit[readOnly="true"] {
-                background-color: #f8f8f8;
-                border: 1px solid lightgray;
-                font-family: Courier New;
-            }
-        """)
+        self.textHistory.setFont(QFont("Courier New"))
 
         labelComment = QLabel("Comment :")
         self.textComment = QTextEdit()
