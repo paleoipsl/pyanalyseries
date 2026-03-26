@@ -33,6 +33,15 @@ The use of the application is detailed in the following [Wiki page](https://gith
 
 <hr style="border:2px solid gray">
 
+#### Captures
+
+![ScreenShot1](misc/capture_01.png) 
+
+
+![ScreenShot2](misc/capture_02.png) 
+
+<hr style="border:2px solid gray">
+
 #### Tutorials
  
 Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnalySeries/wiki)
@@ -129,13 +138,6 @@ git reset --hard origin/main
 	* Windows does **not support SVG icons** → convert to `.ico`
 	* Right-click shortcut → **Properties → Change Icon**
 	* Select your `.ico` file
-
-#### Captures
-
-![ScreenShot1](misc/capture_01.png) 
-
-
-![ScreenShot2](misc/capture_02.png) 
 
 <hr style="border:2px solid gray">
 
