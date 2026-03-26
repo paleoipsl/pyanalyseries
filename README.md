@@ -62,9 +62,17 @@ PyQt6 requires macOS ≥ 13 (Ventura).
 
 ##### Update the application
 
- * `cd PyAnalySeries`
- * `git pull`
- 
+For end users, the local repository is not intended to contain personal developments.
+The recommended update procedure is to reset the application to the latest official version.
+
+Before updating, make sure to save any personal files stored in the `PyAnalySeries` directory.
+
+```
+cd PyAnalySeries
+git fetch origin
+git reset --hard origin/main
+```
+
 ##### Create a python environment to use PyAnalySeries 
 
  * `conda env create --file environment.yml`
