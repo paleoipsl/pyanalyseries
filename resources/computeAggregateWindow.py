@@ -359,17 +359,17 @@ class computeAggregateWindow(QWidget):
     def saveSeriesAggregated(self):
     
         aggregated_Id = generate_Id()
+
+        history = f'Series <i><b>{self.seriesDict["Id"]}</b></i> aggregated with {self.parameters}'
+        history += f'<BR>---> series <i><b>{aggregated_Id}</b></i>'
+
         aggregated_seriesDict = self.seriesDict | {
             "Id": aggregated_Id,
             "Type": "Series aggregated",
             "Series": self.seriesAggregated,
             "Color": generate_color(exclude_color=self.seriesDict["Color"]),
             "Date": datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-            "History": append_to_htmlText(
-                self.seriesDict["History"],
-                f'Series <i><b>{self.seriesDict["Id"]}</b></i> aggregated '
-                f'with {self.parameters}<BR>---> series <i><b>{aggregated_Id}</b></i>'
-            ),
+            'History': append_to_htmlText(self.seriesDict['History'], history),
             "Comment": "",
         }
     

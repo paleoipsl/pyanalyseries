@@ -681,7 +681,7 @@ class computePowerSpectrumWindow(QWidget):
             'Y': f'PSD ({result["label"]})',
             'Color': generate_color(exclude_color=self.seriesDict['Color']) if self.seriesDict else generate_color(),
             'Date': datetime.datetime.now().strftime('Created %Y/%m/%d at %H:%M:%S'),
-            'History': history,
+            'History': append_to_htmlText(self.seriesDict['History'], history),
             'Comment': '',
             'Series': pd.Series(result['psd'], index=result['period']),
         }

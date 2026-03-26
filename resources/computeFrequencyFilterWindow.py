@@ -660,7 +660,7 @@ class computeFrequencyFilterWindow(QWidget):
             "Y": self.yName,
             "Color": result["color"],
             "Date": datetime.datetime.now().strftime("Created %Y/%m/%d %H:%M:%S"),
-            "History": history,
+            'History': append_to_htmlText(self.seriesDict['History'], history),
             'Comment': '',
             "Series": pd.Series(result["y"], index=result["x"])
         }

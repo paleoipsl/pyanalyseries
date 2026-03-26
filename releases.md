@@ -1,3 +1,6 @@
+ * 6.22
+   * Fix history in Detrend, Frequency, Aggregate, Power Spectrum (PSD) 
+   * Shortcut on Windows
  * 6.21
    * Remove synchronisation from tree to windows (sync_with_item, sync_window_with_item)
  * 6.20

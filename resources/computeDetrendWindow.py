@@ -327,7 +327,7 @@ class computeDetrendWindow(QWidget):
             'Series': self.seriesDetrended,
             'Color': generate_color(exclude_color=self.seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
-            "History": history,
+            'History': append_to_htmlText(self.seriesDict['History'], history),
             'Comment': '',
         }
 
