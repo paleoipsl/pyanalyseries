@@ -1,3 +1,5 @@
+ * 6.23
+   * Add window parameter in FIR Frequency Filter
  * 6.22
    * Fix history in Detrend, Frequency, Aggregate, Power Spectrum (PSD) 
    * Shortcut on Windows

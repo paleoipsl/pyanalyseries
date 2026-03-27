@@ -166,6 +166,7 @@ class computeFrequencyFilterWindow(QWidget):
         self.lanczos_cutoff_scale_sb.valueChanged.connect(self.delayed_update)
         self.fir_cutoff_sb.valueChanged.connect(self.delayed_update)
         self.fir_numtaps_sb.valueChanged.connect(self.delayed_update)
+        self.fir_window_combo.currentTextChanged.connect(self.delayed_update)
         self.sg_cutoff_scale_sb.valueChanged.connect(self.delayed_update)
         self.sg_window_sb.valueChanged.connect(self.delayed_update)
         self.sg_poly_sb.valueChanged.connect(self.delayed_update)
@@ -252,7 +253,7 @@ class computeFrequencyFilterWindow(QWidget):
             <b>FIR window filter</b><br>
 
             <b>Backend call</b><br>
-            <code>ts.interp().filter(method="firwin", cutoff_freq=1/P, numtaps=...)</code><br><br>
+            <code>ts.interp().filter(method="firwin", cutoff_scale=..., numtaps=..., window=...)</code><br><br>
 
             <b>Backend defaults</b><br>
             <code>numtaps=None</code>, <code>fs=1</code>,
@@ -346,26 +347,38 @@ class computeFrequencyFilterWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def _build_fir_page(self):
-
+    
         page = QWidget()
         layout = QFormLayout(page)
-
+    
         self.fir_cutoff_sb = QDoubleSpinBox()
         self.fir_cutoff_sb.setDecimals(2)
         self.fir_cutoff_sb.setRange(2, 1000000)
         self.fir_cutoff_sb.setValue(20)
         self.fir_cutoff_sb.setSingleStep(10)
         self.fir_cutoff_sb.setFixedWidth(120)
-
+    
         self.fir_numtaps_sb = QSpinBox()
         self.fir_numtaps_sb.setRange(3, 1000000)
         self.fir_numtaps_sb.setValue(21)
         self.fir_numtaps_sb.setSingleStep(10)
         self.fir_numtaps_sb.setFixedWidth(120)
-
-        layout.addRow("Period threshold:", self.fir_cutoff_sb)
+    
+        self.fir_window_combo = QComboBox()
+        self.fir_window_combo.addItems([
+            "hamming",
+            "hann",
+            "blackman",
+            "bartlett",
+            "boxcar"
+        ])
+        self.fir_window_combo.setCurrentText("hamming")
+        self.fir_window_combo.setFixedWidth(120)
+    
+        layout.addRow("Period cutoff:", self.fir_cutoff_sb)
         layout.addRow("Number of taps:", self.fir_numtaps_sb)
-
+        layout.addRow("Window:", self.fir_window_combo)
+    
         return page
 
     #---------------------------------------------------------------------------------------------
@@ -508,6 +521,7 @@ class computeFrequencyFilterWindow(QWidget):
             
                 period = self.fir_cutoff_sb.value()
                 numtaps = self.fir_numtaps_sb.value()
+                window = self.fir_window_combo.currentText()
             
                 if period <= 2:
                     raise ValueError("Cutoff period must be > 2 sampling steps.")
@@ -515,11 +529,12 @@ class computeFrequencyFilterWindow(QWidget):
                 filtered = ts.interp().filter(
                     method="firwin",
                     cutoff_scale=period,
-                    numtaps=numtaps
+                    numtaps=numtaps,
+                    window=window
                 )
-           
-                label = f"FIR | long periods | P={period} | numtaps={numtaps}"
-    
+            
+                label = f"FIR | long periods | P={period} | numtaps={numtaps} | window={window}"
+
             #-------------------------------
             elif method == self.METHOD_SAVGOL:
     
