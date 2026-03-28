@@ -103,6 +103,9 @@ class computeAggregateWindow(QWidget):
         # Aggregation method
         # ===============================
         form_layout = QFormLayout()
+
+        form_layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
         
         self.method_dropdown = QComboBox()
         self.method_dropdown.addItems([
@@ -195,8 +198,8 @@ class computeAggregateWindow(QWidget):
         #----------------------------------------------
         self.setLayout(main_layout)
 
-        exit_shortcut = QShortcut('q', self)
-        exit_shortcut.activated.connect(self.close)
+        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut.activated.connect(self.close)
 
         self.interactive_plot.fig.canvas.setFocus()
         self.myplot()

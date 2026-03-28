@@ -176,8 +176,8 @@ class computeFrequencyFilterWindow(QWidget):
         self.save_button.clicked.connect(self.save_series)
         self.close_button.clicked.connect(self.close)
 
-        exit_shortcut = QShortcut('q', self)
-        exit_shortcut.activated.connect(self.close)
+        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut.activated.connect(self.close)
 
         self.update_parameter_page(self.method_combo.currentText())
         self.update_method_info(self.method_combo.currentText())
@@ -291,7 +291,10 @@ class computeFrequencyFilterWindow(QWidget):
     
         page = QWidget()
         layout = QFormLayout(page)
-    
+
+        #layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        #layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+
         self.butter_mode_combo = QComboBox()
         self.butter_mode_combo.addItems([self.BUTTER_MODE_LONG, self.BUTTER_MODE_BAND])
         self.butter_mode_combo.setFixedWidth(120)
@@ -334,6 +337,9 @@ class computeFrequencyFilterWindow(QWidget):
         page = QWidget()
         layout = QFormLayout(page)
 
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+
         self.lanczos_cutoff_scale_sb = QDoubleSpinBox()
         self.lanczos_cutoff_scale_sb.setDecimals(2)
         self.lanczos_cutoff_scale_sb.setRange(2, 1000000)
@@ -351,6 +357,9 @@ class computeFrequencyFilterWindow(QWidget):
         page = QWidget()
         layout = QFormLayout(page)
     
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+
         self.fir_cutoff_sb = QDoubleSpinBox()
         self.fir_cutoff_sb.setDecimals(2)
         self.fir_cutoff_sb.setRange(2, 1000000)
@@ -386,6 +395,9 @@ class computeFrequencyFilterWindow(QWidget):
 
         page = QWidget()
         layout = QFormLayout(page)
+
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.sg_cutoff_scale_sb = QDoubleSpinBox()
         self.sg_cutoff_scale_sb.setDecimals(2)

@@ -169,8 +169,8 @@ class computePowerSpectrumWindow(QWidget):
         self.wwz_freq_combo.currentTextChanged.connect(self.delayed_update)
         self.wwz_c_sb.valueChanged.connect(self.delayed_update)
 
-        exit_shortcut = QShortcut('q', self)
-        exit_shortcut.activated.connect(self.close)
+        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut.activated.connect(self.close)
 
         self.update_parameter_page(self.method_combo.currentText())
         self.update_method_info(self.method_combo.currentText())
@@ -315,6 +315,9 @@ class computePowerSpectrumWindow(QWidget):
         page = QWidget()
         layout = QFormLayout(page)
 
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+
         self.periodogram_window_combo = QComboBox(self)
         self.periodogram_window_combo.addItems(['hann', 'boxcar', 'blackman'])
         self.periodogram_window_combo.setFixedWidth(140)
@@ -327,6 +330,9 @@ class computePowerSpectrumWindow(QWidget):
 
         page = QWidget()
         layout = QFormLayout(page)
+
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.welch_window_combo = QComboBox(self)
         self.welch_window_combo.addItems(['hann', 'boxcar', 'blackman'])
@@ -356,6 +362,9 @@ class computePowerSpectrumWindow(QWidget):
         page = QWidget()
         layout = QFormLayout(page)
 
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+
         self.mtm_nw_sb = QDoubleSpinBox(self)
         self.mtm_nw_sb.setRange(2.0, 4.0)
         self.mtm_nw_sb.setSingleStep(0.5)
@@ -373,6 +382,9 @@ class computePowerSpectrumWindow(QWidget):
         page = QWidget()
         layout = QFormLayout(page)
 
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+
         self.lomb_freq_combo = QComboBox(self)
         self.lomb_freq_combo.addItems(['Auto', 'log', 'lomb_scargle', 'welch', 'scale', 'nfft'])
         self.lomb_freq_combo.setFixedWidth(160)
@@ -385,6 +397,9 @@ class computePowerSpectrumWindow(QWidget):
 
         page = QWidget()
         layout = QFormLayout(page)
+
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.wwz_freq_combo = QComboBox()
         self.wwz_freq_combo.addItems(["log", "lomb_scargle", "welch", "scale", "nfft"])

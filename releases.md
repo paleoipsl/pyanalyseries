@@ -1,3 +1,9 @@
+ * 6.24
+   * Fix alignement of parameters
+   * Unified UI with Fusion style for consistent cross-platform rendering
+   * Standardized keyboard shortcuts (platform conventions):
+     * Close window: Ctrl+W / Cmd+W
+     * Quit application: Ctrl+Q / Cmd+Q
  * 6.23
    * Add window parameter in FIR Frequency Filter
  * 6.22

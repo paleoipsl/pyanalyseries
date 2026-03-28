@@ -137,8 +137,8 @@ class defineRandomSeriesWindow(QWidget):
         #----------------------------------------------
         self.setLayout(main_layout)
 
-        exit_shortcut = QShortcut('q', self)
-        exit_shortcut.activated.connect(self.close)
+        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut.activated.connect(self.close)
 
         self.myplot()
 

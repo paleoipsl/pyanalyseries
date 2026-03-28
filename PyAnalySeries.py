@@ -10,6 +10,7 @@ import datetime
 import re
 import copy
 from pathlib import Path
+import platform
 
 import numpy as np
 import pandas as pd
@@ -59,7 +60,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.23'
+version = 'v6.24'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -940,6 +941,7 @@ def create_tree_widget():
     tree_widget.setColumnWidth(3, 300)
     tree_widget.setColumnWidth(4, 300)
     tree_widget.setColumnWidth(5, 20)
+
     tree_widget.setAlternatingRowColors(True)
     tree_widget.setTextElideMode(Qt.TextElideMode.ElideRight)
     tree_widget.setSelectionMode(QTreeWidget.SelectionMode.ExtendedSelection)
@@ -1930,7 +1932,7 @@ saveWSs_action = QAction("Save all worksheets", main_window)
 saveWSs_action.setShortcut('Ctrl+Shift+S')
 saveWSs_action.triggered.connect(save_WorkSheets)
 exit_action = QAction('Exit', main_window)
-exit_action.setShortcut('Q')
+exit_action.setShortcut(QKeySequence.StandardKey.Quit)
 exit_action.triggered.connect(main_window.close)
 
 file_menu.addAction(newWS_action)
@@ -1944,7 +1946,7 @@ file_menu.addAction(exit_action)
 edit_menu = menu_bar.addMenu("Edit")
 
 cut_action = QAction("Cut", main_window)
-#cut_action.setShortcuts([QKeySequence("Ctrl+x"), QKeySequence(Qt.Key_Delete)])
+#cut_action.setShortcuts([QKeySequence("Ctrl+x"), QKeySequence(Qt.Key.Key_Delete)])
 cut_action.setShortcut(QKeySequence("Ctrl+x"))
 cut_action.triggered.connect(cut_items)
 
@@ -2012,15 +2014,13 @@ def add_section(menu, text, first=False):
     # --- Top line (only if not first section) ---
     if not first:
         top_line = QFrame()
-        top_line.setFrameShape(QFrame.Shape.HLine)
-        top_line.setFrameShadow(QFrame.Shadow.Plain)
-        top_line.setFixedHeight(1)
-        top_line.setStyleSheet("background-color: #555;")
+        top_line.setFixedHeight(2)
+        top_line.setStyleSheet("background-color: #999;")
         layout.addWidget(top_line)
 
     # --- Label ---
     label = QLabel(text)
-    #label.setStyleSheet("font-weight: bold;")
+    label.setFont(menu.font())
     layout.addWidget(label)
 
     action = QWidgetAction(menu)

@@ -92,7 +92,7 @@ class defineSinusoidalSeriesWindow(QWidget):
         for w in [self.period2_input, self.amp2_input, self.phase2_input]:
             w.setValidator(validator); w.setFixedWidth(100); w.editingFinished.connect(self.delayed_update)
         box2.addRow(QLabel("<b>Sinusoid #2</b>"))
-        box2.addRow("Prediod2 :", self.period2_input)
+        box2.addRow("Period2 :", self.period2_input)
         box2.addRow("Amp2 :", self.amp2_input)
         box2.addRow("Phase2 (rad) :", self.phase2_input)
         groupbox1_layout.addLayout(box2)
@@ -155,7 +155,9 @@ class defineSinusoidalSeriesWindow(QWidget):
         self.shuffle_button.clicked.connect(self.myplot)
         self.import_button.clicked.connect(self.import_series)
         self.close_button.clicked.connect(self.close)
-        QShortcut('q', self).activated.connect(self.close)
+
+        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut.activated.connect(self.close)
 
         self.myplot()
 
