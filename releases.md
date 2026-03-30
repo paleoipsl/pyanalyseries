@@ -1,3 +1,7 @@
+ * 6.26
+   * Fix in defineInsolation, Eccentricity and Precession parameter are dimensionless
+   * Factorize astro/insolation computations from defineInsolationAstroSeriesWindow into a shared module insolationAstroSeries.py
+   * Add a notebook example using insolationAstroSeries.py (interactive with ipywidgets)
  * 6.25
    * Fix XOriginalValues format to list in defineInterpolation
  values are converted to lists on save to avoid ambiguous comparisons

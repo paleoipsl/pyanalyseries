@@ -15,8 +15,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from .misc import *
 from .interactivePlot import interactivePlot
 
-from inso import astro
-from inso import inso
+from .insolationAstroSeries import *
 
 #=========================================================================================
 for key in plt.rcParams.keys():
@@ -32,7 +31,7 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.open_insolationAstroSeriesWindow = open_insolationAstroSeriesWindow
         self.add_item_tree_widget = add_item_tree_widget
 
-        title = 'Define Insolation / Astromical series'
+        title = 'Define Insolation / Astronomical series'
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)
@@ -53,27 +52,14 @@ class defineInsolationAstroSeriesWindow(QWidget):
         #-------------------------------
         # Insolation type dropdown
         self.plotType_dropdown = QComboBox()
-        self.plotType_dropdown.addItems([
-            "Eccentricity",
-            "Obliquity",
-            "Precession angle",
-            "Precession parameter",
-            "Daily insolation",
-            "Integrated insolation between 2 true longitudes",
-            "Caloric summer insolation",
-            "Caloric winter insolation"
-        ])
+        self.plotType_dropdown.addItems(PLOT_TYPES)
         self.plotType_dropdown.insertSeparator(4)
         self.plotType_dropdown.setCurrentText("Daily insolation")
 
         #-------------------------------
         # Astronomical solution dropdown
         self.solutionAstro_dropdown = QComboBox()
-        self.solutionAstro_dropdown.addItems(["Berger1978", 
-                                              "Laskar1993_01", "Laskar1993_11", 
-                                              "Laskar2004",
-                                              "Laskar2010a", "Laskar2010b", "Laskar2010c", "Laskar2010d", 
-                                              ])
+        self.solutionAstro_dropdown.addItems(ASTRO_SOLUTIONS)
         self.solutionAstro_dropdown.setCurrentText("Laskar2004")
         
         #-------------------------------
@@ -176,25 +162,15 @@ class defineInsolationAstroSeriesWindow(QWidget):
         #----------------------------------------------
         col2_layout = QVBoxLayout()
 
-        self.ref_Berger1978 = 'Berger, A. (1978) Long-term variations of daily insolation and Quaternary climatic changes. Journal of the Atmospheric Sciences, 35, 2362-2367. <a href="https://doi.org/10.1175/1520-0469(1978)035&lt;2362:LTVODI&gt;2.0.CO;2">https://doi.org/10.1175/1520-0469(1978)035&lt;2362:LTVODI&gt;2.0.CO;2</a>'
-        self.ref_Laskar1993 = 'Laskar, J., Joutel, F., & Boudin, F. (1993). Orbital, precessional, and insolation quantities for the Earth from -20 Myr to +10 Myr. Astronomy and Astrophysics, 270(1-2), 522-533. <a href="https://adsabs.harvard.edu/full/1993A%26A...270..522L/0000522.000.html">https://adsabs.harvard.edu/full/1993A%26A...270..522L/0000522.000.html</a>'
-        self.ref_Laskar2004 = 'Laskar, J., Robutel, P., Joutel, F., Gastineau, M., Correia, A. C., & Levrard, B. (2004). A long-term numerical solution for the insolation quantities of the Earth. Astronomy & Astrophysics, 428(1), 261-285. <a href="https://doi.org/10.1051/0004-6361:20041335">https://doi.org/10.1051/0004-6361:20041335</a>'
-        self.ref_Laskar2010 = 'Laskar, J., Fienga, A., Gastineau, M., Manche, H.: (2011). A new orbital solution for the long-term motion of the Earth. Astron. Astrophys., Volume 532, A89. <a href="https://doi.org/10.48550/arXiv.1103.1084">https://doi.org/10.48550/arXiv.1103.1084</a>'
-
         self.ref = QLabel()
-        self.ref.setText(f"Reference : <br><br>{self.ref_Laskar2004}")
+        self.ref.setText(f"Reference : <br><br>{get_solution_reference('Laskar2004')}")
         self.ref.setFixedWidth(400)
         self.ref.setWordWrap(True)
         self.ref.setOpenExternalLinks(True)
         self.ref.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse | Qt.TextInteractionFlag.TextBrowserInteraction)
 
-        self.range_Laskar2010 = 'From -249999 to 0 kyears'
-        self.range_Laskar2004 = 'From -101000 to 21000 kyears'
-        self.range_Laskar1993 = 'From -20000 to 10000 kyears'
-        self.range_Berger1978 = 'Unbounded'
-
         self.range = QLabel()
-        self.range.setText(f"Range : <br><br>{self.range_Laskar2004}")
+        self.range.setText(f"Range : <br><br>{get_solution_range_label('Laskar2004')}")
         self.range.setFixedWidth(400)
         self.range.setWordWrap(True)
         self.range.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
@@ -387,59 +363,58 @@ class defineInsolationAstroSeriesWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def solutionAstro_change(self):
-
-        def reinit_plotType_dropdow():
-            for i in range(self.plotType_dropdown.count()):
-                self.plotType_dropdown.setItemData(i, Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable, Qt.ItemDataRole.UserRole - 1)
-
+    
         self.solutionAstro = self.solutionAstro_dropdown.currentText()
+    
+        allowed = set(get_allowed_plot_types(self.solutionAstro))
+    
+        model = self.plotType_dropdown.model()
+    
+        for i in range(self.plotType_dropdown.count()):
+            item = model.item(i)
+    
+            # Skip separator (None item)
+            if item is None:
+                continue
+    
+            text = item.text()
 
+            if text in allowed:
+                item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEnabled)
+                item.setToolTip("")  # reset si re-enabled
+            else:
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled)
+                item.setToolTip("Not available for this astronomical solution")
+
+        # Si l'item courant devient invalide → fallback
+        current = self.plotType_dropdown.currentText()
+        if current not in allowed:
+            for pt in PLOT_TYPES:
+                if pt in allowed:
+                    self.plotType_dropdown.setCurrentText(pt)
+                    break
+    
+        # ---- Gestion des bornes temporelles (inchangée)
         if self.timeUnit == 'yr':
             scaleFactor = 1000
         else:
             scaleFactor = 1
-
-        if self.solutionAstro.startswith("Laskar2010"):
-            for i in range(self.plotType_dropdown.count()):
-                if self.plotType_dropdown.itemText(i) != "Eccentricity":
-                    self.plotType_dropdown.model().item(i).setFlags(Qt.ItemFlag.NoItemFlags)
-                else:
-                    self.plotType_dropdown.model().item(i).setFlags(Qt.ItemFlag.ItemIsEnabled)
-            self.plotType_dropdown.setCurrentText("Eccentricity")
-            lim1 = -249999
-            lim2 = 0
-            refText = self.ref_Laskar2010
-            rangeText = self.range_Laskar2010
-
-        elif self.solutionAstro.startswith("Laskar2004"):
-            reinit_plotType_dropdow()
-            lim1 = -101000
-            lim2 = 21000 
-            refText = self.ref_Laskar2004
-            rangeText = self.range_Laskar2004
-
-        elif self.solutionAstro.startswith("Laskar1993"):
-            reinit_plotType_dropdow()
-            lim1 = -20000
-            lim2 = 10000 
-            refText = self.ref_Laskar1993
-            rangeText = self.range_Laskar1993
-
-        else:
-            reinit_plotType_dropdow()
-            lim1 = -5E6
-            lim2 = 5E6
-            refText = self.ref_Berger1978
-            rangeText = self.range_Berger1978
-
+    
+        lim1, lim2 = get_solution_limits_kyr(self.solutionAstro)
+        if lim1 is None:
+            lim1, lim2 = -5E6, 5E6
+    
         lim1 = lim1 * self.t_convention * scaleFactor
         lim2 = lim2 * self.t_convention * scaleFactor
+    
         self.tstart_input.setRange(int(min(lim1, lim2)), int(max(lim1, lim2)))
         self.tend_input.setRange(int(min(lim1, lim2)), int(max(lim1, lim2)))
+    
         self.tstart_input.setToolTip(f"Choose a value between {min(lim1, lim2)} and {max(lim1, lim2)}")
         self.tend_input.setToolTip(f"Choose a value between {min(lim1, lim2)} and {max(lim1, lim2)}")
-        self.ref.setText(f"Reference : <br><br>{refText}")
-        self.range.setText(f"Range : <br><br>{rangeText}")
+    
+        self.ref.setText(f"Reference : <br><br>{get_solution_reference(self.solutionAstro)}")
+        self.range.setText(f"Range : <br><br>{get_solution_range_label(self.solutionAstro)}")
     
         self.delayed_update()
 
@@ -450,191 +425,87 @@ class defineInsolationAstroSeriesWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def myplot(self):
-
+    
         self.plotType = self.plotType_dropdown.currentText()
         self.solutionAstro = self.solutionAstro_dropdown.currentText()
-
-        solar_constant = self.solar_constant_input.value()
-        latitude = self.latitude_input.value()
-        trueLongitude1 = self.trueLongitude1_input.value()
-        trueLongitude2 = self.trueLongitude2_input.value()
-        t_start = self.tstart_input.value()
-        t_end = self.tend_input.value()
-        t_step = self.tstep_input.value()
-
-        t = np.arange(t_start, t_end + t_step, t_step) * self.t_convention
-
-        if self.timeUnit == 'yr': t = t/1000
-
-        deg_to_rad = np.pi/180.
-       
-        astro_params = eval(f"astro.Astro{self.solutionAstro}()")
-
-        values = np.empty(len(t))
-
-        piDeg = np.pi/180
-
-        if self.plotType == "Eccentricity":
-            ecc = astro_params.eccentricity(t)
-            values = ecc / piDeg
-            ylabel = "Eccentricity [degrees]"
-
-        elif self.plotType == "Obliquity":
-            obl = astro_params.obliquity(t)
-            values = obl / piDeg
-            ylabel = "Obliquity [degrees]"
-
-        elif self.plotType == "Precession angle":
-            pre = astro_params.precession_angle(t)
-            values = pre / piDeg
-            ylabel = "Precession angle [degrees]"
-
-        elif self.plotType == "Precession parameter":
-            preParam = astro_params.precession_parameter(t)
-            values = preParam / piDeg
-            ylabel = "Precession parameter [degrees]"
-
-        elif self.plotType == "Daily insolation":
-            ecc = astro_params.eccentricity(t)
-            obl = astro_params.obliquity(t)
-            pre = astro_params.precession_angle(t)
-            for i in range(len(t)): 
-                values[i] = solar_constant * \
-                            inso.inso_dayly_radians(
-                                    trueLongitude1*deg_to_rad,
-                                    latitude*deg_to_rad, 
-                                    obl[i], 
-                                    ecc[i], 
-                                    pre[i])
-            ylabel = "Insolation [W/m2]"
-
-        elif self.plotType == "Integrated insolation between 2 true longitudes":
-            ecc = astro_params.eccentricity(t)
-            obl = astro_params.obliquity(t)
-            pre = astro_params.precession_angle(t)
-            for i in range(len(t)): 
-                values[i] = solar_constant * \
-                            inso.inso_mean_radians(
-                                    trueLongitude1*deg_to_rad,
-                                    trueLongitude2*deg_to_rad,
-                                    latitude*deg_to_rad, 
-                                    obl[i], 
-                                    ecc[i], 
-                                    pre[i])
-            ylabel = "Insolation [W/m2]"
-
-        elif self.plotType == "Caloric summer insolation":
-            ecc = astro_params.eccentricity(t)
-            obl = astro_params.obliquity(t)
-            pre = astro_params.precession_angle(t)
-            for i in range(len(t)): 
-                values[i] = solar_constant * \
-                            inso.inso_caloric_summer_NH(
-                                                    latitude*deg_to_rad, 
-                                                    obl[i], 
-                                                    ecc[i], 
-                                                    pre[i])
-            ylabel = "Insolation [W/m2]"
-
-        elif self.plotType == "Caloric winter insolation":
-            ecc = astro_params.eccentricity(t)
-            obl = astro_params.obliquity(t)
-            pre = astro_params.precession_angle(t)
-            for i in range(len(t)): 
-                values[i] = solar_constant * \
-                            inso.inso_caloric_winter_NH(
-                                                    latitude*deg_to_rad, 
-                                                    obl[i], 
-                                                    ecc[i], 
-                                                    pre[i])
-            ylabel = "Insolation [W/m2]"
-
-        if self.timeUnit == 'yr':
-            self.index = t * self.t_convention * 1000
-        else:
-            self.index = t * self.t_convention
-        self.values = values
-
+    
+        try:
+            result = compute_insolation_astro_series(
+                plot_type=self.plotType,
+                solution=self.solutionAstro,
+                solar_constant=self.solar_constant_input.value(),
+                latitude=self.latitude_input.value(),
+                true_longitude1=self.trueLongitude1_input.value(),
+                true_longitude2=self.trueLongitude2_input.value(),
+                t_start=self.tstart_input.value(),
+                t_end=self.tend_input.value(),
+                t_step=self.tstep_input.value(),
+                time_unit=self.timeUnit,
+                t_convention=self.t_convention,
+            )
+        except Exception as e:
+            self.status_bar.showMessage(str(e), 5000)
+            return
+    
+        self.index = result["index"]
+        self.values = result["values"]
+        self.shortName = result["short_name"]
+        self.ylabel = result["ylabel"]
+    
         ax = self.interactive_plot.axs[0]
         ax.clear()
         self.interactive_plot.reset()
-
+    
         ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
-
+    
         color = "darkorange"
         line1, = ax.plot(self.index, self.values, linewidth=0.5, color=color)
         points1 = ax.scatter(self.index, self.values, s=5, marker='o', color=color, visible=False)
         ax.line_points_pairs.append((line1, points1))
-
+    
         ax.set_xlabel(self.timeUnit)
-        ax.set_ylabel(ylabel)
+        ax.set_ylabel(self.ylabel)
         ax.autoscale()
-
+    
         self.interactive_plot.fig.canvas.draw()
         self.interactive_plot.fig.canvas.setFocus()
         self.status_bar.showMessage('Updated', 1000)
 
     #---------------------------------------------------------------------------------------------
     def import_series(self):
-
-        if self.plotType in ["Eccentricity", "Obliquity", "Precession angle", "Precession parameter"]:
-            history = f'Astronomical series "{self.plotType}"' + \
-                        '<ul>' + \
-                        f'<li>Astronomical solution: {self.solutionAstro}' + \
-                        '</ul>'
-            shortName = f"{self.plotType} [degrees]"
-            
-        elif self.plotType == "Daily insolation":
-            history = f'Insolation series "{self.plotType}" with parameters :' + \
-                        '<ul>' + \
-                        f'<li>Astronomical solution: {self.solutionAstro}' + \
-                        f'<li>Solar constant [W/m2]: {self.solar_constant_input.value()}' + \
-                        f'<li>Latitude [°]: {self.latitude_input.value()}' + \
-                        f'<li>True longitude [°]: {self.trueLongitude1_input.value()}' + \
-                        '</ul>'
-            shortName = "Daily insolation [W/m2]"
-
-        elif self.plotType == "Integrated insolation between 2 true longitudes":
-            history = f'Insolation series "{self.plotType}" with parameters :' + \
-                        '<ul>' + \
-                        f'<li>Astronomical solution: {self.solutionAstro}' + \
-                        f'<li>Solar constant [W/m2]: {self.solar_constant_input.value()}' + \
-                        f'<li>Latitude [°]: {self.latitude_input.value()}' + \
-                        f'<li>True longitude #1 [°]: {self.trueLongitude1_input.value()}' + \
-                        f'<li>True longitude #2 [°]: {self.trueLongitude2_input.value()}' + \
-                        '</ul>'
-            shortName = "Integrated insolation [W/m2]"
-
-        elif self.plotType == "Caloric summer insolation" or \
-             self.plotType == "Caloric winter insolation":
-            history = f'Insolation series "{self.plotType}" with parameters :' + \
-                        '<ul>' + \
-                        f'<li>Astronomical solution: {self.solutionAstro}' + \
-                        f'<li>Solar constant [W/m2]: {self.solar_constant_input.value()}' + \
-                        f'<li>Latitude [°]: {self.latitude_input.value()}' + \
-                        '</ul>'
-            shortName = f"{self.plotType} [W/m2]"
- 
+    
+        self.plotType = self.plotType_dropdown.currentText()
+        self.solutionAstro = self.solutionAstro_dropdown.currentText()
+    
+        history = build_history(
+            plot_type=self.plotType,
+            solution=self.solutionAstro,
+            solar_constant=self.solar_constant_input.value(),
+            latitude=self.latitude_input.value(),
+            true_longitude1=self.trueLongitude1_input.value(),
+            true_longitude2=self.trueLongitude2_input.value(),
+        )
+    
         series_Id = generate_Id()
         history += f'---> series <i><b>{series_Id}</b></i>'
-
+    
         seriesDict = {
-            'Id': series_Id, 
-            'Type': 'Series', 
-            'Name': '', 
-            'X': 'years',
-            'Y': shortName,
+            'Id': series_Id,
+            'Type': 'Series',
+            'Name': '',
+            'X': self.timeUnit,
+            'Y': self.shortName,
             'Color': generate_color(),
             'History': history,
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'Comment': '',
             'Series': pd.Series(self.values, index=self.index),
-            }
-
+        }
+    
         try:
-            self.add_item_tree_widget(None, seriesDict)          # will be added on parent from current index
-        except:
-            pass
+            self.add_item_tree_widget(None, seriesDict)
+        except Exception as e:
+            self.status_bar.showMessage(str(e), 5000)
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
