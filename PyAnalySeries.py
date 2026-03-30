@@ -1879,6 +1879,7 @@ def on_custom_tooltip_changed(enabled):
 
 #========================================================================================
 app = QApplication(sys.argv)
+app.setStyle("Fusion")
 
 app_dir = Path(__file__).resolve().parent
 
