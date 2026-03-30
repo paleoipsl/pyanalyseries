@@ -1,3 +1,6 @@
+ * 6.25
+   * Fix XOriginalValues format to list in defineInterpolation
+ values are converted to lists on save to avoid ambiguous comparisons
  * 6.24
    * Fix alignement of parameters
    * Unified UI with Fusion style for consistent cross-platform rendering

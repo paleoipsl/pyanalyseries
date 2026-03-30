@@ -60,7 +60,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.24'
+version = 'v6.25'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -301,8 +301,6 @@ def update_items_from_data(ref_item):
     #print('---', ref_itemDict['Id'], ref_item.parent().text(0))
     
     for item in allItems:
-
-        itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
         itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
