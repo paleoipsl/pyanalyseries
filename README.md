@@ -12,6 +12,8 @@ The core design follows a **"Define then Apply"** workflow for data processing o
 Documents are read and saved in an **open format** spreadsheet (xlsx) with **multiple worksheets** for organization. It is also possible to import series or pointers directly from the **clipboard**, following a simple **copy (Ctrl+C)** and **paste (Ctrl+V)** operation from an external spreadsheet.  
 The application leverages **robust, well-tested modules** for interpolation, notably **SciPy**, and features an **interactive interface** for defining **interpolation pointers** (formerly known as *Linage* and *Splinage*), allowing for **precise placement and manipulation**—either directly on data points or independently.  
 
+PyAnalySeries provides access to insolation computations through the **Insolation** module, including astronomical solutions and derived quantities such as eccentricity, obliquity, precession parameters, and various insolation metrics. It also integrates the **Pyleoclim** package for time series processing, including detrending, frequency filtering, and power spectral density (PSD) estimation.
+
 Based on: numpy, pandas, matplotlib, scipy, shapely, openpyxl, PyQt, Inso, Pyleoclim
 
 Conception and developments : Patrick Brockmann LSCE/CEA - IPSL
@@ -37,6 +39,8 @@ Wednesday, 06 May, 08:30–10:15 (CEST), Room 0.55
 
 Questions, feedback, or suggestions can be shared here:  
 https://github.com/PaleoIPSL/PyAnalySeries/discussions/49
+
+<hr style="border:2px solid gray">
 
 #### Documentation 
 The use of the application is detailed in the following [Wiki page](https://github.com/PaleoIPSL/PyAnalySeries/wiki).
