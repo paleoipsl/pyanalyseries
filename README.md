@@ -28,6 +28,16 @@ Hevia-Cruz, F., Brockmann, P., Govin, A., Michel, E., and Paillard, D. (2025). R
 
 <hr style="border:2px solid gray">
 
+#### EGU 2026 Demo Session
+
+A demo session on PyAnalySeries will take place during EGU 2026:
+
+**SC2.27 – Processing and visualizing 2-D datasets using the PyAnalySeries software for research and teaching**  
+Wednesday, 06 May, 08:30–10:15 (CEST), Room 0.55
+
+Questions, feedback, or suggestions can be shared here:  
+https://github.com/PaleoIPSL/PyAnalySeries/discussions/49
+
 #### Documentation 
 The use of the application is detailed in the following [Wiki page](https://github.com/PaleoIPSL/PyAnalySeries/wiki).
 
