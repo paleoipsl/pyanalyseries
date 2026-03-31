@@ -75,8 +75,8 @@ The provided environment file installs all dependencies, including:
 - Python 3.12
 - PyQt6
 
-⚠️ macOS:
-macOS 13+ recommended. macOS 12 not guaranteed.
+⚠️ macOS:a
+macOS 13 or later is recommended. Compatibility with earlier versions is not guaranteed.
 
 ##### Get the application
 
