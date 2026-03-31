@@ -12,7 +12,7 @@ The core design follows a **"Define then Apply"** workflow for data processing o
 Documents are read and saved in an **open format** spreadsheet (xlsx) with **multiple worksheets** for organization. It is also possible to import series or pointers directly from the **clipboard**, following a simple **copy (Ctrl+C)** and **paste (Ctrl+V)** operation from an external spreadsheet.  
 The application leverages **robust, well-tested modules** for interpolation, notably **SciPy**, and features an **interactive interface** for defining **interpolation pointers** (formerly known as *Linage* and *Splinage*), allowing for **precise placement and manipulation**—either directly on data points or independently.  
 
-Based on: numpy, pandas, matplotlib, scipy, shapely, openpyxl, PyQt
+Based on: numpy, pandas, matplotlib, scipy, shapely, openpyxl, PyQt, Inso, Pyleoclim
 
 Conception and developments : Patrick Brockmann LSCE/CEA - IPSL
 
@@ -62,7 +62,7 @@ The provided environment file installs all dependencies, including:
 - PyQt6
 
 ⚠️ macOS:
-PyQt6 requires macOS ≥ 13 (Ventura).
+macOS 13+ recommended. macOS 12 not guaranteed.
 
 ##### Get the application
 
