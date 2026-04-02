@@ -28,7 +28,7 @@ cd PyAnalySeries
 ### 2. Create environment (PyQt6 – default)
 
 ```bash
-conda env create -f environment-pyqt6.yml
+conda env create -f environment_PyQt6.yml
 conda activate env_PyAnalySeries
 ```
 
@@ -45,7 +45,7 @@ python PyAnalySeries.py
 If the PyQt6 environment fails to install (this may happen on older macOS versions):
 
 ```bash
-conda env create -f environment-pyqt5.yml
+conda env create -f environment_PyQt5.yml
 conda activate env_PyAnalySeries
 ```
 
@@ -86,5 +86,5 @@ If you previously used an older environment, it is recommended to recreate it:
 
 ```bash
 conda remove --name env_PyAnalySeries --all
-conda env create -f environment-pyqt6.yml
+conda env create -f environment_PyQt6.yml
 ```

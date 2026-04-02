@@ -65,9 +65,12 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
 
 <hr style="border:2px solid gray">
 
-##### Installation
+##### Installation and update
 
 See [installation.md](./installation.md) for installation details.
+
+
+See [update.md](./updatec.md) for update details.
 
 <hr style="border:2px solid gray">
 
