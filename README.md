@@ -65,55 +65,9 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
 
 <hr style="border:2px solid gray">
 
-#### Installation
+##### Installation
 
-#### Requirements
-
-- Conda / Miniconda
-
-The provided environment file installs all dependencies, including:
-- Python 3.12
-- PyQt6
-
-⚠️ macOS:a
-macOS 13 or later is recommended. Compatibility with earlier versions is not guaranteed.
-
-##### Get the application
-
- * `git clone https://github.com/PaleoIPSL/PyAnalySeries`
- * `cd PyAnalySeries`
-
-##### Update the application
-
-For end users, the local repository is not intended to contain personal developments.
-The recommended update procedure is to reset the application to the latest official version.
-
-Before updating, make sure to save any personal files stored in the `PyAnalySeries` directory.
-
-```
-cd PyAnalySeries
-git fetch origin
-git reset --hard origin/main
-```
-
-##### Create a python environment to use PyAnalySeries 
-
- * `conda env create --file environment_PyQt6.yml`
- * `conda env list`
- * `conda activate env_PyAnalySeries`
-
->  🚨 **BREAKING CHANGE – CONDA ENVIRONMENT RESET REQUIRED**
->
-> The application now uses **PyQt6 (Qt6)** and **Pyleoclim**.
-> The existing Conda environment created with **PyQt5** is **not compatible**.
->
-> **If you already created `env_PyAnalySeries`, you must delete and recreate it.**
->
-> ```bash
-> conda deactivate
-> conda env remove -n env_PyAnalySeries
-> conda env create --file environment_PtQt6.yml
-> conda activate env_PyAnalySeries
+See [installation.md](./installation.md) for installation details.
 
 ##### Test
 
@@ -121,7 +75,9 @@ git reset --hard origin/main
  * `python PyAnalySeries.py test/ws_ex.xlsx`
  * `python PyAnalySeries.py test/MD95-2042.xlsx test/GeoB3938.xlsx`
 
-##### Icon and shortcuts 
+##### Shortcuts 
+
+See [shortcuts.md](./shortcuts.md) for shortcut settings.
 
  * Icon : <img src="resources/PyAnalySeries_icon.svg" alt="shortcut icon" width="80" />
  * Shortcut on Linux :
