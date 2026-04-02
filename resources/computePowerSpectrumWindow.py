@@ -686,7 +686,7 @@ class computePowerSpectrumWindow(QWidget):
         series_Id = generate_Id()
 
         history = result['history']
-        history += f' ---> series <i><b>{series_Id}</b></i>'
+        history += f'<BR>---> series <i><b>{series_Id}</b></i>'
 
         PSD_seriesDict = {
             'Id': series_Id,

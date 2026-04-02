@@ -133,7 +133,7 @@ class displaySingleSeriesWindow(QWidget):
         labelHistory = QLabel("History :")
         self.textHistory = QTextEdit()
         self.textHistory.setFixedHeight(self.textHistory.fontMetrics().lineSpacing() * 10)
-        self.textHistory.setText(self.seriesDict['History'])
+        self.textHistory.setText(f"<ol><li>{self.seriesDict['History']}</ol>")
         self.textHistory.setReadOnly(True)
         self.textHistory.setFont(QFont("Courier New"))
 
