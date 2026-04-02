@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 import sys
 import datetime
@@ -109,7 +107,7 @@ class defineSinusoidalSeriesWindow(QWidget):
             border-top: 1px solid #ccc;
         """)
         self.formula_label.setFont(QFont("Courier New"))
-        self.formula_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.formula_label.setTextInteractionFlags(TextSelectableByMouse)
         main_layout.addWidget(self.formula_label)
 
         #========================================================
@@ -302,5 +300,5 @@ if __name__ == "__main__":
     win = defineSinusoidalSeriesWindow(open_sinusoidalSeriesWindow, handle_item)
     open_sinusoidalSeriesWindow['sin'] = defineSinusoidalSeriesWindow
     win.show()
-    sys.exit(app.exec())
 
+    sys.exit(app_exec(app))

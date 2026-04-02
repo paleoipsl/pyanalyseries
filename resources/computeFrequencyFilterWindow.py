@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 import sys
 import datetime
@@ -292,8 +290,8 @@ class computeFrequencyFilterWindow(QWidget):
         page = QWidget()
         layout = QFormLayout(page)
 
-        #layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        #layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+        #layout.setFormAlignment(AlignTop | AlignLeft)
+        #layout.setLabelAlignment(AlignLeft)
 
         self.butter_mode_combo = QComboBox()
         self.butter_mode_combo.addItems([self.BUTTER_MODE_LONG, self.BUTTER_MODE_BAND])
@@ -337,8 +335,8 @@ class computeFrequencyFilterWindow(QWidget):
         page = QWidget()
         layout = QFormLayout(page)
 
-        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+        layout.setFormAlignment(AlignTop | AlignLeft)
+        layout.setLabelAlignment(AlignLeft)
 
         self.lanczos_cutoff_scale_sb = QDoubleSpinBox()
         self.lanczos_cutoff_scale_sb.setDecimals(2)
@@ -357,8 +355,8 @@ class computeFrequencyFilterWindow(QWidget):
         page = QWidget()
         layout = QFormLayout(page)
     
-        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+        layout.setFormAlignment(AlignTop | AlignLeft)
+        layout.setLabelAlignment(AlignLeft)
 
         self.fir_cutoff_sb = QDoubleSpinBox()
         self.fir_cutoff_sb.setDecimals(2)
@@ -396,8 +394,8 @@ class computeFrequencyFilterWindow(QWidget):
         page = QWidget()
         layout = QFormLayout(page)
 
-        layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+        layout.setFormAlignment(AlignTop | AlignLeft)
+        layout.setLabelAlignment(AlignLeft)
 
         self.sg_cutoff_scale_sb = QDoubleSpinBox()
         self.sg_cutoff_scale_sb.setDecimals(2)
@@ -749,4 +747,4 @@ if __name__ == '__main__':
     open_frequencyFilterWindows[Id_frequencyFilterWindow] = frequencyFilterWindow
     frequencyFilterWindow.show()
 
-    sys.exit(app.exec())
+    sys.exit(app_exec(app))

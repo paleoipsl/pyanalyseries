@@ -1,3 +1,5 @@
+ * 6.27
+   * Add Qt compatibility layer (PyQt5 / PyQt6)
  * 6.26
    * Fix in defineInsolation, Eccentricity and Precession parameter are dimensionless
    * Factorize astro/insolation computations from defineInsolationAstroSeriesWindow into a shared module insolationAstroSeries.py

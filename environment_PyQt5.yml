@@ -1,0 +1,18 @@
+name: env_PyAnalySeries_PyQt5
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy=2.3.5
+  - pandas=2.3.3
+  - matplotlib=3.10.7
+  - scipy=1.16.3
+  - shapely=2.1.2
+  - openpyxl=3.1.5
+  - numba
+  - pyqt
+  - pyproj
+  - pip
+  - pip:
+    - inso==0.7.0
+    - pyleoclim==1.3.0

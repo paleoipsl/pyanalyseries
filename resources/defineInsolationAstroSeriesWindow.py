@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 import sys
 import datetime
@@ -167,13 +165,13 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.ref.setFixedWidth(400)
         self.ref.setWordWrap(True)
         self.ref.setOpenExternalLinks(True)
-        self.ref.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse | Qt.TextInteractionFlag.TextBrowserInteraction)
+        self.ref.setTextInteractionFlags(TextSelectableByMouse | TextBrowserInteraction)
 
         self.range = QLabel()
         self.range.setText(f"Range : <br><br>{get_solution_range_label('Laskar2004')}")
         self.range.setFixedWidth(400)
         self.range.setWordWrap(True)
-        self.range.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.range.setTextInteractionFlags(TextSelectableByMouse)
 
         col2_layout.addWidget(self.ref)
         col2_layout.addSpacing(50)
@@ -380,10 +378,10 @@ class defineInsolationAstroSeriesWindow(QWidget):
             text = item.text()
 
             if text in allowed:
-                item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEnabled)
+                item.setFlags(item.flags() | ItemIsEnabled)
                 item.setToolTip("")  # reset si re-enabled
             else:
-                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled)
+                item.setFlags(item.flags() & ~ItemIsEnabled)
                 item.setToolTip("Not available for this astronomical solution")
 
         # Si l'item courant devient invalide → fallback
@@ -528,5 +526,4 @@ if __name__ == "__main__":
     open_insolationAstroSeriesWindow[Id_insolationAstroSeriesWindow] = defineInsolationAstroSeriesWindow
     insolationAstroSeriesWindow.show()
 
-    sys.exit(app.exec())
-
+    sys.exit(app_exec(app))

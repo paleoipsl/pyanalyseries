@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 import matplotlib
 matplotlib.use("QtAgg")
@@ -74,8 +72,8 @@ class computeDetrendWindow(QWidget):
         
         form_layout = QFormLayout()
         
-        form_layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+        form_layout.setFormAlignment(AlignTop | AlignLeft)
+        form_layout.setLabelAlignment(AlignLeft)
 
         self.method_dropdown = QComboBox()
         self.method_dropdown.addItems(["linear", "constant", "savitzky-golay", "emd"])
@@ -378,4 +376,4 @@ if __name__ == "__main__":
     open_detrendWindows[Id_detrendWindow] = detrendWindow
     detrendWindow.show()
 
-    sys.exit(app.exec())
+    sys.exit(app_exec(app))

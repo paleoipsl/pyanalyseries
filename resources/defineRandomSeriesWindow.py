@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 import sys
 import datetime
@@ -240,5 +238,4 @@ if __name__ == "__main__":
     open_randomSeriesWindow[Id_randomSeriesWindow] = defineRandomSeriesWindow
     randomSeriesWindow.show()
 
-    sys.exit(app.exec())
-
+    sys.exit(app_exec(app))

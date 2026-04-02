@@ -15,9 +15,7 @@ import platform
 import numpy as np
 import pandas as pd
 
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 from resources.preferencesDialog import preferencesDialog 
 
@@ -60,7 +58,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.26'
+version = 'v6.27'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -117,7 +115,7 @@ def populate_tree_widget(fileName, itemDict_list):
     ws_item.setText(0, fileName)
     ws_item.setToolTip(0, fileName)
     ws_item.setExpanded(True)
-    ws_item.setFlags(ws_item.flags() & ~Qt.ItemFlag.ItemIsSelectable)
+    ws_item.setFlags(ws_item.flags() & ~ItemIsSelectable)
     open_ws[id(ws_item)] = ws_item.text(0)
 
     for itemDict in itemDict_list:
@@ -141,7 +139,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     icon_apply = QIcon(str(app_dir / 'resources' / 'icon_apply.png'))
 
     item = QTreeWidgetItem()
-    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+    item.setFlags(item.flags() & ~ItemIsDropEnabled)
 
     if itemDict['Type'].startswith('Series'):            # to be backward compatible with Serie and now Series
         Series = itemDict['Series']
@@ -207,7 +205,7 @@ def add_item_tree_widget(ws_item, itemDict, position=None, mark=True, update=Tru
     buttonColor.setStyleSheet(f"background-color: {itemDict['Color']};")
     buttonColor.clicked.connect(lambda: selectColor(buttonColor, item))
     tree_widget.setItemWidget(item, 5, buttonColor)
-    item.setTextAlignment(5, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+    item.setTextAlignment(5, AlignLeft | AlignVCenter)
 
     if update: update_items_from_data(item)
 
@@ -986,7 +984,7 @@ def create_tree_widget():
     tree_widget.setAcceptDrops(True)
     tree_widget.setDropIndicatorShown(True)
     tree_widget.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
-    tree_widget.invisibleRootItem().setFlags(Qt.ItemFlag.ItemIsEnabled)      # root non droppable
+    tree_widget.invisibleRootItem().setFlags(ItemIsEnabled)      # root non droppable
 
     return tree_widget
 
@@ -1031,7 +1029,7 @@ class CustomTreeWidget(QTreeWidget):
         super().__init__()
         self.clipboard_items = []
         self.setMouseTracking(True)
-        self.viewport().setAttribute(Qt.WidgetAttribute.WA_Hover, True)
+        self.viewport().setAttribute(WA_Hover, True)
         self.viewport().installEventFilter(self)
 
         self.setItemDelegate(FullRowDelegate(self))
@@ -1049,10 +1047,10 @@ class CustomTreeWidget(QTreeWidget):
             ul { margin: 0px; }
         """)
         # font-size: 12px;
-        self.custom_tooltip.setWindowFlags(Qt.WindowType.ToolTip)
+        self.custom_tooltip.setWindowFlags(ToolTip)
         self.custom_tooltip.setFixedWidth(500)
         self.custom_tooltip.setWordWrap(True)
-        self.custom_tooltip.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)  # Align top-left
+        self.custom_tooltip.setAlignment(AlignTop | AlignLeft)  # Align top-left
         self.custom_tooltip.hide()
 
     #-----------------------------------
@@ -1071,7 +1069,8 @@ class CustomTreeWidget(QTreeWidget):
             return
 
         dragged_item = self.currentItem()
-        target_item = self.itemAt(event.position().toPoint())
+        x, y = event_pos(event)
+        target_item = self.itemAt(int(x), int(y))
 
         # drag only in same WS
         if not target_item or dragged_item.parent() != target_item.parent():
@@ -1103,8 +1102,9 @@ class CustomTreeWidget(QTreeWidget):
             return super().eventFilter(obj, event)
 
         """ Event filter to detect mouse hover and display a tooltip """
-        if event.type() == QEvent.Type.HoverMove:
-            pos = event.position().toPoint()
+        if event.type() == HoverMove:
+            x, y = event_pos(event)
+            pos = QPoint(int(x), int(y))
             item = self.itemAt(pos)
             col = self.columnAt(pos.x())
 
@@ -1129,7 +1129,7 @@ class CustomTreeWidget(QTreeWidget):
             else:
                 self.custom_tooltip.hide()
 
-        elif event.type() in [QEvent.Type.Leave, QEvent.Type.FocusOut]:
+        elif event.type() in [Leave, FocusOut]:
             self.custom_tooltip.hide()
 
         return super().eventFilter(obj, event)
@@ -1310,11 +1310,11 @@ def apply_filter():
         main_window, 
         "Apply filter confirmation",
         "Do you want to apply filter on selected series ?",
-        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-        QMessageBox.StandardButton.No
+        MessageBoxYes | MessageBoxNo,
+        MessageBoxNo
     )
     
-    if reply == QMessageBox.StandardButton.No:
+    if reply == MessageBoxNo:
         for item in items:
             colorize_item(item, None)
         tree_widget.clearSelection()
@@ -1415,11 +1415,11 @@ def apply_sampling():
         main_window, 
         "Apply sampling confirmation",
         "Do you want to apply sampling on selected series ?",
-        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-        QMessageBox.StandardButton.No
+        MessageBoxYes | MessageBoxNo,
+        MessageBoxNo
     )
     
-    if reply == QMessageBox.StandardButton.No:
+    if reply == MessageBoxNo:
         for item in items:
             colorize_item(item, None)
         tree_widget.clearSelection()
@@ -1557,11 +1557,11 @@ def apply_interpolation(interpolationMode):
         main_window, 
         "Apply interpolation confirmation",
         "Do you want to apply interpolation on selected series ?",
-        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-        QMessageBox.StandardButton.No
+        MessageBoxYes | MessageBoxNo,
+        MessageBoxNo
     )
     
-    if reply == QMessageBox.StandardButton.No:
+    if reply == MessageBoxNo:
         for item in items:
             colorize_item(item, None)
         tree_widget.clearSelection()
@@ -1769,19 +1769,19 @@ def on_item_double_clicked(item, column):
     itemDict = item.data(0, Qt.ItemDataRole.UserRole)
 
     if column == 0:
-        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
+        item.setFlags(item.flags() | ItemIsEditable)
         if item_isWS:
             item.setText(0, item.text(0).replace(" *", ""))  # Remove visual cue
     elif column == 2:
         tree_widget.custom_tooltip.hide()
-        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
+        item.setFlags(item.flags() | ItemIsEditable)
     elif column == 3 and (itemDict['Type'].startswith('Series') or
                           itemDict['Type'] == "INTERPOLATION"): 
-        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
+        item.setFlags(item.flags() | ItemIsEditable)
     elif column == 4 and itemDict['Type'].startswith('Series'):
-        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
+        item.setFlags(item.flags() | ItemIsEditable)
     else:
-        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        item.setFlags(item.flags() & ~ItemIsEditable)
 
     tree_widget.blockSignals(False)
 
@@ -1819,18 +1819,18 @@ def exit_confirm(parent):
         reply = QMessageBox.question(
             parent, "Exit",
             "Are you sure you want to exit the application?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            MessageBoxYes | MessageBoxNo,
+            MessageBoxNo
         )
-        return reply == QMessageBox.StandardButton.Yes
+        return reply == MessageBoxYes
 
     else:
         msg = QMessageBox(parent)
         msg.setWindowTitle("Exit")
         msg.setText("There are unsaved worksheets. What do you want to do?")
-        no_save_exit = msg.addButton(QMessageBox.StandardButton.Discard)
-        cancel = msg.addButton(QMessageBox.StandardButton.Cancel)
-        save_exit = msg.addButton("Save all unsaved worksheets and Exit", QMessageBox.ButtonRole.AcceptRole)
+        no_save_exit = msg.addButton(MessageBoxDiscard)
+        cancel = msg.addButton(MessageBoxCancel)
+        save_exit = msg.addButton("Save all unsaved worksheets and Exit", MessageBoxAcceptRole)
         msg.exec()
 
         clicked = msg.clickedButton()
@@ -1901,7 +1901,7 @@ main_widget = QWidget()
 layout = QVBoxLayout()
 
 tree_widget = create_tree_widget()
-tree_widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+tree_widget.setContextMenuPolicy(CustomContextMenu)
 tree_widget.customContextMenuRequested.connect(show_context_menu)
 tree_widget.itemChanged.connect(on_item_changed)
 tree_widget.itemDoubleClicked.connect(on_item_double_clicked)
@@ -2130,4 +2130,4 @@ main_window.setStatusBar(QStatusBar())
 main_window.statusBar().showMessage('Application ready', 5000)
 main_window.show()
 
-sys.exit(app.exec())
+sys.exit(app_exec(app))

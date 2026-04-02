@@ -11,6 +11,7 @@ dependencies:
   - openpyxl=3.1.5
   - numba
   - pyqt6
+  - pyproj
   - pip
   - pip:
     - inso==0.7.0

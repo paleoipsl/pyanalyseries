@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 import matplotlib
 matplotlib.use("QtAgg")
@@ -524,5 +522,4 @@ if __name__ == "__main__":
     open_samplingWindows[Id_samplingWindow] = samplingWindow
     samplingWindow.show()
 
-    sys.exit(app.exec())
-
+    sys.exit(app_exec(app))

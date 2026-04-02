@@ -98,7 +98,7 @@ git reset --hard origin/main
 
 ##### Create a python environment to use PyAnalySeries 
 
- * `conda env create --file environment.yml`
+ * `conda env create --file environment_PyQt6.yml`
  * `conda env list`
  * `conda activate env_PyAnalySeries`
 
@@ -112,7 +112,7 @@ git reset --hard origin/main
 > ```bash
 > conda deactivate
 > conda env remove -n env_PyAnalySeries
-> conda env create --file environment.yml
+> conda env create --file environment_PtQt6.yml
 > conda activate env_PyAnalySeries
 
 ##### Test

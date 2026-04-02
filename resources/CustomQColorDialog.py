@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QColorDialog, QApplication
-from PyQt6.QtGui import QColor
+from resources.qt_compat import *
+
 from matplotlib import cm
 
 #=========================================================================================

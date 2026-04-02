@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 import matplotlib
 matplotlib.use("QtAgg")
@@ -65,7 +63,7 @@ class computeAggregateWindow(QWidget):
         for i in range(len(self.series)):
 
             item_x = QTableWidgetItem(f'{self.series.index[i]:.6f}')
-            item_x.setFlags(item_x.flags() & ~Qt.ItemFlag.ItemIsEditable)  # column X not editable
+            item_x.setFlags(item_x.flags() & ~ItemIsEditable)              # column X not editable
             self.data_table.setItem(i, 0, item_x)
 
             item_y = QTableWidgetItem(f'{self.series.values[i]:.6f}')      # column Y editable
@@ -104,8 +102,8 @@ class computeAggregateWindow(QWidget):
         # ===============================
         form_layout = QFormLayout()
 
-        form_layout.setFormAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+        form_layout.setFormAlignment(AlignTop | AlignLeft)
+        form_layout.setLabelAlignment(AlignLeft)
         
         self.method_dropdown = QComboBox()
         self.method_dropdown.addItems([
@@ -420,4 +418,4 @@ if __name__ == "__main__":
     open_aggregateWindows[Id_aggregateWindow] = aggregateWindow
     aggregateWindow.show()
 
-    sys.exit(app.exec())
+    sys.exit(app_exec(app))

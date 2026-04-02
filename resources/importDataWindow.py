@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 import sys
 import datetime
@@ -25,7 +23,7 @@ class importDataWindow(QWidget):
         
         #----------------------------------------------
         self.label = QLabel("Press 'Ctrl+V' (or 'Cmd+V' on Mac) to paste the copied spreadsheet data.", self)
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label.setAlignment(AlignCenter)
         self.label.setStyleSheet(
             "padding: 10px;"
         )
@@ -375,5 +373,4 @@ if __name__ == "__main__":
     open_importWindow[Id_importWindow] = importWindow
     importWindow.show()
 
-    sys.exit(app.exec())
-
+    sys.exit(app_exec(app))

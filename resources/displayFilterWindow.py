@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 import sys
 
@@ -128,4 +126,4 @@ if __name__ == "__main__":
     open_displayWindows[Id_displayWindow] = displayWindow
     displayWindow.show()
 
-    sys.exit(app.exec())
+    sys.exit(app_exec(app))

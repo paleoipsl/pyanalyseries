@@ -1,3 +1,4 @@
+from resources.qt_compat import *
 
 import uuid
 import random
@@ -5,8 +6,6 @@ import numpy as np
 import pandas as pd
 
 from matplotlib import cm
-
-from PyQt6.QtGui import QColor 
 
 #========================================================================================
 def generate_Id():

@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import * 
-from PyQt6.QtCore import * 
-from PyQt6.QtGui import *
+from resources.qt_compat import *
 
 from .misc import *
 from .interactivePlot import interactivePlot
@@ -214,8 +212,8 @@ class defineInterpolationWindow(QWidget):
         saveCloseLine_layout.addWidget(self.close_button)
         saveClose_layout.addLayout(saveCloseLine_layout)
         control_layout3.addLayout(saveClose_layout)
-        control_layout3.setAlignment(buttonsGroup1_layout, Qt.AlignmentFlag.AlignBottom)
-        #control_layout3.setAlignment(saveClose_layout, Qt.AlignmentFlag.AlignBottom)
+        control_layout3.setAlignment(buttonsGroup1_layout, AlignBottom)
+        #control_layout3.setAlignment(saveClose_layout, AlignBottom)
 
         main_layout.addLayout(control_layout3)
 
@@ -650,11 +648,11 @@ class defineInterpolationWindow(QWidget):
                 self, 
                 'Confirmation', 
                 'Are you sure you want to delete all pointers ?', 
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, 
-                QMessageBox.StandardButton.No
+                MessageBoxYes | MessageBoxNo, 
+                MessageBoxNo
             )
 
-            if reply == QMessageBox.StandardButton.Yes:
+            if reply == MessageBoxYes:
                 self.artistsList_LastId = None
                 self.removeAddLastConnect_button.setEnabled(False)
                 self.removeAddLastConnect_button.setText("Remove last connection")
@@ -962,4 +960,4 @@ if __name__ == "__main__":
     open_interpolationWindows[Id_interpolationWindow] = interpolationWindow
     interpolationWindow.show()
 
-    sys.exit(app.exec())
+    sys.exit(app_exec(app))

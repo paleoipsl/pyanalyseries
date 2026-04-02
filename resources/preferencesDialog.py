@@ -1,6 +1,4 @@
-
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
+from resources.qt_compat import *
 
 class preferencesDialog(QDialog):
 
