@@ -17,7 +17,7 @@ except ImportError:
     IS_QT6 = False
     IS_QT5 = True
 
-print(QT_API)
+#print(QT_API)
 
 #========================================================================================
 if IS_QT6:
