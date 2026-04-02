@@ -1,4 +1,4 @@
-name: env_PyAnalySeries_PyQt5
+name: env_PyAnalySeries
 channels:
   - conda-forge
 dependencies:
