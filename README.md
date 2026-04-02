@@ -70,7 +70,7 @@ Tutorials can be found from the [Wiki page](https://github.com/PaleoIPSL/PyAnaly
 See [installation.md](./installation.md) for installation details.
 
 
-See [update.md](./updatec.md) for update details.
+See [update.md](./update.md) for update details.
 
 <hr style="border:2px solid gray">
 
