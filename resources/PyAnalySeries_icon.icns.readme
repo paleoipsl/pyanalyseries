@@ -1,0 +1,12 @@
+
+rsvg-convert -w 1024 -h 1024 PyAnalySeries_icon.svg > icon_1024x1024.png
+
+for size in 16 32 128 256 512 1024; do     convert icon_1024x1024.png -resize ${size}x${size} icon_${size}x${size}.png; done
+
+png2icns icon.icns \
+  icon_16x16.png \
+  icon_32x32.png \
+  icon_128x128.png \
+  icon_256x256.png \
+  icon_512x512.png \
+  icon_1024x1024.png
