@@ -12,7 +12,7 @@
 * Use Automator tool to set a shortcut (choose new application and execute shell)
 * Copy in the shell the PyAnalySeries.sh file content with correct anaconda path
 * Save as an application in your Desktop directory
-* Set an icon by pressing **⌘ + I** on the shorcut created and drag the `resources/PyAnalySeries_icon.svg` file on the top icon 
+* Set an icon by pressing **⌘ + I** on the shorcut created and drag the `resources/PyAnalySeries_icon.icns` file on the top icon 
 
 ### Shortcut on Windows
 * Right-click on Desktop → **New → Text Document**
