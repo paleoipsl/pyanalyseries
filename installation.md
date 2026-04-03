@@ -85,6 +85,7 @@ On some macOS configurations, certain dependencies (e.g. `pyproj`) must be insta
 If you previously used an older environment, it is recommended to recreate it:
 
 ```bash
+conda deactivate
 conda remove --name env_PyAnalySeries --all
 conda env create -f environment_PyQt6.yml
 ```
