@@ -2020,6 +2020,7 @@ def add_section(menu, text, first=False):
     # --- Label ---
     label = QLabel(text)
     label.setFont(menu.font())
+    label.setStyleSheet("color: black;")
     layout.addWidget(label)
 
     action = QWidgetAction(menu)
