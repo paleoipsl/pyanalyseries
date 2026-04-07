@@ -1,4 +1,8 @@
+ * 6.28
+   * Update inso to v1.2.0 in conda environments
+   * Preserve replicate variability when compute Detrend
  * 6.27
+   * Add Qt compatibility layer (PyQt5 / PyQt6)
    * Add Qt compatibility layer (PyQt5 / PyQt6)
  * 6.26
    * Fix in defineInsolation, Eccentricity and Precession parameter are dimensionless

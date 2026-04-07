@@ -259,8 +259,9 @@ class computeDetrendWindow(QWidget):
         self.seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
         self.xName = self.seriesDict['X']
         self.yName = self.seriesDict['Y']
-        self.series = self.seriesDict['Series']
-        self.series = self.series.groupby(self.series.index).mean()
+
+        self.series_raw = self.seriesDict['Series']
+        self.series = self.series_raw.groupby(self.series_raw.index).mean()
 
         ax = self.interactive_plot.axs[0]
 
@@ -293,6 +294,12 @@ class computeDetrendWindow(QWidget):
         )
 
         self.seriesDetrended = pd.Series(ts_dt.value, index=ts_dt.time)
+
+        mean_raw_aligned = self.series.reindex(self.series_raw.index)
+        mean_dt_aligned = self.seriesDetrended.reindex(self.series_raw.index)
+
+        self.seriesDetrended_raw = self.series_raw - mean_raw_aligned + mean_dt_aligned
+
         seriesColor = self.seriesDict['Color']
 
         line1, = ax.plot(self.series.index, self.series.values, color=seriesColor, linewidth=self.seriesWidth, label='Original')
@@ -325,7 +332,7 @@ class computeDetrendWindow(QWidget):
 
         detrended_seriesDict = self.seriesDict | {'Id': detrended_Id,
             'Type': 'Series detrended', 
-            'Series': self.seriesDetrended,
+            'Series': self.seriesDetrended_raw,
             'Color': generate_color(exclude_color=self.seriesDict['Color']),
             'Date': datetime.datetime.now().strftime("Created %Y/%m/%d at %H:%M:%S"),
             'History': append_to_htmlText(self.seriesDict['History'], history),

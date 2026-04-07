@@ -14,5 +14,5 @@ dependencies:
   - pyproj
   - pip
   - pip:
-    - inso==0.7.0
+    - inso==1.2.0
     - pyleoclim==1.3.0
