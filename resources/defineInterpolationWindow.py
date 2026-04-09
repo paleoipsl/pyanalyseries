@@ -239,7 +239,7 @@ class defineInterpolationWindow(QWidget):
         menu_bar = QMenuBar(self)
         main_layout.setMenuBar(menu_bar)
 
-        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut = QShortcut(QKeySequenceClose, self)
         close_shortcut.activated.connect(self.close)
 
         self.interactive_plot.fig.canvas.setFocus()
@@ -277,6 +277,10 @@ class defineInterpolationWindow(QWidget):
 
         xlim0 = self.axs[0].get_xlim()      # keep axs[0] range 
         xlim1 = self.axs[1].get_xlim()      # keep axs[1] range 
+
+        if self.second_xaxis is not None:
+            self.second_xaxis.remove()
+            self.second_xaxis = None
 
         self.deleteConnections()
         self.axs[0].clear()
@@ -327,6 +331,10 @@ class defineInterpolationWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def updateInterpPlot(self):
+
+        if self.second_xaxis is not None:
+            self.second_xaxis.remove()
+            self.second_xaxis = None
 
         self.axsInterp.set_visible(False)
         self.axsInterp.clear()

@@ -1,4 +1,10 @@
+ * 6.29
+   * Fix issue with secondary axis not properly removed in defineInterpolationWindow
+   * Add season_length.ipynb notebook (need inso 1.2.0, `pip install --ugrade inso`)
+   * Add images in defineInsolationAstroSeriesWindow
+   * Additionnal Qt compatibilities (QKeySequence.StandardKey.Close, ...)
  * 6.28
+   * Update inso to v1.2.0 in conda environments
    * Update inso to v1.2.0 in conda environments
    * Preserve replicate variability when compute Detrend
  * 6.27

@@ -51,6 +51,15 @@ if IS_QT6:
     Leave = QEvent.Type.Leave
     FocusOut = QEvent.Type.FocusOut
 
+    KeepAspectRatio = Qt.AspectRatioMode.KeepAspectRatio
+    SmoothTransformation = Qt.TransformationMode.SmoothTransformation
+    Expanding = QSizePolicy.Policy.Expanding
+    Minimum = QSizePolicy.Policy.Minimum
+
+    SP_DialogApplyButton = QStyle.StandardPixmap.SP_DialogApplyButton
+
+    QKeySequenceClose = QKeySequence.StandardKey.Close
+
 #----------------------------------------------
 else:
     AlignLeft = Qt.AlignLeft
@@ -82,6 +91,15 @@ else:
     HoverEnter = QEvent.HoverEnter
     Leave = QEvent.Leave
     FocusOut = QEvent.FocusOut
+
+    KeepAspectRatio = Qt.KeepAspectRatio
+    SmoothTransformation = Qt.SmoothTransformation
+    Expanding = QSizePolicy.Expanding
+    Minimum = QSizePolicy.Minimum
+
+    SP_DialogApplyButton = QStyle.SP_DialogApplyButton
+
+    QKeySequenceClose = QKeySequence.Close
 
 #========================================================================================
 def app_exec(app):

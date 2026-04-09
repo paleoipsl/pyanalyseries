@@ -32,7 +32,7 @@ class defineInsolationAstroSeriesWindow(QWidget):
         title = 'Define Insolation / Astronomical series'
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(1000, 800)
         
         main_layout = QVBoxLayout()
 
@@ -161,21 +161,87 @@ class defineInsolationAstroSeriesWindow(QWidget):
         col2_layout = QVBoxLayout()
 
         self.ref = QLabel()
-        self.ref.setText(f"Reference : <br><br>{get_solution_reference('Laskar2004')}")
-        self.ref.setFixedWidth(400)
+        self.ref.setText(f"Reference : {get_solution_reference('Laskar2004')}")
+        self.ref.setFixedWidth(600)
+        self.ref.setFixedHeight(80)
         self.ref.setWordWrap(True)
         self.ref.setOpenExternalLinks(True)
         self.ref.setTextInteractionFlags(TextSelectableByMouse | TextBrowserInteraction)
 
         self.range = QLabel()
-        self.range.setText(f"Range : <br><br>{get_solution_range_label('Laskar2004')}")
-        self.range.setFixedWidth(400)
+        self.range.setText(f"Range : {get_solution_range_label('Laskar2004')}")
+        self.range.setFixedWidth(600)
+        self.range.setFixedHeight(20)
         self.range.setWordWrap(True)
         self.range.setTextInteractionFlags(TextSelectableByMouse)
 
+        #-----------------------------
+        self.image_stack = QStackedWidget()
+        self.image_stack.setFixedSize(500, 250)
+        
+        self.image_label1 = QLabel()
+        self.image_label1.setAlignment(AlignCenter)
+
+        textTooltip1 = '''
+        The vernal point (γ) is defined as the position of the Sun as seen from Earth at the time of the NH spring equinox.<br>
+        The climatic precession angle (ῶ) is the position of the perihelion relative to the vernal point γ.
+        '''
+        self.image_label1.setToolTip(textTooltip1)
+        
+        self.image_label2 = QLabel()
+        self.image_label2.setAlignment(AlignCenter)
+        textTooltip2 = '''
+        Seasonal durations are defined by fixed true-longitude intervals, but vary through time due to changes in the Earth's orbital velocity.<br>
+        This modulation of time spent within each sector contributes to variations in integrated insolation and thus to orbital-scale climate variability.
+        '''
+        self.image_label2.setToolTip(textTooltip2)
+        
+        self.pixmap1 = QPixmap("resources/precession_angle.png")
+        self.pixmap2 = QPixmap("resources/season_length.png")
+        
+        self.image_label1.setPixmap(
+            self.pixmap1.scaled(
+                500, 250,
+                KeepAspectRatio,
+                SmoothTransformation
+            )
+        )
+    
+        self.image_label2.setPixmap(
+            self.pixmap2.scaled(
+                500, 250,
+                KeepAspectRatio,
+                SmoothTransformation
+            )
+        )
+
+        self.image_stack.addWidget(self.image_label1)
+        self.image_stack.addWidget(self.image_label2)
+
+        #-----------------------------
+        nav_layout = QHBoxLayout()
+        
+        self.prev_button = QPushButton("◀")
+        self.next_button = QPushButton("▶")
+
+        for button in (self.prev_button, self.next_button):
+            button.setFixedSize(22, 22)
+            button.setStyleSheet("padding: 0px; font-size: 10px;")
+        
+        self.prev_button.clicked.connect(self.show_prev_image)
+        self.next_button.clicked.connect(self.show_next_image)
+        
+        nav_layout.addSpacing(250)
+        nav_layout.addWidget(self.prev_button)
+        nav_layout.addWidget(self.next_button)
+        nav_layout.addStretch()
+
+        #-----------------------------
         col2_layout.addWidget(self.ref)
-        col2_layout.addSpacing(50)
         col2_layout.addWidget(self.range)
+        col2_layout.addSpacing(10)
+        col2_layout.addWidget(self.image_stack)
+        col2_layout.addLayout(nav_layout)
         col2_layout.addStretch()
 
         #----------------------------------------------
@@ -236,12 +302,23 @@ class defineInsolationAstroSeriesWindow(QWidget):
         #----------------------------------------------
         self.setLayout(main_layout)
 
-        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut = QShortcut(QKeySequenceClose, self)
         close_shortcut.activated.connect(self.close)
 
         self.plotType_change()
         self.myplot()
 
+    #---------------------------------------------------------------------------------------------
+    def show_prev_image(self):
+        index = self.image_stack.currentIndex()
+        count = self.image_stack.count()
+        self.image_stack.setCurrentIndex((index - 1) % count)
+    
+    def show_next_image(self):
+        index = self.image_stack.currentIndex()
+        count = self.image_stack.count()
+        self.image_stack.setCurrentIndex((index + 1) % count)
+    
     #---------------------------------------------------------------------------------------------
     def timeConvention_change(self):
 
@@ -411,8 +488,8 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.tstart_input.setToolTip(f"Choose a value between {min(lim1, lim2)} and {max(lim1, lim2)}")
         self.tend_input.setToolTip(f"Choose a value between {min(lim1, lim2)} and {max(lim1, lim2)}")
     
-        self.ref.setText(f"Reference : <br><br>{get_solution_reference(self.solutionAstro)}")
-        self.range.setText(f"Range : <br><br>{get_solution_range_label(self.solutionAstro)}")
+        self.ref.setText(f"Reference : {get_solution_reference(self.solutionAstro)}")
+        self.range.setText(f"Range : {get_solution_range_label(self.solutionAstro)}")
     
         self.delayed_update()
 

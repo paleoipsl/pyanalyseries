@@ -28,7 +28,8 @@ class defineSinusoidalSeriesWindow(QWidget):
         self.add_item_tree_widget = add_item_tree_widget
 
         self.setWindowTitle('Define Sinusoidal series')
-        self.resize(1200, 750)
+        self.setGeometry(200, 200, 1200, 800)
+        self.setMinimumSize(800, 600)
         
         main_layout = QVBoxLayout(self)
 
@@ -154,7 +155,7 @@ class defineSinusoidalSeriesWindow(QWidget):
         self.import_button.clicked.connect(self.import_series)
         self.close_button.clicked.connect(self.close)
 
-        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut = QShortcut(QKeySequenceClose, self)
         close_shortcut.activated.connect(self.close)
 
         self.myplot()

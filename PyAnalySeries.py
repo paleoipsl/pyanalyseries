@@ -58,7 +58,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.28'
+version = 'v6.29'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -1802,10 +1802,10 @@ def show_dialog(title, fileHTML, width, height):
     main_layout.addWidget(text_browser)
     
     button_layout = QHBoxLayout()
-    button_layout.addItem(QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+    button_layout.addItem(QSpacerItem(40, 20, Expanding, Minimum))
     ok_button = QPushButton('OK')
     ok_button.clicked.connect(dialog.accept)
-    icon = QApplication.style().standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton)
+    icon = QApplication.style().standardIcon(SP_DialogApplyButton)
     ok_button.setIcon(icon)
     button_layout.addWidget(ok_button)
     main_layout.addLayout(button_layout)

@@ -156,12 +156,14 @@ class computeDetrendWindow(QWidget):
 
         self.status_bar = QStatusBar()
         self.status_bar.setFixedHeight(20)
+        self.status_bar.setSizeGripEnabled(False)
+
         main_layout.addWidget(self.status_bar)
 
         #----------------------------------------------
         self.setLayout(main_layout)
 
-        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut = QShortcut(QKeySequenceClose, self)
         close_shortcut.activated.connect(self.close)
 
         self.interactive_plot.fig.canvas.setFocus()

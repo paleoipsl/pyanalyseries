@@ -183,7 +183,7 @@ class displayInterpolationWindow(QWidget):
         menu_bar = QMenuBar(self)
         main_layout.setMenuBar(menu_bar)
 
-        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut = QShortcut(QKeySequenceClose, self)
         close_shortcut.activated.connect(self.close)
 
     #---------------------------------------------------------------------------------------------

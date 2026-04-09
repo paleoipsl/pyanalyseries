@@ -212,7 +212,7 @@ class defineSamplingWindow(QWidget):
         #----------------------------------------------
         self.setLayout(main_layout)
 
-        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut = QShortcut(QKeySequenceClose, self)
         close_shortcut.activated.connect(self.close)
 
         self.interactive_plot.fig.canvas.setFocus()

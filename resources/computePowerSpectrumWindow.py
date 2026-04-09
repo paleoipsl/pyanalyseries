@@ -147,6 +147,8 @@ class computePowerSpectrumWindow(QWidget):
         #----------------------------------------------
         self.status_bar = QStatusBar()
         self.status_bar.setFixedHeight(20)
+        self.status_bar.setSizeGripEnabled(False)
+
         main_layout.addWidget(self.status_bar)
 
         self.setLayout(main_layout)
@@ -167,7 +169,7 @@ class computePowerSpectrumWindow(QWidget):
         self.wwz_freq_combo.currentTextChanged.connect(self.delayed_update)
         self.wwz_c_sb.valueChanged.connect(self.delayed_update)
 
-        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut = QShortcut(QKeySequenceClose, self)
         close_shortcut.activated.connect(self.close)
 
         self.update_parameter_page(self.method_combo.currentText())

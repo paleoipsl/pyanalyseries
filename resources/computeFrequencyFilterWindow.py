@@ -174,7 +174,7 @@ class computeFrequencyFilterWindow(QWidget):
         self.save_button.clicked.connect(self.save_series)
         self.close_button.clicked.connect(self.close)
 
-        close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        close_shortcut = QShortcut(QKeySequenceClose, self)
         close_shortcut.activated.connect(self.close)
 
         self.update_parameter_page(self.method_combo.currentText())
