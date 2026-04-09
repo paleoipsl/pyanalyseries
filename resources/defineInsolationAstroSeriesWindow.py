@@ -4,6 +4,7 @@ import sys
 import datetime
 import pandas as pd
 import numpy as np
+from pathlib import Path
 
 import matplotlib
 matplotlib.use("QtAgg")
@@ -25,6 +26,8 @@ class defineInsolationAstroSeriesWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def __init__(self, open_insolationAstroSeriesWindow, add_item_tree_widget):
         super().__init__()
+
+        self.app_dir = Path(__file__).resolve().parent.parent
 
         self.open_insolationAstroSeriesWindow = open_insolationAstroSeriesWindow
         self.add_item_tree_widget = add_item_tree_widget
@@ -196,8 +199,8 @@ class defineInsolationAstroSeriesWindow(QWidget):
         '''
         self.image_label2.setToolTip(textTooltip2)
         
-        self.pixmap1 = QPixmap("resources/precession_angle.png")
-        self.pixmap2 = QPixmap("resources/season_length.png")
+        self.pixmap1 = QPixmap(str(self.app_dir / 'resources' / 'precession_angle.png'))
+        self.pixmap2 = QPixmap(str(self.app_dir / 'resources' / 'season_length.png'))
         
         self.image_label1.setPixmap(
             self.pixmap1.scaled(
