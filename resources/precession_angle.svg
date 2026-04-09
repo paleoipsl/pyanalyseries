@@ -7,6 +7,9 @@
    id="svg56"
    sodipodi:docname="precession_angle.svg"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   inkscape:export-filename="/home/brock/PyAnalySeries-6.29/resources/precession_angle.png"
+   inkscape:export-xdpi="140"
+   inkscape:export-ydpi="140"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -22,7 +25,7 @@
      inkscape:pagecheckerboard="0"
      showgrid="false"
      inkscape:zoom="1.0040916"
-     inkscape:cx="448.16628"
+     inkscape:cx="422.27223"
      inkscape:cy="98.09862"
      inkscape:window-width="1858"
      inkscape:window-height="1016"
@@ -550,7 +553,7 @@
        style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18px;line-height:1.25;font-family:'Times New Roman', Times, serif;-inkscape-font-specification:'Times New Roman, Times, serif Bold Italic';font-variant-ligatures:none;white-space:pre;shape-inside:url(#rect65243)"><tspan
          x="160.67773"
          y="-191.71906"
-         id="tspan10237">lon=270</tspan></text>
+         id="tspan1087">lon=270</tspan></text>
     <text
        xml:space="preserve"
        transform="translate(431.31952,308.56381)"
@@ -558,7 +561,7 @@
        style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18px;line-height:1.25;font-family:'Times New Roman', Times, serif;-inkscape-font-specification:'Times New Roman, Times, serif Bold Italic';font-variant-ligatures:none;white-space:pre;shape-inside:url(#rect65243-5)"><tspan
          x="160.67773"
          y="-191.71906"
-         id="tspan10239">lon=180</tspan></text>
+         id="tspan1089">lon=180</tspan></text>
     <text
        xml:space="preserve"
        transform="translate(425.04645,612.33129)"
@@ -566,7 +569,7 @@
        style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18px;line-height:1.25;font-family:'Times New Roman', Times, serif;-inkscape-font-specification:'Times New Roman, Times, serif Bold Italic';font-variant-ligatures:none;white-space:pre;shape-inside:url(#rect65243-2)"><tspan
          x="160.67773"
          y="-191.71906"
-         id="tspan10241">lon=0</tspan></text>
+         id="tspan1091">lon=0</tspan></text>
     <text
        xml:space="preserve"
        transform="translate(573.69434,507.60245)"
@@ -574,6 +577,6 @@
        style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18px;line-height:1.25;font-family:'Times New Roman', Times, serif;-inkscape-font-specification:'Times New Roman, Times, serif Bold Italic';font-variant-ligatures:none;white-space:pre;shape-inside:url(#rect65243-7)"><tspan
          x="160.67773"
          y="-191.71906"
-         id="tspan10243">lon=90</tspan></text>
+         id="tspan1093">lon=90</tspan></text>
   </g>
 </svg>
