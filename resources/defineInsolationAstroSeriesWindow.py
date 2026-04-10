@@ -22,6 +22,10 @@ for key in plt.rcParams.keys():
         plt.rcParams[key] = []
 
 #=========================================================================================
+DEFAULT_MIN = -5_000_000
+DEFAULT_MAX =  5_000_000
+
+#=========================================================================================
 class defineInsolationAstroSeriesWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def __init__(self, open_insolationAstroSeriesWindow, add_item_tree_widget):
@@ -324,28 +328,35 @@ class defineInsolationAstroSeriesWindow(QWidget):
     
     #---------------------------------------------------------------------------------------------
     def timeConvention_change(self):
+    
+        v1 = self.tstart_input.value()
+        v2 = self.tend_input.value()
+        self.tstart_input.setValue(v2)
+        self.tend_input.setValue(v1)
 
-        if self.timeConvention_dropdown.currentIndex() == 0:     # Past < 0
-            self.t_convention = 1
-        else:                                                    # Past > 0
-            self.t_convention = -1
-
-        lim1 = self.tstart_input.minimum() * (-1)
-        lim2 = self.tstart_input.maximum() * (-1)
-        value1 = self.tstart_input.value() * (-1) 
-        value2 = self.tend_input.value() * (-1)
-
-        self.tstart_input.blockSignals(True)
-        self.tstart_input.setRange(min(lim1,lim2), max(lim1,lim2))
-        self.tstart_input.setToolTip(f"Choose a value between {min(lim1,lim2)} and {max(lim1,lim2)}")
-        self.tstart_input.setValue(min(value1, value2))
-        self.tstart_input.blockSignals(False)
-
-        self.tend_input.blockSignals(True)
-        self.tend_input.setRange(min(lim1,lim2), max(lim1,lim2))
-        self.tend_input.setToolTip(f"Choose a value between {min(lim1,lim2)} and {max(lim1,lim2)}")
-        self.tend_input.setValue(max(value1, value2))
-        self.tend_input.blockSignals(False)
+        if self.timeConvention_dropdown.currentIndex() == 0:
+            self.t_convention = 1   # Past < 0
+        else:
+            self.t_convention = -1  # Past > 0
+    
+        if self.timeUnit == 'yr':
+            scaleFactor = 1000
+        else:
+            scaleFactor = 1
+    
+        lim1, lim2 = get_solution_limits_kyr(self.solutionAstro)
+        if lim1 is None:
+            lim1 = DEFAULT_MIN
+            lim2 = DEFAULT_MAX
+        else:
+            lim1 *= scaleFactor
+            lim2 *= scaleFactor
+            if self.t_convention == -1:
+                lim1, lim2 = -lim2, -lim1
+        self.tstart_input.setRange(lim1, lim2)
+        self.tstart_input.setToolTip(f"Choose a value between {lim1} and {lim2}")
+        self.tend_input.setRange(lim1, lim2)
+        self.tend_input.setToolTip(f"Choose a value between {lim1} and {lim2}")
 
         self.delayed_update()
 
@@ -357,8 +368,25 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.label_tend.setText(f"End [{self.timeUnit}] :")
         self.label_tstep.setText(f"Step [{self.timeUnit}] :")
 
-        lim1 = self.tstart_input.minimum()
-        lim2 = self.tstart_input.maximum()
+        if self.timeUnit == 'yr':
+            scaleFactor = 1000
+        else:
+            scaleFactor = 1
+       
+        lim1, lim2 = get_solution_limits_kyr(self.solutionAstro)
+        if lim1 is None:
+            lim1 = DEFAULT_MIN
+            lim2 = DEFAULT_MAX
+        else:
+            lim1 *= scaleFactor
+            lim2 *= scaleFactor
+            if self.t_convention == -1:
+                lim1, lim2 = -lim2, -lim1
+        self.tstart_input.setRange(lim1, lim2)
+        self.tstart_input.setToolTip(f"Choose a value between {lim1} and {lim2}")
+        self.tend_input.setRange(lim1, lim2)
+        self.tend_input.setToolTip(f"Choose a value between {lim1} and {lim2}")
+
         value1 = self.tstart_input.value()
         value2 = self.tend_input.value()
         step_lim1 = self.tstep_input.minimum()
@@ -366,8 +394,6 @@ class defineInsolationAstroSeriesWindow(QWidget):
         step_value = self.tstep_input.value()
 
         if self.timeUnit == 'yr':
-            lim1 = lim1 * 1000
-            lim2 = lim2 * 1000
             value1 = value1 * 1000
             value2 = value2 * 1000
             step = 1000
@@ -375,25 +401,19 @@ class defineInsolationAstroSeriesWindow(QWidget):
             step_lim2 = step_lim2 * 1000
             step_value = step_value * 1000
         else:
-            lim1 = lim1 // 1000
-            lim2 = lim2 // 1000
-            value1 = value1 // 1000
-            value2 = value2 // 1000
+            value1 = int(value1 / 1000)
+            value2 = int(value2 / 1000)
             step = 1
             step_lim1 = step_lim1 / 1000
             step_lim2 = step_lim2 / 1000
             step_value = step_value / 1000
 
         self.tstart_input.blockSignals(True)
-        self.tstart_input.setRange(lim1, lim2)
-        self.tstart_input.setToolTip(f"Choose a value between {lim1} and {lim2}")
         self.tstart_input.setValue(value1)
         self.tstart_input.setSingleStep(step)
         self.tstart_input.blockSignals(False)
 
         self.tend_input.blockSignals(True)
-        self.tend_input.setRange(lim1, lim2)
-        self.tend_input.setToolTip(f"Choose a value between {lim1} and {lim2}")
         self.tend_input.setValue(value2)
         self.tend_input.setSingleStep(step)
         self.tend_input.blockSignals(False)
@@ -480,17 +500,18 @@ class defineInsolationAstroSeriesWindow(QWidget):
     
         lim1, lim2 = get_solution_limits_kyr(self.solutionAstro)
         if lim1 is None:
-            lim1, lim2 = -5E6, 5E6
-    
-        lim1 = lim1 * self.t_convention * scaleFactor
-        lim2 = lim2 * self.t_convention * scaleFactor
-    
-        self.tstart_input.setRange(int(min(lim1, lim2)), int(max(lim1, lim2)))
-        self.tend_input.setRange(int(min(lim1, lim2)), int(max(lim1, lim2)))
-    
-        self.tstart_input.setToolTip(f"Choose a value between {min(lim1, lim2)} and {max(lim1, lim2)}")
-        self.tend_input.setToolTip(f"Choose a value between {min(lim1, lim2)} and {max(lim1, lim2)}")
-    
+            lim1 = DEFAULT_MIN
+            lim2 = DEFAULT_MAX
+        else:
+            lim1 *= scaleFactor
+            lim2 *= scaleFactor
+            if self.t_convention == -1:
+                lim1, lim2 = -lim2, -lim1
+        self.tstart_input.setRange(lim1, lim2)
+        self.tstart_input.setToolTip(f"Choose a value between {lim1} and {lim2}")
+        self.tend_input.setRange(lim1, lim2)
+        self.tend_input.setToolTip(f"Choose a value between {lim1} and {lim2}")
+
         self.ref.setText(f"Reference : {get_solution_reference(self.solutionAstro)}")
         self.range.setText(f"Range : {get_solution_range_label(self.solutionAstro)}")
     
@@ -506,7 +527,17 @@ class defineInsolationAstroSeriesWindow(QWidget):
     
         self.plotType = self.plotType_dropdown.currentText()
         self.solutionAstro = self.solutionAstro_dropdown.currentText()
-    
+   
+        t0 = self.tstart_input.value()
+        t1 = self.tend_input.value()
+        
+        if self.t_convention == -1:  # Past > 0
+            t0 = -t0
+            t1 = -t1
+        
+        t_start = min(t0, t1)
+        t_end   = max(t0, t1)
+
         try:
             result = compute_insolation_astro_series(
                 plot_type=self.plotType,
@@ -515,17 +546,19 @@ class defineInsolationAstroSeriesWindow(QWidget):
                 latitude=self.latitude_input.value(),
                 true_longitude1=self.trueLongitude1_input.value(),
                 true_longitude2=self.trueLongitude2_input.value(),
-                t_start=self.tstart_input.value(),
-                t_end=self.tend_input.value(),
+                t_start=t_start,
+                t_end=t_end,
                 t_step=self.tstep_input.value(),
-                time_unit=self.timeUnit,
-                t_convention=self.t_convention,
+                time_unit=self.timeUnit
             )
         except Exception as e:
             self.status_bar.showMessage(str(e), 5000)
             return
     
         self.index = result["index"]
+        if self.t_convention == -1:
+            self.index = -self.index
+
         self.values = result["values"]
         self.shortName = result["short_name"]
         self.ylabel = result["ylabel"]

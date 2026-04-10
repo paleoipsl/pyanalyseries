@@ -43,7 +43,6 @@ def get_solution_limits_kyr(solution: str):
         return -20000, 10000
     return None, None
 
-
 def get_solution_reference(solution: str):
     if solution.startswith("Laskar2010"):
         return SOLUTION_REFERENCES["Laskar2010"]
@@ -78,11 +77,11 @@ def validate_plot_type_solution(plot_type: str, solution: str):
         )
 
 
-def build_time_vector(t_start: float, t_end: float, t_step: float, time_unit: str, t_convention: int):
+def build_time_vector(t_start: float, t_end: float, t_step: float, time_unit: str):
     if t_step <= 0:
         raise ValueError("t_step must be > 0.")
 
-    t = np.arange(t_start, t_end + t_step, t_step) * t_convention
+    t = np.arange(t_start, t_end + t_step, t_step)
 
     if time_unit == "yr":
         t_kyr = t / 1000.0
@@ -130,8 +129,7 @@ def compute_insolation_astro_series(
     t_start: float = -1000.0,
     t_end: float = 0.0,
     t_step: float = 1.0,
-    time_unit: str = "kyr",
-    t_convention: int = 1,
+    time_unit: str = "kyr"
 ):
     """
     Returns a dict with:
@@ -147,7 +145,7 @@ def compute_insolation_astro_series(
     validate_plot_type_solution(plot_type, solution)
 
     deg_to_rad = np.pi / 180.0
-    t_kyr, index = build_time_vector(t_start, t_end, t_step, time_unit, t_convention)
+    t_kyr, index = build_time_vector(t_start, t_end, t_step, time_unit)
     check_time_range(solution, t_kyr)
 
     astro_params = get_astro_params(solution)

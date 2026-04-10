@@ -1,4 +1,8 @@
+ * 6.30
+   * Fix incorrect time sign handling (Past > 0) introduced by astro/insolation code refactoring
+   * Update images in defineInsolationAstroSeriesWindow
  * 6.29
+   * Fix issue with secondary axis not properly removed in defineInterpolationWindow
    * Fix issue with secondary axis not properly removed in defineInterpolationWindow
    * Add season_length.ipynb notebook (need inso 1.2.0, `pip install --ugrade inso`)
    * Add images in defineInsolationAstroSeriesWindow
