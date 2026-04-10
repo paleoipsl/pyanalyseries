@@ -46,6 +46,17 @@ cd PyAnalySeries
 ```
 
 ---
+### Important
+
+If you previously used an older environment, it is recommended to recreate it:
+
+```bash
+conda deactivate
+conda remove --name env_PyAnalySeries --all
+conda env create -f environment_PyQt6.yml
+```
+
+---
 
 ## User data location
 
@@ -54,3 +65,4 @@ User data (projects, input files, results, exports, etc.) should **not be stored
 Updating or reinstalling the application may overwrite or delete files located in the repository folder.
 
 It is recommended to keep your data in a separate directory outside of PyAnalySeries.
+
