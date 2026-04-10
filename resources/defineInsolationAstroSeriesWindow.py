@@ -122,7 +122,7 @@ class defineInsolationAstroSeriesWindow(QWidget):
         
         self.tend_input = QSpinBox()
         self.tend_input.setRange(min(lim1, lim2), max(lim1, lim2))
-        self.tend_input.setValue(0)
+        self.tend_input.setValue(500)
         self.tend_input.setSingleStep(1000)
         self.tend_input.setToolTip(f"Choose a value between {min(lim1, lim2)} and {max(lim1, lim2)}")
 
@@ -328,11 +328,18 @@ class defineInsolationAstroSeriesWindow(QWidget):
     
     #---------------------------------------------------------------------------------------------
     def timeConvention_change(self):
-    
+   
         v1 = self.tstart_input.value()
         v2 = self.tend_input.value()
-        self.tstart_input.setValue(v2)
-        self.tend_input.setValue(v1)
+
+        self.tstart_input.blockSignals(True)
+        self.tend_input.blockSignals(True)
+
+        self.tstart_input.setValue(-v2)
+        self.tend_input.setValue(-v1)
+
+        self.tstart_input.blockSignals(False)
+        self.tend_input.blockSignals(False)
 
         if self.timeConvention_dropdown.currentIndex() == 0:
             self.t_convention = 1   # Past < 0
