@@ -375,6 +375,9 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.label_tend.setText(f"End [{self.timeUnit}] :")
         self.label_tstep.setText(f"Step [{self.timeUnit}] :")
 
+        value1 = self.tstart_input.value()
+        value2 = self.tend_input.value()
+
         if self.timeUnit == 'yr':
             scaleFactor = 1000
         else:
@@ -394,8 +397,6 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.tend_input.setRange(lim1, lim2)
         self.tend_input.setToolTip(f"Choose a value between {lim1} and {lim2}")
 
-        value1 = self.tstart_input.value()
-        value2 = self.tend_input.value()
         step_lim1 = self.tstep_input.minimum()
         step_lim2 = self.tstep_input.maximum()
         step_value = self.tstep_input.value()
