@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PyAnalySeries Demo Tour</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --border: #dbe2ea;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 28px 32px 18px 32px;
+      background: linear-gradient(135deg, #eef4ff 0%, #f8fbff 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 30px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 900px;
+    }
+
+    main {
+      padding: 24px 32px 40px 32px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .tour-panel {
+      position: relative;
+      min-height: 720px;
+      background: #ffffff;
+    }
+
+    .tour-image {
+      width: 100%;
+      display: block;
+    }
+
+    .node {
+      position: absolute;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: 3px solid #ffffff;
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .node:hover {
+      transform: scale(1.08);
+      background: #1d4ed8;
+    }
+
+    .node.active {
+      background: #0f172a;
+    }
+
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .video-wrap {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    video {
+      width: 100%;
+      border-radius: 14px;
+      background: #000000;
+      display: block;
+    }
+
+    .info {
+      padding: 18px 18px 22px 18px;
+    }
+
+    .step-id {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e8f0ff;
+      color: var(--accent);
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 0 0 10px 0;
+      font-size: 22px;
+    }
+
+    .description {
+      margin: 0 0 14px 0;
+      color: var(--muted);
+      line-height: 1.5;
+      min-height: 72px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    a.button-link {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button.secondary,
+    a.button-link.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .playlist {
+      margin-top: 18px;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+    }
+
+    .playlist-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #eef2f7;
+      cursor: pointer;
+    }
+
+    .playlist-item:last-child {
+      border-bottom: none;
+    }
+
+    .playlist-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .playlist-item span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .playlist-item:hover strong {
+      color: var(--accent);
+    }
+
+    @media (max-width: 1100px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .tour-panel {
+        min-height: 520px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PyAnalySeries Demo Tour</h1>
+    <p class="subtitle">
+      Offline interactive presentation for conference and teaching use.
+      Click a numbered step on the workflow map to load the corresponding mini-demo video.
+    </p>
+  </header>
+
+  <main>
+    <section class="panel tour-panel">
+      <img class="tour-image" src="captures/capture_01.png" alt="PyAnalySeries workflow map">
+
+      <!-- Adjust top/left values to match your image -->
+      <button class="node active" style="top: 12%; left: 10%;" data-step="0">1</button>
+      <button class="node" style="top: 24%; left: 28%;" data-step="1">2</button>
+      <button class="node" style="top: 42%; left: 42%;" data-step="2">3</button>
+      <button class="node" style="top: 58%; left: 56%;" data-step="3">4</button>
+      <button class="node" style="top: 35%; left: 70%;" data-step="4">5</button>
+      <button class="node" style="top: 70%; left: 78%;" data-step="5">6</button>
+    </section>
+
+    <aside class="panel side-panel">
+      <div class="video-wrap">
+        <video id="player" controls preload="metadata">
+          <source id="playerSource" src="videos/01_import.mp4" type="video/mp4">
+          Your browser does not support HTML5 video.
+        </video>
+      </div>
+
+      <div class="info">
+        <div id="stepTag" class="step-id">STEP 1</div>
+        <h2 id="stepTitle">Import data</h2>
+        <p id="stepDescription" class="description">
+          Import series directly from the clipboard and display the first plot within seconds.
+        </p>
+        <div id="stepMeta" class="meta">Video: 01_import.mp4</div>
+
+        <div class="controls">
+          <button id="playBtn">Play</button>
+          <button id="restartBtn" class="secondary">Restart</button>
+          <a id="openBtn" class="button-link secondary" href="videos/01_import.mp4" target="_blank">Open video file</a>
+        </div>
+
+        <div class="playlist" id="playlist"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const steps = [
+      {
+        id: "STEP 1",
+        title: "Import data",
+        description: "Import series directly from the clipboard and display the first plot within seconds.",
+        file: "videos/01_import.mp4"
+      },
+      {
+        id: "STEP 2",
+        title: "Interactive navigation",
+        description: "Zoom, pan, autoscale, and inspect local segments efficiently during exploratory analysis.",
+        file: "videos/02_interactive_navigation.mp4"
+      },
+      {
+        id: "STEP 3",
+        title: "Tie-points and interpolation",
+        description: "Define tie-points interactively and update interpolation consistently with the visual alignment.",
+        file: "videos/03_tie_points_interpolation.mp4"
+      },
+      {
+        id: "STEP 4",
+        title: "Signal processing",
+        description: "Apply cleaning, aggregation, detrending, and interpolation workflows from a unified interface.",
+        file: "videos/04_processing.mp4"
+      },
+      {
+        id: "STEP 5",
+        title: "Spectral estimation",
+        description: "Compare several spectral estimation methods without leaving the application.",
+        file: "videos/05_spectral_estimation.mp4"
+      },
+      {
+        id: "STEP 6",
+        title: "Reproducibility and export",
+        description: "Track processing steps, preserve metadata, and keep the workflow transparent and reusable.",
+        file: "videos/06_reproducibility_export.mp4"
+      }
+    ];
+
+    const player = document.getElementById("player");
+    const playerSource = document.getElementById("playerSource");
+    const stepTag = document.getElementById("stepTag");
+    const stepTitle = document.getElementById("stepTitle");
+    const stepDescription = document.getElementById("stepDescription");
+    const stepMeta = document.getElementById("stepMeta");
+    const openBtn = document.getElementById("openBtn");
+    const playBtn = document.getElementById("playBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const playlist = document.getElementById("playlist");
+    const nodes = document.querySelectorAll(".node");
+
+    let currentIndex = 0;
+
+    function loadStep(index, autoplay = false) {
+      const step = steps[index];
+      currentIndex = index;
+
+      stepTag.textContent = step.id;
+      stepTitle.textContent = step.title;
+      stepDescription.textContent = step.description;
+      stepMeta.textContent = `Video: ${step.file.split("/").pop()}`;
+      openBtn.href = step.file;
+
+      player.pause();
+      playerSource.src = step.file;
+      player.load();
+
+      if (autoplay) {
+        player.play().catch(() => {});
+      }
+
+      nodes.forEach((node, i) => {
+        node.classList.toggle("active", i === index);
+      });
+
+      document.querySelectorAll(".playlist-item").forEach((item, i) => {
+        item.style.fontWeight = i === index ? "700" : "400";
+      });
+    }
+
+    function buildPlaylist() {
+      steps.forEach((step, index) => {
+        const item = document.createElement("div");
+        item.className = "playlist-item";
+        item.innerHTML = `
+          <strong>${step.id} — ${step.title}</strong>
+          <span>${step.description}</span>
+        `;
+        item.addEventListener("click", () => loadStep(index, true));
+        playlist.appendChild(item);
+      });
+    }
+
+    nodes.forEach((node) => {
+      node.addEventListener("click", () => {
+        loadStep(Number(node.dataset.step), true);
+      });
+    });
+
+    playBtn.addEventListener("click", () => {
+      player.play().catch(() => {});
+    });
+
+    restartBtn.addEventListener("click", () => {
+      player.currentTime = 0;
+      player.play().catch(() => {});
+    });
+
+    buildPlaylist();
+    loadStep(0, false);
+  </script>
+</body>
+</html>
