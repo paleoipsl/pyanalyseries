@@ -90,7 +90,6 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.trueLongitude1_input.setValue(90)
         self.trueLongitude1_input.setSingleStep(5)
         self.trueLongitude1_input.setDecimals(2)
-        self.trueLongitude1_input.valueChanged.connect(self.updateTrueLongitude2Limit)
 
         #-------------------------------
         # True longitude #2
@@ -434,10 +433,6 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.tstep_input.blockSignals(False)
 
         self.delayed_update()
-
-    #---------------------------------------------------------------------------------------------
-    def updateTrueLongitude2Limit(self, value):
-        self.trueLongitude2_input.setMinimum(value + 1)
 
     #---------------------------------------------------------------------------------------------
     def plotType_change(self):

@@ -179,6 +179,9 @@ def compute_insolation_astro_series(
         lon1_rad = true_longitude1 * deg_to_rad
         lon2_rad = true_longitude2 * deg_to_rad
 
+        if lon2_rad < lon1_rad:
+            lon2_rad += 2 * np.pi
+
         if plot_type == "Daily insolation":
             values = solar_constant * inso.inso_dayly_radians(
                 lon1_rad, lat_rad, obl, ecc, pre

@@ -635,7 +635,7 @@ class defineInterpolationWindow(QWidget):
 
         #-------------------
         elif event.key == 'z':
-            self.selectSeries_change()
+            #self.selectSeries_change()
             self.showInterp.setChecked(not self.showInterp.isChecked())
             self.showInterp_change()
 
