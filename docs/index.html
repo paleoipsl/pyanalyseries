@@ -241,10 +241,11 @@
 
     <aside class="panel side-panel">
       <div class="video-wrap">
-        <video id="player" controls preload="metadata">
-          <source id="playerSource" src="videos/01_display.mp4" type="video/mp4">
-          Your browser does not support HTML5 video.
-        </video>
+	<video id="player" controls preload="metadata">
+	  <source id="playerSource" src="videos/01_display.mp4" type="video/mp4">
+	  <track id="subtitleTrack" kind="subtitles" srclang="en" label="English" src="videos/01_display.vtt">
+	  Your browser does not support HTML5 video.
+	</video>
       </div>
 
       <div class="info">
@@ -347,6 +348,7 @@
     const restartBtn = document.getElementById("restartBtn");
     const playlist = document.getElementById("playlist");
     const nodes = document.querySelectorAll(".node");
+    const subtitleTrack = document.getElementById("subtitleTrack");
 
     let currentIndex = 0;
 
@@ -362,6 +364,7 @@
 
       player.pause();
       playerSource.src = step.file;
+      subtitleTrack.src = step.file.replace(".mp4", ".vtt");
       player.load();
 
       if (autoplay) {
