@@ -1,0 +1,136 @@
+WEBVTT
+
+00:00:00.070 --> 00:00:03.680
+The objective of PyAnalySeries is to provide an application with
+
+00:00:03.710 --> 00:00:09.090
+interactive capabilities to explore 2D time-series efficiently and to perform
+
+00:00:09.090 --> 00:00:14.410
+computations on the data, in particular interpolation between series.
+
+00:00:14.410 --> 00:00:17.900
+The first step is to visualize a series so let’s
+
+00:00:17.900 --> 00:00:18.610
+see how.
+
+00:00:18.610 --> 00:00:22.000
+From the main window, users can display a series by
+
+00:00:22.000 --> 00:00:23.990
+pressing Control D.
+
+00:00:23.990 --> 00:00:28.040
+The Display window then opens, organized into multiple tabs.
+
+00:00:28.040 --> 00:00:32.840
+The application also allows the visualization of multiple series simultaneously
+
+00:00:33.170 --> 00:00:34.980
+which will be introduced later.
+
+00:00:34.980 --> 00:00:37.760
+For now, select a series and press Control D to
+
+00:00:37.760 --> 00:00:39.600
+open the Display window.
+
+00:00:39.600 --> 00:00:42.260
+Users can zoom in and out using the mouse wheel
+
+00:00:42.260 --> 00:00:45.640
+or trackpad, and pan across the data by holding the
+
+00:00:45.640 --> 00:00:46.760
+right mouse button.
+
+00:00:46.760 --> 00:00:50.790
+Zooming and panning can be applied independently to each axis
+
+00:00:51.120 --> 00:00:55.220
+by positioning the cursor over the corresponding axis or applied
+
+00:00:55.220 --> 00:00:58.490
+to both axes simultaneously when the cursor is over the
+
+00:00:58.490 --> 00:00:59.500
+plot area.
+
+00:00:59.500 --> 00:01:02.670
+Axis representation can be modified at any time.
+
+00:01:02.670 --> 00:01:05.790
+You can invert an axis … switch to a logarithmic
+
+00:01:05.790 --> 00:01:09.670
+scale when appropriate … and return to a linear scale
+
+00:01:10.060 --> 00:01:13.630
+These transformations are available for each axis through the context
+
+00:01:13.630 --> 00:01:16.840
+menu, accessed with the right mouse button.
+
+00:01:16.840 --> 00:01:20.300
+Axis limits can also be adjusted dynamically.
+
+00:01:20.300 --> 00:01:24.760
+For both axes, users may choose between a local autoscaling
+
+00:01:25.080 --> 00:01:29.270
+adapted to the current view or a global autoscaling applied
+
+00:01:29.270 --> 00:01:31.120
+to the entire dataset.
+
+00:01:31.120 --> 00:01:34.770
+These settings can be defined independently for each axis.
+
+00:01:34.770 --> 00:01:37.180
+When the cursor is over the plot area and not
+
+00:01:37.180 --> 00:01:41.600
+on the axes a global autoscaling affecting both axes is
+
+00:01:41.600 --> 00:01:44.010
+available from the context menu.
+
+00:01:44.010 --> 00:01:47.110
+Data points can be displayed by pressing the Control key
+
+00:01:47.480 --> 00:01:51.060
+allowing precise inspection of values along the curve.
+
+00:01:51.060 --> 00:01:55.580
+Export functionality is accessible through the context menu.
+
+00:01:55.580 --> 00:02:00.020
+Users can generate figures in standard formats such as PNG
+
+00:02:00.290 --> 00:02:06.670
+or PDF ensuring compatibility with publications and presentations.
+
+00:02:06.670 --> 00:02:10.130
+The Data tab provides access to raw values and allows
+
+00:02:10.160 --> 00:02:13.970
+easy copying into a spreadsheet using standard shortcuts such as
+
+00:02:13.970 --> 00:02:16.180
+Control C and Control V.
+
+00:02:16.180 --> 00:02:19.270
+The Stat tab presents computed statistics.
+
+00:02:19.270 --> 00:02:22.980
+And finally, the Info tab displays the processing history and
+
+00:02:22.980 --> 00:02:25.280
+allows users to add comments.
+
+00:02:25.280 --> 00:02:27.530
+You can close the window at any time using the
+
+00:02:27.530 --> 00:02:29.980
+standard shortcut Control W.
