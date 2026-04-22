@@ -1,0 +1,25 @@
+The objective of PyAnalySeries is to provide an application with interactive capabilities to explore 2D time-series efficiently... and to perform computations on the data, in particular interpolation between series.
+
+The first step is to visualize a series... so let’s see how.
+
+From the main window, users can display a series by pressing Control D.  The Display window then opens, organized into multiple tabs. The application also allows the visualization of multiple series simultaneously, which will be introduced later.
+
+For now, select a series and press Control D to open the Display window.
+
+Users can zoom in and out using the mouse wheel or trackpad, and pan across the data by holding the right mouse button. Zooming and panning can be applied independently to each axis by positioning the cursor over the corresponding axis... or applied to both axes simultaneously when the cursor is over the plot area.
+
+Axis representation can be modified at any time. You can invert an axis… switch to a logarithmic scale when appropriate… and return to a linear scale. These transformations are available for each axis through the context menu, accessed with the right mouse button.
+
+Axis limits can also be adjusted dynamically. For both axes, users may choose between a local autoscaling... adapted to the current view... or a global autoscaling... applied to the entire dataset. These settings can be defined independently for each axis. When the cursor is over the plot area... and not on the axes... a global autoscaling affecting both axes is available from the context menu.
+
+Data points can be displayed by pressing the Control key... allowing precise inspection of values along the curve.
+
+Export functionality is accessible through the context menu. Users can generate figures in standard formats such as PNG or PDF... ensuring compatibility with publications and presentations.
+
+The Data tab provides access to raw values... and allows easy copying into a spreadsheet using standard shortcuts such as Control C and Control V.
+
+The Stat tab presents computed statistics.
+
+And finally, the Info tab displays the processing history... and allows users to add comments.
+
+You can close the window at any time using the standard shortcut Control W.
