@@ -1,0 +1,37 @@
+Now you are ready to try PyAnalySeries.
+Let’s see how to proceed.
+
+As a reminder, PyAnalySeries is an application, not a library.
+It is written in Python and relies on standard scientific modules.
+Installation instructions are available in the project GitHub repository.
+
+The interface is built on PyQt.
+This ensures consistent behavior across Linux, macOS, and Windows.
+
+The recommended approach is to create a dedicated conda environment.
+Most dependencies are installed with conda.
+A small subset is completed with pip when needed.
+This strategy maximizes stability and reproducibility.
+
+Two environments are provided.
+One is based on PyQt5.
+The other is based on PyQt6.
+You should try PyQt6 on recent systems.
+Otherwise, fall back to the PyQt5 environment.
+
+The installation process has been validated in practice.
+More than 40 users have already installed and used the application.
+This gives confidence in its robustness across different systems.
+
+If you encounter issues during environment setup or execution,
+please contact us.
+We will find a solution together.
+
+Updating the application is straightforward.
+You simply pull the latest version from the repository.
+
+The application will evolve based on user needs.
+Feel free to contribute via GitHub by opening issues.
+
+And of course, we welcome your feedback.
+Please also share any publications where PyAnalySeries has been used.
