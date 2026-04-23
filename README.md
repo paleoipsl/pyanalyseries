@@ -32,7 +32,7 @@ Hevia-Cruz, F., Brockmann, P., Govin, A., Michel, E., and Paillard, D. (2025). R
 
 #### PyAnalySeries Demo Tour
 
-https://paleoipsl.github.io/PyAnalySeries
+<a href="https://paleoipsl.github.io/PyAnalySeries" target="_blank">https://paleoipsl.github.io/PyAnalySeries</a>
 
 <hr style="border:2px solid gray">
 
