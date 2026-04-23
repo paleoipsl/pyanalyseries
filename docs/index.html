@@ -133,10 +133,19 @@ body {
 
       <!-- PLAYER -->
       <div class="pt-0 px-3 pb-3">
-        <video id="player" class="w-100 rounded" controls
-               style="aspect-ratio:16/9; background:black;">
-          <source id="source" src="videos/01.mp4">
-        </video>
+	<video id="player" class="w-100 rounded" controls
+	       style="aspect-ratio:16/9; background:black;">
+	
+	  <source id="source" src="videos/01.mp4">
+	
+	  <track id="track"
+	         kind="subtitles"
+	         src="videos/01.vtt"
+	         srclang="en"
+	         label="English"
+	         default>
+	
+	</video>
       </div>
 
       <!-- TEXT -->
@@ -217,6 +226,7 @@ const steps = [
 
 const player = document.getElementById("player");
 const source = document.getElementById("source");
+const track = document.getElementById("track");
 const stepsContainer = document.getElementById("stepsContainer");
 
 let currentStep = 0;
@@ -241,6 +251,8 @@ function loadStep(i) {
   document.getElementById("description").textContent = s.description;
 
   source.src = s.file;
+  track.src = s.file.replace('.mp4', '.vtt');
+
   player.load();
 
   // nodes
