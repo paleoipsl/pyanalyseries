@@ -1,420 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PyAnalySeries Demo Tour</title>
-  <style>
-    :root {
-      --bg: #f6f7fb;
-      --panel: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --accent: #2563eb;
-      --border: #dbe2ea;
-      --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      --radius: 18px;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    * {
-      box-sizing: border-box;
-    }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
+<style>
+body { 
+  overflow: auto; 
+}
 
-    header {
-      padding: 28px 32px 18px 32px;
-      background: linear-gradient(135deg, #eef4ff 0%, #f8fbff 100%);
-      border-bottom: 1px solid var(--border);
-    }
+.row {
+  flex-wrap: nowrap !important;
+}
 
-    h1 {
-      margin: 0 0 8px 0;
-      font-size: 30px;
-      line-height: 1.2;
-    }
+.container-fluid {
+  min-width: 1200px;
+  min-height: 800px;
+}
 
-    .subtitle {
-      margin: 0;
-      color: var(--muted);
-      font-size: 16px;
-      max-width: 900px;
-    }
+.canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 900px;
+  margin: auto;
+  aspect-ratio: 16 / 9;
+}
 
-    main {
-      padding: 24px 32px 40px 32px;
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 24px;
-    }
+.canvas img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
+.bg-layer {
+  background: lightgray;
+  border-radius: 6px;
+  height: 700px;
+}
 
-    .tour-panel {
-      position: relative;
-      min-height: 720px;
-      background: #ffffff;
-    }
+.node {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  cursor:pointer;
+  transform: translate(-50%, -50%);
+  transition: 0.2s;
+}
 
-    .tour-image {
-      width: 100%;
-      display: block;
-    }
+.node:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
 
-    .node {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 3px solid #ffffff;
-      background: var(--accent);
-      color: #ffffff;
-      font-weight: bold;
-      font-size: 22px;
-      cursor: pointer;
-      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
+.node.active {
+  background: #0f172a;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.3);
+}
 
-    .node:hover {
-      transform: scale(1.08);
-      background: #1d4ed8;
-    }
+#stepList {
+  max-height: 250px;
+}
 
-    .node.active {
-      background: #0f172a;
-    }
-
-    .side-panel {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .video-wrap {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    video {
-      width: 100%;
-      border-radius: 14px;
-      background: #000000;
-      display: block;
-    }
-
-    .info {
-      padding: 18px 18px 22px 18px;
-    }
-
-    .step-id {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: #e8f0ff;
-      color: var(--accent);
-      font-weight: bold;
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      margin: 0 0 10px 0;
-      font-size: 22px;
-    }
-
-    .description {
-      margin: 0 0 14px 0;
-      color: var(--muted);
-      line-height: 1.5;
-      min-height: 72px;
-    }
-
-    .meta {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    button,
-    a.button-link {
-      appearance: none;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 14px;
-      background: var(--accent);
-      color: #ffffff;
-      cursor: pointer;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    button.secondary,
-    a.button-link.secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-    .playlist {
-      margin-top: 18px;
-      border-top: 1px solid var(--border);
-      padding-top: 18px;
-    }
-
-    .playlist-item {
-      padding: 12px 0;
-      border-bottom: 1px solid #eef2f7;
-      cursor: pointer;
-    }
-
-    .playlist-item:last-child {
-      border-bottom: none;
-    }
-
-    .playlist-item strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .playlist-item span {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .playlist-item:hover strong {
-      color: var(--accent);
-    }
-
-    @media (max-width: 1100px) {
-      main {
-        grid-template-columns: 1fr;
-      }
-
-      .tour-panel {
-        min-height: 520px;
-      }
-    }
-  </style>
+.list-group-item.active {
+  background-color: #0f172a;
+  border-color: #0f172a;
+}
+</style>
 </head>
-<body>
-  <header>
-    <h1>PyAnalySeries Demo Tour (under construction)</h1>
-    <p class="subtitle">
-    </p>
-  </header>
 
-  <main>
-    <section class="panel tour-panel">
-      <img class="tour-image" src="captures/capture_01.png">
-      <img class="tour-image"  style="position: relative; top:-200px; left: 0px;" src="captures/c1.png">
+<body class="vh-100 d-flex flex-column">
 
-      <!-- Adjust top/left values to match your image -->
-      <button class="node active" style="top: 490px; left: 100px;" data-step="0">1</button>
-      <button class="node"        style="top: 365px; left: 140px;" data-step="1">2</button>
-      <button class="node"        style="top: 448px; left: 194px;" data-step="2">3</button>
-      <button class="node"        style="top: 431px; left: 290px;" data-step="3">4</button>
-      <button class="node"        style="top: 500px; left: 376px;" data-step="4">5</button>
-      <button class="node"        style="top: 401px; left: 433px;" data-step="5">6</button>
-      <button class="node"        style="top: 459px; left: 488px;" data-step="6">7</button>
-      <button class="node"        style="top: 335px; left: 538px;" data-step="7">8</button>
-      <button class="node"        style="top: 521px; left: 566px;" data-step="8">9</button>
-      <button class="node"        style="top: 386px; left: 618px;" data-step="9">10</button>
-      <button class="node"        style="top: 431px; left: 688px;" data-step="10">11</button>
-    </section>
+<div class="container-fluid flex-grow-1 d-flex flex-column align-items-center pt-3">
 
-    <aside class="panel side-panel">
-      <div class="video-wrap">
-	<video id="player" controls preload="metadata">
-	  <source id="playerSource" src="videos/01_display.mp4" type="video/mp4">
-	  <track id="subtitleTrack" kind="subtitles" srclang="en" label="English" src="videos/01_display.vtt">
-	  Your browser does not support HTML5 video.
-	</video>
+  <!-- HEADER -->
+  <div class="w-100 mb-2 px-3 py-2 rounded-3 d-flex align-items-center"
+     style="width:100%; background:#0f172a; color:white;">
+
+  <div class="me-2"
+       style="width:8px; height:8px; background:#2563eb; border-radius:50%;">
+  </div>
+
+  <div class="fw-semibold" style="font-size:0.95rem;">
+    PyAnalySeries Demo Tour
+  </div>
+
+  </div>
+
+  <!-- MAIN -->
+  <div class="row w-100 align-items-start">
+
+    <!-- LEFT -->
+    <div class="col-7 d-flex align-items-start justify-content-center">
+
+	<div class="canvas">
+	
+                <div class="bg-layer"></div>
+
+		<!-- image principale -->
+	        <img src="captures/capture_01.png" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain;">
+	
+	        <!-- overlay -->
+	        <img src="captures/c1.png" style="position:absolute; top:32%; left:12%; width:80%; pointer-events:none;">
+	
+	        <!-- nodes -->
+	        <div class="node" style="top:101%; left:23.7%;" data-step="0">1</div>
+	        <div class="node" style="top:61.2%; left:27%;" data-step="1">2</div>
+	        <div class="node" style="top: 80%;left: 31.7%;" data-step="2">3</div>
+	        <div class="node" style="top: 90%;left: 38%;" data-step="3">4</div>
+	        <div class="node" style="top: 77%;left:45%;" data-step="4">5</div>
+	        <div class="node" style="top: 91%;left: 51%;" data-step="5">6</div>
+	        <div class="node" style="top: 77%;left: 57%;" data-step="6">7</div>
+	        <div class="node" style="top: 103%;left: 64%;" data-step="7">8</div>
+	        <div class="node" style="top: 70%;left: 69%;" data-step="8">9</div>
+	        <div class="node active" style="top: 84%;left: 76%;" data-step="9">10</div>
+	        <div class="node" style="top: 70%;left: 81.5%;" data-step="10">11</div>
+
+	</div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-5 d-flex flex-column">
+
+      <!-- PLAYER -->
+      <div class="pt-0 px-3 pb-3">
+        <video id="player" class="w-100 rounded" controls
+               style="aspect-ratio:16/9; background:black;">
+          <source id="source" src="videos/01.mp4">
+        </video>
       </div>
 
-      <div class="info">
-        <div id="stepTag" class="step-id">STEP 1</div>
-        <h2 id="stepTitle">Import data</h2>
-        <p id="stepDescription" class="description">
-          Import series directly from the clipboard and display the first plot within seconds.
-        </p>
-        <div id="stepMeta" class="meta">Video: 01_display.mp4</div>
-
-        <div class="controls">
-          <button id="playBtn">Play</button>
-          <button id="restartBtn" class="secondary">Restart</button>
-          <a id="openBtn" class="button-link secondary" href="videos/01_import.mp4" target="_blank">Open video file</a>
-        </div>
-
-        <div class="playlist" id="playlist"></div>
+      <!-- TEXT -->
+      <div class="p-3">
+        <h5 id="title">Step 1</h5>
+        <p id="description" class="text-muted">Description</p>
       </div>
-    </aside>
-  </main>
 
-  <script>
-    const steps = [
-      {
-        id: "STEP 1",
-        title: "Display a series",
-        description: "Display a series, zoom, pan, change axis, autoscale",
-        file: "videos/01_display_single_series.mp4"
-      },
-      {
-        id: "STEP 2",
-        title: "Define interpolation",
-        description: "Define tie-points between series",
-        file: "videos/02_interpolation_define.mp4"
-      },
-      {
-        id: "STEP 3",
-        title: "Apply interpolation",
-        description: "Apply interpolation on series",
-        file: "videos/03_interpolation_apply.mp4"
-      },
-      {
-        id: "STEP 4",
-        title: "Display multiple series",
-        description: "Display multiple series together or stacked",
-        file: "videos/04_display_multiple_series.mp4"
-      },
-      {
-        id: "STEP 5",
-        title: "X-Domain Filter",
-        description: "Smoothing Average",
-        file: "videos/05_smoothing_average.mp4"
-      },
-      {
-        id: "STEP 6",
-        title: "Resampling",
-        description: "Resample and integration",
-        file: "videos/06_resampling.mp4"
-      },
-      {
-        id: "STEP 7",
-        title: "Frequency-Domain Filter",
-        description: "Explore various filtering methods",
-        file: "videos/07_filtering.mp4"
-      },
-      {
-        id: "STEP 8",
-        title: "Power Spectrum Density (PSD)",
-        description: "Explore various estimations of PSD",
-        file: "videos/08_PSD.mp4"
-      },
-      {
-        id: "STEP 9",
-        title: "Insolation",
-        description: "Generate astronomomical and insolation series",
-        file: "videos/09_insolation.mp4"
-      },
-      {
-        id: "STEP 10",
-        title: "Import / Export",
-        description: "Import your data from a spreadsheet",
-        file: "videos/10_import.mp4"
-      },
-      {
-        id: "STEP 11",
-        title: "Installation",
-        description: "How to install the application",
-        file: "videos/11_installation.mp4"
-      }
-    ];
+      <!-- STEP LIST -->
+      <div class="p-3 flex-grow-1 overflow-auto" id="stepList">
+        <ul class="list-group" id="stepsContainer"></ul>
+      </div>
 
-    const player = document.getElementById("player");
-    const playerSource = document.getElementById("playerSource");
-    const stepTag = document.getElementById("stepTag");
-    const stepTitle = document.getElementById("stepTitle");
-    const stepDescription = document.getElementById("stepDescription");
-    const stepMeta = document.getElementById("stepMeta");
-    const openBtn = document.getElementById("openBtn");
-    const playBtn = document.getElementById("playBtn");
-    const restartBtn = document.getElementById("restartBtn");
-    const playlist = document.getElementById("playlist");
-    const nodes = document.querySelectorAll(".node");
-    const subtitleTrack = document.getElementById("subtitleTrack");
+    </div>
 
-    let currentIndex = 0;
+  </div>
+</div>
 
-    function loadStep(index, autoplay = false) {
-      const step = steps[index];
-      currentIndex = index;
+<script>
 
-      stepTag.textContent = step.id;
-      stepTitle.textContent = step.title;
-      stepDescription.textContent = step.description;
-      stepMeta.textContent = `Video: ${step.file.split("/").pop()}`;
-      openBtn.href = step.file;
+const steps = [
+  {
+    title: "Display a series",
+    description: "Display a series, zoom, pan, change axis, autoscale",
+    file: "videos/01_display_single_series.mp4"
+  },
+  {
+    title: "Define interpolation",
+    description: "Define tie-points between series",
+    file: "videos/02_interpolation_define.mp4"
+  },
+  {
+    title: "Apply interpolation",
+    description: "Apply interpolation on series",
+    file: "videos/03_interpolation_apply.mp4"
+  },
+  {
+    title: "Display multiple series",
+    description: "Display multiple series together or stacked",
+    file: "videos/04_display_multiple_series.mp4"
+  },
+  {
+    title: "X-Domain Filter",
+    description: "Smoothing Average",
+    file: "videos/05_smoothing_average.mp4"
+  },
+  {
+    title: "Resampling",
+    description: "Resample and integration",
+    file: "videos/06_resampling.mp4"
+  },
+  {
+    title: "Frequency-Domain Filter",
+    description: "Explore various filtering methods",
+    file: "videos/07_filtering.mp4"
+  },
+  {
+    title: "Power Spectrum Density (PSD)",
+    description: "Explore various estimations of PSD",
+    file: "videos/08_PSD.mp4"
+  },
+  {
+    title: "Insolation",
+    description: "Generate astronomomical and insolation series",
+    file: "videos/09_insolation.mp4"
+  },
+  {
+    title: "Import / Export",
+    description: "Import your data from a spreadsheet",
+    file: "videos/10_import.mp4"
+  },
+  {
+    title: "Installation",
+    description: "How to install the application",
+    file: "videos/11_installation.mp4"
+  }
+];
 
-      player.pause();
-      playerSource.src = step.file;
-      subtitleTrack.src = step.file.replace(".mp4", ".vtt");
-      player.load();
+const player = document.getElementById("player");
+const source = document.getElementById("source");
+const stepsContainer = document.getElementById("stepsContainer");
 
-      if (autoplay) {
-        player.play().catch(() => {});
-      }
+let currentStep = 0;
 
-      nodes.forEach((node, i) => {
-        node.classList.toggle("active", i === index);
-      });
+// Build list
+steps.forEach((s, i) => {
+  const li = document.createElement("li");
+  li.className = "list-group-item list-group-item-action";
+  li.dataset.step = i;
+  li.innerHTML = `<strong>${i+1}. ${s.title}</strong><br><small>${s.description}</small>`;
 
-      document.querySelectorAll(".playlist-item").forEach((item, i) => {
-        item.style.fontWeight = i === index ? "700" : "400";
-      });
-    }
+  li.addEventListener("click", () => loadStep(i));
+  stepsContainer.appendChild(li);
+});
 
-    function buildPlaylist() {
-      steps.forEach((step, index) => {
-        const item = document.createElement("div");
-        item.className = "playlist-item";
-        item.innerHTML = `
-          <strong>${step.id} — ${step.title}</strong>
-          <span>${step.description}</span>
-        `;
-        item.addEventListener("click", () => loadStep(index, true));
-        playlist.appendChild(item);
-      });
-    }
+// Load step
+function loadStep(i) {
+  currentStep = i;
+  const s = steps[i];
 
-    nodes.forEach((node) => {
-      node.addEventListener("click", () => {
-        loadStep(Number(node.dataset.step), true);
-      });
+  document.getElementById("title").textContent = s.title;
+  document.getElementById("description").textContent = s.description;
+
+  source.src = s.file;
+  player.load();
+
+  // nodes
+  document.querySelectorAll(".node").forEach((n, idx) => {
+    n.classList.toggle("active", idx === i);
+  });
+
+  // list
+  document.querySelectorAll("#stepsContainer li").forEach((li, idx) => {
+    li.classList.toggle("active", idx === i);
+  });
+
+  // scroll
+  const activeItem = document.querySelector("#stepsContainer li.active");
+  if (activeItem) {
+    activeItem.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
     });
+  }
+}
 
-    playBtn.addEventListener("click", () => {
-      player.play().catch(() => {});
-    });
+// Node click
+const nodes = document.querySelectorAll(".node");
+nodes.forEach(node => {
+  node.addEventListener("click", () => {
+    loadStep(Number(node.dataset.step));
+  });
+});
 
-    restartBtn.addEventListener("click", () => {
-      player.currentTime = 0;
-      player.play().catch(() => {});
-    });
+// Init
+loadStep(0);
 
-    buildPlaylist();
-    loadStep(0, false);
-  </script>
+</script>
+
 </body>
 </html>
