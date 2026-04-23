@@ -1,0 +1,91 @@
+WEBVTT
+
+00:00:00.120 --> 00:00:02.930
+Now you are ready to try PyAnalySeries.
+
+00:00:02.930 --> 00:00:04.630
+Let’s see how to proceed.
+
+00:00:04.630 --> 00:00:08.620
+As a reminder, PyAnalySeries is an application, not a library
+
+00:00:09.130 --> 00:00:12.410
+It is written in Python and relies on standard scientific
+
+00:00:12.410 --> 00:00:13.320
+modules.
+
+00:00:13.320 --> 00:00:17.520
+Installation instructions are available in the project GitHub repository.
+
+00:00:17.520 --> 00:00:20.140
+The interface is built on PyQt.
+
+00:00:20.140 --> 00:00:25.190
+This ensures consistent behavior across Linux, macOS, and Windows.
+
+00:00:25.190 --> 00:00:28.680
+The recommended approach is to create a dedicated conda environment
+
+00:00:28.900 --> 00:00:31.440
+Most dependencies are installed with conda.
+
+00:00:31.440 --> 00:00:34.230
+A small subset is completed with pip when needed.
+
+00:00:34.230 --> 00:00:38.030
+This strategy maximizes stability and reproducibility.
+
+00:00:38.030 --> 00:00:39.380
+Two environments are provided.
+
+00:00:39.380 --> 00:00:41.670
+One is based on PyQt5.
+
+00:00:41.670 --> 00:00:44.430
+The other is based on PyQt6.
+
+00:00:44.430 --> 00:00:48.000
+You should try PyQt6 on recent systems.
+
+00:00:48.000 --> 00:00:51.870
+Otherwise, fall back to the PyQt5 environment.
+
+00:00:51.870 --> 00:00:55.510
+The installation process has been validated in practice.
+
+00:00:55.510 --> 00:00:58.230
+More than 40 users have already installed and used the
+
+00:00:58.230 --> 00:00:59.360
+application.
+
+00:00:59.360 --> 00:01:03.420
+This gives confidence in its robustness across different systems.
+
+00:01:03.420 --> 00:01:07.760
+If you encounter issues during environment setup or execution, please
+
+00:01:07.760 --> 00:01:09.110
+contact us.
+
+00:01:09.110 --> 00:01:11.220
+We will find a solution together.
+
+00:01:11.220 --> 00:01:13.830
+Updating the application is straightforward.
+
+00:01:13.830 --> 00:01:17.040
+You simply pull the latest version from the repository.
+
+00:01:17.040 --> 00:01:20.120
+The application will evolve based on user needs.
+
+00:01:20.120 --> 00:01:23.720
+Feel free to contribute via GitHub by opening issues.
+
+00:01:23.720 --> 00:01:26.000
+And of course, we welcome your feedback.
+
+00:01:26.000 --> 00:01:30.160
+Please also share any publications where PyAnalySeries has been used
