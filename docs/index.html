@@ -73,6 +73,7 @@ body {
 .list-group-item.active {
   background-color: #0f172a;
   border-color: #0f172a;
+  box-shadow: inset 4px 0 0 #2563eb;
 }
 </style>
 </head>
@@ -229,6 +230,8 @@ const source = document.getElementById("source");
 const track = document.getElementById("track");
 const stepsContainer = document.getElementById("stepsContainer");
 
+const nodes = document.querySelectorAll(".node");
+
 let currentStep = 0;
 
 // Build list
@@ -256,7 +259,7 @@ function loadStep(i) {
   player.load();
 
   // nodes
-  document.querySelectorAll(".node").forEach((n, idx) => {
+  nodes.forEach((n, idx) => {
     n.classList.toggle("active", idx === i);
   });
 
@@ -276,7 +279,6 @@ function loadStep(i) {
 }
 
 // Node click
-const nodes = document.querySelectorAll(".node");
 nodes.forEach(node => {
   node.addEventListener("click", () => {
     loadStep(Number(node.dataset.step));
