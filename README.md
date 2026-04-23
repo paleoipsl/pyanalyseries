@@ -30,6 +30,12 @@ Hevia-Cruz, F., Brockmann, P., Govin, A., Michel, E., and Paillard, D. (2025). R
 
 <hr style="border:2px solid gray">
 
+#### PyAnalySeries Demo Tour
+
+https//paleoipsl.github.io/PyAnalySeries
+
+<hr style="border:2px solid gray">
+
 #### EGU 2026 Demo Session
 
 A demo session on PyAnalySeries will take place during EGU 2026:
