@@ -1,0 +1,208 @@
+WEBVTT
+
+00:00:00.160 --> 00:00:04.970
+The application can also provide temporal variations of astronomical parameters
+
+00:00:05.180 --> 00:00:07.230
+and insolation series.
+
+00:00:07.230 --> 00:00:10.310
+To do so, let’s choose ' Create ' and then
+
+00:00:10.310 --> 00:00:12.910
+' Insolation / Astronomical series '.
+
+00:00:14.030 --> 00:00:17.530
+In the Type field, we can choose between various astronomical
+
+00:00:17.530 --> 00:00:20.810
+parameters and different types of insolation.
+
+00:00:20.810 --> 00:00:24.140
+We can then select the astronomical solution to use, with
+
+00:00:24.140 --> 00:00:26.340
+the reference shown on the right-hand side.
+
+00:00:28.570 --> 00:00:31.300
+We select the time period over which the series is
+
+00:00:31.300 --> 00:00:32.580
+computed.
+
+00:00:32.580 --> 00:00:36.110
+Past ages can be entered as negative or positive values
+
+00:00:36.460 --> 00:00:39.770
+We can choose the time unit: years or thousands of
+
+00:00:39.770 --> 00:00:42.680
+years, noted k y r in the interface.
+
+00:00:43.980 --> 00:00:47.860
+First, we plot the daily insolation using the ' Laskar
+
+00:00:47.860 --> 00:00:50.830
+2 0 04 ' astronomical solution.
+
+00:00:50.830 --> 00:00:55.290
+To represent Northern Hemisphere summer solstice insolation at 6 5
+
+00:00:55.290 --> 00:00:59.680
+North, we enter 65 in the latitude field and 90
+
+00:00:59.680 --> 00:01:01.270
+in the true longitude field.
+
+00:01:03.570 --> 00:01:06.830
+We can, for example, plot this insolation over the last
+
+00:01:06.830 --> 00:01:10.220
+1 6 0 thousand years, with a step of 0
+
+00:01:10.220 --> 00:01:11.540
+2.
+
+00:01:11.540 --> 00:01:14.760
+Please note that the application relies on true longitudes and
+
+00:01:14.760 --> 00:01:16.260
+not calendar dates.
+
+00:01:16.260 --> 00:01:19.280
+The true longitude is illustrated in the schematic on the
+
+00:01:19.280 --> 00:01:23.030
+right-hand side: it corresponds to the angle ' lambda '
+
+00:01:23.030 --> 00:01:26.590
+between the vernal point ' gamma ', defined as 0
+
+00:01:26.590 --> 00:01:28.770
+°, and the position of the Sun as seen from
+
+00:01:28.770 --> 00:01:30.090
+Earth at a given time.
+
+00:01:31.380 --> 00:01:35.010
+The reason for using true longitudes instead of dates is
+
+00:01:35.010 --> 00:01:39.610
+illustrated in the second figure, accessible using the carousel navigation
+
+00:01:39.610 --> 00:01:43.800
+arrows: the length of the seasons, defined by fixed true-longitude
+
+00:01:43.800 --> 00:01:46.020
+intervals, varies through time.
+
+00:01:46.020 --> 00:01:48.870
+This is ignored when using fixed dates such as June
+
+00:01:48.870 --> 00:01:49.610
+21.
+
+00:01:51.010 --> 00:01:54.280
+In our case study, we also plot the daily insolation
+
+00:01:54.280 --> 00:01:56.900
+at a latitude of 5 ° South for the Southern
+
+00:01:56.900 --> 00:02:00.710
+Hemisphere summer solstice, still over the last 1 6 0
+
+00:02:00.710 --> 00:02:02.280
+thousand years.
+
+00:02:02.280 --> 00:02:05.320
+We then enter - 5 in the latitude field and
+
+00:02:05.320 --> 00:02:08.320
+2 7 0 in the true longitude field.
+
+00:02:10.500 --> 00:02:12.660
+We can click on ' Import series ' to save
+
+00:02:12.660 --> 00:02:14.490
+the insolation time series.
+
+00:02:14.790 --> 00:02:19.170
+Finally, we calculate and plot the integrated insolation between two
+
+00:02:19.170 --> 00:02:22.110
+true longitudes, selected in the Type field.
+
+00:02:23.210 --> 00:02:26.690
+We plot the insolation integrated over the Southern Hemisphere summer
+
+00:02:26.690 --> 00:02:31.670
+period, namely December, January, and February.
+
+00:02:32.960 --> 00:02:36.820
+We need to determine the corresponding true longitude values.
+
+00:02:36.820 --> 00:02:39.510
+We know that the true longitude of the Southern Hemisphere
+
+00:02:39.510 --> 00:02:43.050
+summer solstice is 2 7 0 °.
+
+00:02:43.050 --> 00:02:46.250
+We assume that 3 6 0 days correspond to 3
+
+00:02:46.250 --> 00:02:48.820
+6 0 ° of longitude.
+
+00:02:48.820 --> 00:02:52.450
+The Southern Hemisphere summer period, from early December to late
+
+00:02:52.450 --> 00:02:57.170
+February, roughly corresponds to true longitudes between 2 50 and
+
+00:02:57.170 --> 00:03:00.060
+3 4 0.
+
+00:03:00.060 --> 00:03:03.550
+We enter these values in True Longitude 1 and True
+
+00:03:03.550 --> 00:03:04.750
+Longitude 2.
+
+00:03:07.000 --> 00:03:09.230
+We click on ' Import series ' to save this
+
+00:03:09.230 --> 00:03:12.500
+Southern Hemisphere integrated summer insolation.
+
+00:03:12.500 --> 00:03:14.660
+Take a moment to name the series.
+
+00:03:19.120 --> 00:03:22.210
+We can now compare our filtered ' PercAndes ' record
+
+00:03:22.510 --> 00:03:26.310
+with this Southern Hemisphere integrated summer insolation curve.
+
+00:03:28.770 --> 00:03:31.080
+We click on ' Display Together ' and use a
+
+00:03:31.080 --> 00:03:32.900
+separate vertical axis.
+
+00:03:34.970 --> 00:03:38.270
+We observe that high values of the filtered ' PercAndes
+
+00:03:38.270 --> 00:03:42.000
+' record generally correspond to high insolation values.
+
+00:03:43.150 --> 00:03:47.530
+The scientific interpretation is that Southern Hemisphere integrated summer insolation
+
+00:03:47.530 --> 00:03:52.320
+controls, on precessional time scales, the intensity of the South
+
+00:03:52.320 --> 00:03:56.750
+American summer monsoon system, and thus the delivery of Andean-derived
+
+00:03:56.750 --> 00:03:59.110
+terrigenous material at the core site.

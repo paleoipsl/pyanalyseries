@@ -1,0 +1,66 @@
+The application can also provide temporal variations of astronomical parameters and insolation series.
+
+To do so, let’s choose 'Create' and then 'Insolation / Astronomical series'.
+<break time="1s" />
+
+In the Type field, we can choose between various astronomical parameters and different types of insolation.
+We can then select the astronomical solution to use, with the reference shown on the right-hand side.
+<break time="2s" />
+
+We select the time period over which the series is computed.
+Past ages can be entered as negative or positive values.
+
+We can choose the time unit: years or thousands of years, noted k y r in the interface.
+<break time="1s" />
+
+First, we plot the daily insolation using the 'Laskar 2004' astronomical solution.
+To represent Northern Hemisphere summer solstice insolation at 65°North, we enter 65 in the latitude field and 90 in the true longitude field.
+<break time="2s" />
+
+We can, for example, plot this insolation over the last 160 thousand years, with a step of 0.2.
+
+Please note that the application relies on true longitudes and not calendar dates. 
+The true longitude is illustrated in the schematic on the right-hand side: it corresponds to the angle 'lambda' between the vernal point 'gamma', defined as 0°, and the position of the Sun as seen from Earth at a given time.
+<break time="1s" />
+
+The reason for using true longitudes instead of dates is illustrated in the second figure, accessible using the carousel navigation arrows: the length of the seasons, defined by fixed true-longitude intervals, varies through time. This is ignored when using fixed dates such as June 21.
+<break time="1s" />
+
+In our case study, we also plot the daily insolation at a latitude of 5°South for the Southern Hemisphere summer solstice, still over the last 160 thousand years.
+
+We then enter -5 in the latitude field and 270 in the true longitude field. 
+<break time="2s" />
+
+We can click on 'Import series' to save the insolation time series.
+<break time="1s" />
+
+Finally, we calculate and plot the integrated insolation between two true longitudes, selected in the Type field.
+<break time="1s" />
+
+We plot the insolation integrated over the Southern Hemisphere summer period, namely December, January, and February.
+<break time="1s" />
+
+We need to determine the corresponding true longitude values.
+
+We know that the true longitude of the Southern Hemisphere summer solstice is 270°.
+
+We assume that 360 days correspond to 360° of longitude.
+The Southern Hemisphere summer period, from early December to late February, roughly corresponds to true longitudes between 250 and 340.
+We enter these values in True Longitude 1 and True Longitude 2.
+<break time="2s" />
+
+We click on 'Import series' to save this Southern Hemisphere integrated summer insolation.
+Take a moment to name the series.
+<break time="4s" />
+
+We can now compare our filtered 'PercAndes' record with this Southern Hemisphere integrated summer insolation curve.
+<break time="2s" />
+
+We click on 'Display Together' and use a separate vertical axis.
+<break time="2s" />
+
+We observe that high values of the filtered 'PercAndes' record generally correspond to high insolation values.
+<break time="1s" />
+
+The scientific interpretation is that Southern Hemisphere integrated summer insolation controls, on precessional time scales, the intensity of the South American summer monsoon system, and thus the delivery of Andean-derived terrigenous material at the core site.
+
