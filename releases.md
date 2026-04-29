@@ -1,5 +1,7 @@
+ * 6.32
+   * Increase numerical precision in statistics display from .2f to .6f
  * 6.31
-   * Fix angular wrap for true longitudes when computing integrated insolation (support intervals crossing 0°).
+   * Fix angular wrap for true longitudes when computing integrated insolation (support intervals crossing 0°)
    * Fix shortcut 'z' in defineInterpolationWindow
  * 6.30
    * Fix incorrect time sign handling (Past > 0) introduced by astro/insolation code refactoring

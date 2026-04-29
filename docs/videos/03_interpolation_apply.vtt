@@ -1,0 +1,73 @@
+WEBVTT
+
+00:00:00.200 --> 00:00:02.120
+Once you have defined a set of pointers to build
+
+00:00:02.120 --> 00:00:05.290
+your interpolation, you can apply it to any series of
+
+00:00:05.290 --> 00:00:06.080
+your choice.
+
+00:00:07.290 --> 00:00:10.890
+You can inspect the previously defined interpolation by pressing Ctrl
+
+00:00:10.890 --> 00:00:11.520
+D.
+
+00:00:13.670 --> 00:00:17.320
+Next, select the interpolation — referred to as the age
+
+00:00:17.320 --> 00:00:20.480
+model in paleoclimatology — and choose the series to be
+
+00:00:20.480 --> 00:00:21.530
+interpolated.
+
+00:00:23.770 --> 00:00:27.190
+Then select Apply Interpolation, depending on the method you want
+
+00:00:27.190 --> 00:00:27.850
+to use.
+
+00:00:28.980 --> 00:00:30.910
+A confirmation dialog appears.
+
+00:00:31.950 --> 00:00:34.860
+The interpolation is shown in red, and the series to
+
+00:00:34.860 --> 00:00:37.510
+which it will be applied are highlighted in green.
+
+00:00:38.700 --> 00:00:41.790
+The interpolated series appear below the original ones.
+
+00:00:42.980 --> 00:00:47.210
+Let’s inspect one interpolated series with Display Single or Ctrl
+
+00:00:47.210 --> 00:00:47.810
+D.
+
+00:00:49.900 --> 00:00:52.160
+You can see the new axis at the bottom, while
+
+00:00:52.160 --> 00:00:55.610
+the original axis remains at the top, now distorted.
+
+00:00:55.610 --> 00:00:59.140
+Note that the zoom function applies simultaneously to both axes
+
+00:01:00.460 --> 00:01:03.580
+The worksheet appears with an asterisk, indicating that it has
+
+00:01:03.580 --> 00:01:04.820
+been modified.
+
+00:01:04.820 --> 00:01:06.540
+Press Ctrl S to save it.
+
+00:01:07.640 --> 00:01:09.920
+In the next step, we will see how to display
+
+00:01:09.920 --> 00:01:11.410
+multiple series together.

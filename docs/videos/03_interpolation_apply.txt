@@ -1,0 +1,32 @@
+Once you have defined a set of pointers to build your interpolation, you can apply it to any series of your choice.
+<break time="1s"/>  
+
+You can inspect the previously defined interpolation by pressing Ctrl D.
+<break time="2s"/>  
+
+Next, select the interpolation — referred to as the age model in paleoclimatology — and choose the series to be interpolated.
+<break time="2s"/>  
+Then select Apply Interpolation, depending on the method you want to use.
+<break time="1s"/>  
+
+A confirmation dialog appears.
+<break time="1s"/>  
+
+The interpolation is shown in red, and the series to which it will be applied are highlighted in green.
+<break time="1s"/>  
+
+The interpolated series appear below the original ones.
+<break time="1s"/>  
+
+Let’s inspect one interpolated series with Display Single or Ctrl D.
+<break time="2s"/>  
+
+You can see the new axis at the bottom, while the original axis remains at the top, now distorted.
+Note that the zoom function applies simultaneously to both axes.
+<break time="1s"/>  
+
+The worksheet appears with an asterisk, indicating that it has been modified.
+Press Ctrl S to save it.
+<break time="1s"/>
+
+In the next step, we will see how to display multiple series together.
