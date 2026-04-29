@@ -1,0 +1,49 @@
+There are several ways to display series:
+either individually or grouped together.
+<break time="1s"/>
+
+Let’s go through this!
+<break time="1s"/>
+
+Select the delta O18 and delta C13 series that we have just interpolated.
+<break time="1s"/>
+
+Then choose Display Together.
+<break time="1s"/>
+
+Next, select Separated axis: Vertical.
+
+Invert the axis for the delta O18 series.
+<break time="1s"/>
+
+From a scientific perspective,
+we typically observe reduced benthic delta C13 values during glacial periods,
+which correspond to increased benthic delta O18 values — for example, between 60 and 70 thousands years.
+<break time="1s"/>
+
+Now, let’s display the other variables in a stacked view.
+<break time="1s"/>
+
+From the menu, select Display Stacked.
+<break time="1s"/>
+
+From a scientific perspective, we typically observe opposite variations
+between calcium proportions—mostly of marine biogenic origin—
+and other elements of continental, terrigenous provenance.
+<break time="1s"/>
+
+You may have noticed that the series are linked,
+because they share the same name for their horizontal axis.
+<break time="1s"/>
+
+However, you can control this behavior.
+<break time="0.5s"/>
+
+For example, you can assign the axis of Plot 2 to a new group,
+making it independent, while preserving the link between Plots 1 and 3.
+<break time="3s"/>
+
+By the way, the colors automatically assigned to the series
+can be modified using the color picker.
+<break time="2s"/>
+

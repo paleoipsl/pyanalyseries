@@ -1,0 +1,76 @@
+WEBVTT
+
+00:00:00.390 --> 00:00:04.660
+There are several ways to display series: either individually or
+
+00:00:04.660 --> 00:00:05.570
+grouped together.
+
+00:00:06.930 --> 00:00:08.210
+Let’s go through this!
+
+00:00:09.540 --> 00:00:13.830
+Select the delta O18 and delta C13 series that we
+
+00:00:13.830 --> 00:00:15.110
+have just interpolated.
+
+00:00:16.240 --> 00:00:18.050
+Then choose Display Together.
+
+00:00:19.450 --> 00:00:23.610
+Next, select Separated axis: Vertical.
+
+00:00:23.610 --> 00:00:26.660
+Invert the axis for the delta O18 series.
+
+00:00:27.940 --> 00:00:32.400
+From a scientific perspective, we typically observe reduced benthic delta
+
+00:00:32.400 --> 00:00:37.120
+C13 values during glacial periods, which correspond to increased benthic
+
+00:00:37.120 --> 00:00:40.980
+delta O18 values — for example, between 60 and 70
+
+00:00:40.980 --> 00:00:41.960
+thousands years.
+
+00:00:43.070 --> 00:00:46.830
+Now, let’s display the other variables in a stacked view
+
+00:00:48.430 --> 00:00:51.740
+From the menu, select Display Stacked.
+
+00:00:52.940 --> 00:00:58.200
+From a scientific perspective, we typically observe opposite variations between
+
+00:00:58.200 --> 00:01:03.800
+calcium proportions—mostly of marine biogenic origin — and other elements
+
+00:01:03.800 --> 00:01:06.180
+of continental, terrigenous provenance.
+
+00:01:07.880 --> 00:01:10.520
+You may have noticed that the series are linked, because
+
+00:01:10.520 --> 00:01:13.490
+they share the same name for their horizontal axis.
+
+00:01:14.690 --> 00:01:17.510
+However, you can control this behavior.
+
+00:01:18.660 --> 00:01:22.010
+For example, you can assign the axis of Plot 2
+
+00:01:22.010 --> 00:01:25.990
+to a new group, making it independent, while preserving the
+
+00:01:25.990 --> 00:01:28.470
+link between Plots 1 and 3.
+
+00:01:31.730 --> 00:01:35.210
+By the way, the colors automatically assigned to the series
+
+00:01:35.500 --> 00:01:37.820
+can be modified using the color picker.
