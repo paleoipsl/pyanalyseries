@@ -1,0 +1,62 @@
+Before going further,
+let’s briefly review the sampling capabilities available in PyAnalySeries.
+<break time="1s"/>  
+
+The application allows you to redefine the sampling of your series
+in a flexible and controlled way.
+<break time="1s"/>  
+
+You can resample a dataset either using a regular step,
+or based on the X-values of another series.
+<break time="1s"/>  
+
+An integration option is also available,
+allowing values to be averaged over intervals.
+<break time="1s"/>
+
+Several interpolation methods are available,
+depending on the nature of your data
+and the level of precision required.
+<break time="1s"/>  
+
+These tools help standardize your datasets,
+make comparisons more robust,
+and prepare the data for further analysis or visualization.
+<break time="1s"/>  
+
+Let’s now look at a concrete example.
+<break time="1s"/>  
+
+We now focus on the record called “PercAndes”,
+which reflects the relative contribution of Andean versus lowland input
+from Amazonian terrigenous sediments deposited at the core site.
+<break time="1s"/>
+
+The record exhibits uneven temporal resolution over time,
+due to a reduced sedimentation rate in the lower part of the record.
+<break time="1s"/>
+
+To address this issue,
+we resample the record using a regular step size.
+<break time="1s"/>
+
+Select the series,
+then go to Process → Define Sampling.
+<break time="2s"/>
+
+Define the sampling parameters.
+<break time="1s"/>
+
+For example,
+resample the record every 250 years
+by entering 0.25 in the sampling step field.
+<break time="1s"/>
+
+The record now has a regular spacing of 0.25 kyr.
+<break time="1s"/>
+
+You can then save both the sampling configuration and the resampled series.
+<break time="1s"/>
+
+Let’s now inspect the resampled series.
+<break time="6s"/>

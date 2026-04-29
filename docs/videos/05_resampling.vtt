@@ -1,0 +1,94 @@
+WEBVTT
+
+00:00:00.190 --> 00:00:04.300
+Before going further, let’s briefly review the sampling capabilities available
+
+00:00:04.300 --> 00:00:05.800
+in PyAnalySeries.
+
+00:00:06.890 --> 00:00:09.680
+The application allows you to redefine the sampling of your
+
+00:00:09.680 --> 00:00:12.120
+series in a flexible and controlled way.
+
+00:00:13.300 --> 00:00:16.650
+You can resample a dataset either using a regular step
+
+00:00:16.850 --> 00:00:19.080
+or based on the X-values of another series.
+
+00:00:20.270 --> 00:00:23.680
+An integration option is also available, allowing values to be
+
+00:00:23.680 --> 00:00:25.110
+averaged over intervals.
+
+00:00:26.410 --> 00:00:30.030
+Several interpolation methods are available, depending on the nature of
+
+00:00:30.030 --> 00:00:32.760
+your data and the level of precision required.
+
+00:00:33.940 --> 00:00:38.290
+These tools help standardize your datasets, make comparisons more robust
+
+00:00:38.560 --> 00:00:41.900
+and prepare the data for further analysis or visualization.
+
+00:00:43.010 --> 00:00:44.930
+Let’s now look at a concrete example.
+
+00:00:46.080 --> 00:00:48.820
+We now focus on the record called “ PercAndes ”,
+
+00:00:48.820 --> 00:00:52.590
+which reflects the relative contribution of Andean versus lowland input
+
+00:00:52.830 --> 00:00:56.350
+from Amazonian terrigenous sediments deposited at the core site.
+
+00:00:57.520 --> 00:01:01.810
+The record exhibits uneven temporal resolution over time, due to
+
+00:01:01.810 --> 00:01:04.300
+a reduced sedimentation rate in the lower part of the
+
+00:01:04.300 --> 00:01:04.940
+record.
+
+00:01:06.180 --> 00:01:09.280
+To address this issue, we resample the record using a
+
+00:01:09.280 --> 00:01:10.560
+regular step size.
+
+00:01:11.710 --> 00:01:15.240
+Select the series, then go to Process → Define Sampling
+
+00:01:17.640 --> 00:01:19.630
+Define the sampling parameters.
+
+00:01:20.830 --> 00:01:24.980
+For example, resample the record every 2 5 0 years
+
+00:01:25.090 --> 00:01:26.200
+by entering 0.
+
+00:01:26.200 --> 00:01:29.080
+2 5 in the sampling step field.
+
+00:01:30.240 --> 00:01:32.540
+The record now has a regular spacing of 0.
+
+00:01:32.540 --> 00:01:33.820
+2 5 kyr.
+
+00:01:35.000 --> 00:01:37.990
+You can then save both the sampling configuration and the
+
+00:01:37.990 --> 00:01:39.350
+resampled series.
+
+00:01:40.520 --> 00:01:43.330
+Let’s now inspect the resampled series.
