@@ -1,0 +1,103 @@
+Let’s explore the interpolation feature, a central component of PyAnalySeries ! 
+Thanks to the application’s interactivity, defining an interpolation becomes a simple and intuitive process !
+
+Let’s consider a real use case. 
+The example files are available in the installation directory.
+
+First, open the files. 
+You can load multiple files, referred to as WorkSheets in the application.
+The format is based on the open .xlsx standard.
+
+Open the two files as shown in the video.
+<break time="1s" />
+
+Now select the variables to interpolate, along with their reference series — here, delta C 13 and delta O 18.
+Use the Control key to select multiple series.
+The selection order does not matter, but for clarity, we will choose the reference first.
+<break time="2s" />
+
+Open the interpolation window. 
+In practice, this consists of identifying correspondences between two series.
+
+This is where interactivity becomes essential.
+You can place tie points either on transitions or directly on data points.
+<break time="2s" />
+
+We now have four series selected.
+<break time="1s" />
+
+Start with delta O 18.
+Define the reference and the series to interpolate using the selection controls.
+<break time="2s" />
+
+Identify similar transition zones.
+<break time="2s" />
+
+Hold Shift and click to place the vertical dashed line in each window.
+Then press C to connect them.
+<break time="1s" />
+
+This creates a pair of corresponding points — called pointers.
+<break time="1s" />
+
+Select another transition and repeat the operation.
+<break time="2s" />
+
+Once two pairs are defined, the interpolation appears automatically.
+Press Z, or enable “Show interpolated curve”, to toggle its display.
+<break time="2s" />
+
+You can also compare interpolation methods — linear or polynomial — and observe their effect.
+<break time="2s" />
+
+Now refine the interpolation by placing a pointer directly on a data point.
+Hold Control and click on the point.
+<break time="2s" />
+
+Repeat this on the reference series, then connect the two pointers.
+<break time="2s" />
+
+In short:
+Shift-click places a free pointer.
+Control-click snaps to a data point.
+<break time="2s" />
+
+To undo the last connection, click “Remove last connection” or press U.
+<break time="1s" />
+
+To delete a specific connection, hover over it — it turns red — then press X.
+<break time="1s" />
+
+Press uppercase X to remove all pointers.
+<break time="2s" />
+
+You can review all pointer values in the “Pointers” tab.
+<break time="1s" />
+
+In the “Pointers plot” tab, you can visualize X2 as a function of X1, along with the gradient.
+If X2 is time and X1 is depth, this gradient represents the sedimentation rate.
+<break time="2s" />
+
+During the process, you may need to switch variables to refine the alignment.
+<break time="1s" />
+
+Switch to delta C 13.
+Define a new correspondence and connect the points.
+<break time="2s" />
+
+Then switch back to delta O 18.
+<break time="2s" />
+
+This iterative workflow allows you to progressively improve the interpolation.
+<break time="2s" />
+
+Let’s now look at the result produced by an experienced user.
+<break time="4s" />
+
+Once satisfied, you can save either the interpolation or the interpolation and the current interpolated series.
+<break time="2s" />
+
+You can also load an existing pointer file to refine or adjust your interpolation.
+<break time="2s" />
+
+In the next step, we will see how to apply this interpolation to a set of series.

@@ -1,0 +1,223 @@
+WEBVTT
+
+00:00:00.120 --> 00:00:05.330
+Let’s explore the interpolation feature, a central component of PyAnalySeries
+
+00:00:05.860 --> 00:00:09.990
+Thanks to the application’s interactivity, defining an interpolation becomes a
+
+00:00:09.990 --> 00:00:12.460
+simple and intuitive process!
+
+00:00:12.460 --> 00:00:14.870
+Let’s consider a real use case.
+
+00:00:14.870 --> 00:00:17.660
+The files are available in the installation directory.
+
+00:00:17.660 --> 00:00:20.080
+First, open the files.
+
+00:00:20.080 --> 00:00:23.520
+You can load multiple files, referred to as WorkSheets in
+
+00:00:23.520 --> 00:00:24.930
+the application.
+
+00:00:24.930 --> 00:00:27.420
+The file format is based on the open.
+
+00:00:27.420 --> 00:00:29.790
+xlsx spreadsheet standard.
+
+00:00:29.790 --> 00:00:32.770
+Open the two files as shown in the video.
+
+00:00:32.770 --> 00:00:36.990
+Select the variables to interpolate and the corresponding reference series
+
+00:00:36.990 --> 00:00:41.390
+for delta C 13 and delta O 18.
+
+00:00:41.390 --> 00:00:43.830
+Use the Control key to add multiple series to your
+
+00:00:43.830 --> 00:00:45.100
+selection.
+
+00:00:45.100 --> 00:00:49.310
+The selection order does not matter, although for simplicity we
+
+00:00:49.310 --> 00:00:51.890
+will choose the reference series first.
+
+00:00:51.890 --> 00:00:55.210
+Now open the window used to define an interpolation.
+
+00:00:55.210 --> 00:01:00.490
+In practice, this consists of identifying correspondences between two series
+
+00:01:01.160 --> 00:01:04.790
+This is where interactivity becomes essential, as it allows you
+
+00:01:04.790 --> 00:01:09.190
+to place tie points either on transitions or precisely on
+
+00:01:09.190 --> 00:01:10.680
+individual points.
+
+00:01:10.680 --> 00:01:13.450
+We now have four series selected.
+
+00:01:13.450 --> 00:01:17.660
+Start with delta O 18, and specify the reference series
+
+00:01:17.690 --> 00:01:20.910
+and the series to be interpolated using the selection controls
+
+00:01:21.650 --> 00:01:24.330
+Identify similar transition zones.
+
+00:01:26.520 --> 00:01:29.680
+Using the Shift key, click to place a vertical dashed
+
+00:01:29.680 --> 00:01:33.620
+line at each corresponding transition in both windows.
+
+00:01:33.620 --> 00:01:36.040
+Then connect the two lines by pressing the C key
+
+00:01:37.440 --> 00:01:40.980
+This creates a pair of corresponding points, referred to as
+
+00:01:40.980 --> 00:01:42.270
+pointers.
+
+00:01:42.270 --> 00:01:44.090
+Select another transition.
+
+00:01:46.260 --> 00:01:50.040
+Once two pairs of pointers have been defined, the interpolation
+
+00:01:50.040 --> 00:01:52.030
+is automatically displayed.
+
+00:01:52.030 --> 00:01:55.400
+Press Z or enable the “ Show interpolated curve ”
+
+00:01:55.400 --> 00:01:58.050
+checkbox to toggle its visibility.
+
+00:01:58.050 --> 00:02:01.270
+You can also visualize the effect of the interpolation method
+
+00:02:01.590 --> 00:02:03.820
+whether linear or polynomial.
+
+00:02:03.820 --> 00:02:07.750
+Continue this iterative process by placing a pointer directly on
+
+00:02:07.750 --> 00:02:08.960
+a data point.
+
+00:02:08.960 --> 00:02:11.730
+To do this, hold the Control key and click on
+
+00:02:11.730 --> 00:02:12.510
+the point.
+
+00:02:12.790 --> 00:02:16.200
+Repeat the same operation on the reference series and connect
+
+00:02:16.200 --> 00:02:17.270
+the two pointers.
+
+00:02:19.440 --> 00:02:22.440
+To summarize: use the Shift key to place a pointer
+
+00:02:22.440 --> 00:02:25.220
+freely, or the Control key to snap it to a
+
+00:02:25.220 --> 00:02:26.440
+data point.
+
+00:02:26.440 --> 00:02:28.860
+You can undo the last connection by clicking the “
+
+00:02:28.860 --> 00:02:32.060
+Remove last connection ” button or by pressing the U
+
+00:02:32.060 --> 00:02:32.860
+key.
+
+00:02:32.860 --> 00:02:35.590
+You can also remove a connection by hovering over it—it
+
+00:02:36.290 --> 00:02:39.120
+will turn red—and then pressing the X key.
+
+00:02:40.390 --> 00:02:44.170
+Pressing uppercase X prompts you to remove all pointers.
+
+00:02:45.610 --> 00:02:48.290
+You can review the values of the defined pointers at
+
+00:02:48.320 --> 00:02:50.440
+any time in the Pointers tab.
+
+00:02:50.440 --> 00:02:53.750
+In the Pointers plot tab, you can visualize X2 as
+
+00:02:53.750 --> 00:02:57.270
+a function of X1, as well as the corresponding gradient
+
+00:02:57.480 --> 00:03:02.370
+If X2 represents time and X1 represents depth, this gradient
+
+00:03:02.370 --> 00:03:04.550
+corresponds to the sedimentation rate.
+
+00:03:05.650 --> 00:03:08.740
+During the definition of an interpolation, you may need to
+
+00:03:08.740 --> 00:03:11.940
+switch to another variable to refine or adjust your pointers
+
+00:03:12.450 --> 00:03:16.390
+Switch to delta C 13 by selecting the reference series
+
+00:03:16.420 --> 00:03:18.180
+and the series to be interpolated.
+
+00:03:20.490 --> 00:03:24.700
+Define a correspondence on a transition and create the connection
+
+00:03:25.340 --> 00:03:28.690
+Now switch back to delta O 18.
+
+00:03:31.990 --> 00:03:35.630
+This process can be repeated iteratively until the desired result
+
+00:03:35.630 --> 00:03:36.430
+is obtained.
+
+00:03:37.590 --> 00:03:40.330
+Let’s look at the result produced by an expert user
+
+00:03:44.840 --> 00:03:47.920
+Once satisfied with the result, you can save either the
+
+00:03:47.920 --> 00:03:51.020
+full interpolation or only the pointers.
+
+00:03:51.020 --> 00:03:54.130
+You can also load an existing pointer file and continue
+
+00:03:54.130 --> 00:03:57.070
+refining or redefining the pointers.
+
+00:03:57.070 --> 00:03:59.290
+In the next step, we will see how to apply
+
+00:03:59.290 --> 00:04:02.200
+the defined interpolation to a set of series.
