@@ -1,0 +1,112 @@
+WEBVTT
+
+00:00:00.430 --> 00:00:04.000
+Now that you are ready to use PyAnalySeries, an important
+
+00:00:04.000 --> 00:00:06.770
+point is how to work with your data, in other
+
+00:00:06.770 --> 00:00:08.810
+words, how to import series.
+
+00:00:09.970 --> 00:00:13.590
+Many scientists working with field or instrumental data rely on
+
+00:00:13.590 --> 00:00:14.980
+spreadsheet formats.
+
+00:00:16.140 --> 00:00:19.820
+For this reason, PyAnalySeries allows you to directly copy and
+
+00:00:19.820 --> 00:00:23.060
+paste data from your spreadsheet into the import window.
+
+00:00:24.360 --> 00:00:26.280
+Let’s look at this in more detail.
+
+00:00:29.380 --> 00:00:32.050
+Let’s open a new worksheet to host our data.
+
+00:00:35.230 --> 00:00:37.380
+Rename the file if needed.
+
+00:00:43.680 --> 00:00:47.040
+Data can be imported in X, Y format, or with
+
+00:00:47.040 --> 00:00:51.370
+multiple series such as X, Y1, Y2, Y3.
+
+00:00:51.370 --> 00:00:55.120
+From your spreadsheet, select the columns and press Control C
+
+00:00:57.450 --> 00:01:00.700
+Then, in the import window available from the Create menu
+
+00:01:01.200 --> 00:01:03.490
+press Control V.
+
+00:01:13.660 --> 00:01:16.300
+There is no need to clear the import window; simply
+
+00:01:16.300 --> 00:01:18.320
+paste your data directly into it.
+
+00:01:19.730 --> 00:01:22.580
+Columns can also be reorganized once pasted.
+
+00:01:22.580 --> 00:01:25.400
+If the columns are not ordered as X, Y1, Y2
+
+00:01:25.790 --> 00:01:27.960
+you can rearrange them as needed.
+
+00:01:34.140 --> 00:01:36.830
+Click and hold the column title, then drag it to
+
+00:01:36.830 --> 00:01:38.520
+the desired position.
+
+00:01:43.850 --> 00:01:46.390
+It is also possible to import a set of pointers
+
+00:01:46.420 --> 00:01:48.830
+in X, Y format.
+
+00:01:58.990 --> 00:02:02.000
+Missing Y values can be preserved, allowing you to keep
+
+00:02:02.000 --> 00:02:04.660
+the data exactly as it was originally produced.
+
+00:02:05.820 --> 00:02:08.320
+Let’s now examine the effect of this checkbox on the
+
+00:02:08.320 --> 00:02:10.470
+imported series.
+
+00:02:20.850 --> 00:02:24.350
+Import is independent of the decimal separator, whether comma or
+
+00:02:24.350 --> 00:02:25.110
+dot.
+
+00:02:25.110 --> 00:02:27.960
+Values are internally standardized using the dot.
+
+00:02:29.180 --> 00:02:33.180
+Column titles can include LaTeX-style characters, which will be correctly
+
+00:02:33.180 --> 00:02:34.370
+rendered in the plots.
+
+00:02:35.500 --> 00:02:38.730
+You may also want to reorganize items internally.
+
+00:02:38.730 --> 00:02:40.820
+Just drag them to the desired order.
+
+00:02:44.940 --> 00:02:47.390
+Do not forget to save your worksheet with your imported
+
+00:02:47.390 --> 00:02:49.510
+data with a Ctrl S.

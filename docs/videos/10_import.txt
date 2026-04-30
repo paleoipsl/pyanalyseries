@@ -1,0 +1,61 @@
+Now that you are ready to use PyAnalySeries, an important point is how to work with your data, 
+in other words, how to import series.
+<break time="1s"/>
+
+Many scientists working with field or instrumental data rely on spreadsheet formats.
+<break time="1s"/>
+
+For this reason, PyAnalySeries allows you to directly copy and paste data from your spreadsheet 
+into the import window.
+<break time="1s"/>
+
+Let’s look at this in more detail.
+<break time="3s"/>
+
+Let’s open a new worksheet to host our data.
+<break time="3s"/>
+
+Rename the file if needed.
+<break time="6s"/>
+
+Data can be imported in X, Y format, or with multiple series such as X, Y1, Y2, Y3.
+From your spreadsheet, select the columns and press Control C.
+<break time="2s"/>
+
+Then, in the import window available from the Create menu, press Control V.
+<break time="10s"/>
+
+There is no need to clear the import window; simply paste your data directly into it.
+<break time="1s"/>
+
+Columns can also be reorganized once pasted.
+If the columns are not ordered as X, Y1, Y2, you can rearrange them as needed.
+<break time="6s"/>
+
+Click and hold the column title, then drag it to the desired position.
+<break time="5s"/>
+
+It is also possible to import a set of pointers in X, Y format.
+<break time="10s"/>
+
+Missing Y values can be preserved, allowing you to keep the data exactly as it was originally produced.
+<break time="1s"/>
+
+Let’s now examine the effect of this checkbox on the imported series.
+<break time="15s"/>
+
+Import is independent of the decimal separator, whether comma or dot.
+Values are internally standardized using the dot.
+<break time="1s"/>
+
+Column titles can include LaTeX-style characters, which will be correctly rendered in the plots.
+<break time="1s"/>
+
+You may also want to reorganize items internally.
+Just drag them to the desired order.
+<break time="4s"/>
+
+Do not forget to save your worksheet with your imported data with a Ctrl S.
+<break time="4s"/>
+
+
