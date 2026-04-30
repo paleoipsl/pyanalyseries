@@ -1,0 +1,76 @@
+WEBVTT
+
+00:00:00.350 --> 00:00:04.470
+In PyAnalySeries, just as we had different methods to estimate
+
+00:00:04.470 --> 00:00:08.150
+the Power Spectral Density, we also have several approaches to
+
+00:00:08.150 --> 00:00:10.540
+apply high-pass or band-pass filtering.
+
+00:00:11.840 --> 00:00:15.760
+Let’s return to our example and explore the filtering options
+
+00:00:17.160 --> 00:00:22.630
+We select the resampled PercAndes record, and choose: Process, Frequency
+
+00:00:22.630 --> 00:00:23.360
+Filter.
+
+00:00:25.870 --> 00:00:30.720
+Different filtering methods can be tested, such as Butterworth, Lanczos
+
+00:00:31.560 --> 00:00:36.250
+FIR for Finite Impulse Response, or Savitzky–Golay.
+
+00:00:42.680 --> 00:00:46.060
+It is important to clearly understand the method being applied
+
+00:00:46.730 --> 00:00:49.840
+The documentation is available for that purpose.
+
+00:00:54.380 --> 00:00:58.410
+The workflow remains the same: we explore different parameter settings
+
+00:00:58.670 --> 00:01:01.980
+clear the stack of intermediate tests when needed, and save
+
+00:01:01.980 --> 00:01:03.790
+once the result is satisfactory.
+
+00:01:05.000 --> 00:01:08.860
+We know from the published study that precessional periodicities, around
+
+00:01:08.860 --> 00:01:12.450
+19 and 2 3 thousand years, are significant in the
+
+00:01:12.450 --> 00:01:14.420
+PercAndes record from this core.
+
+00:01:15.870 --> 00:01:19.050
+We now filter the record within this range of periodicities
+
+00:01:20.460 --> 00:01:25.840
+Here, we choose a Butterworth period band filter, keeping periodicities
+
+00:01:25.840 --> 00:01:28.960
+between 18 and 2 5 thousand years.
+
+00:01:35.070 --> 00:01:36.810
+Save the filtered series.
+
+00:01:39.030 --> 00:01:42.500
+You can now display both the original and the frequency-filtered
+
+00:01:42.500 --> 00:01:43.620
+series together.
+
+00:01:44.710 --> 00:01:48.410
+Select both series, and press Control T to display them
+
+00:01:48.410 --> 00:01:49.490
+together.
+
+00:01:55.670 --> 00:01:59.510
+We can now compare this filtered signal to insolation variations

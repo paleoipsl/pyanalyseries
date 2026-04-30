@@ -1,0 +1,38 @@
+In PyAnalySeries, just as we had different methods to estimate the Power Spectral Density, we also have several approaches to apply high-pass or band-pass filtering.
+<break time="1s"/>
+
+Let’s return to our example and explore the filtering options.
+<break time="1s"/>
+
+We select the resampled PercAndes record, and choose: Process, Frequency Filter.
+<break time="2s"/>
+
+Different filtering methods can be tested, such as Butterworth, Lanczos, FIR for Finite Impulse Response, or Savitzky–Golay.
+<break time="6s"/>
+
+It is important to clearly understand the method being applied. The documentation is available for that purpose.
+<break time="4s"/>
+
+The workflow remains the same: we explore different parameter settings, clear the stack of intermediate tests when needed, and save once the result is satisfactory.
+<break time="1s"/>
+
+We know from the published study that precessional periodicities, around 19 and 23 thousand years, are significant in the PercAndes record from this core.
+<break time="1s"/>
+
+We now filter the record within this range of periodicities.
+<break time="1s"/>
+
+Here, we choose a Butterworth period band filter, keeping periodicities between 18 and 25 thousand years.
+<break time="6s"/>
+
+Save the filtered series.
+<break time="2s"/>
+
+You can now display both the original and the frequency-filtered series together.
+<break time="1s"/>
+
+Select both series, and press Control T to display them together.
+<break time="6s"/>
+
+We can now compare this filtered signal to insolation variations.
+<break time="2s"/>
