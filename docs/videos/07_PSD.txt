@@ -1,0 +1,99 @@
+PyAnalySeries provides several methods
+to estimate the power spectral density of a signal.
+<break time="1s"/>
+
+These methods rely on the Pyleoclim module,
+which itself builds on spectral analysis methods available in SciPy.
+<break time="1s"/>
+
+The goal here is to make these methods easily accessible
+within the application, so they can be tested and compared interactively.
+<break time="1s"/>
+
+For each method, the most essential parameters
+have been exposed in the interface,
+allowing quick exploration of the different spectral estimators.
+<break time="1s"/>
+
+Let’s return to our example.
+<break time="1s"/>
+
+We use the “PercAndes” series
+to investigate its significant periodicities,
+using the different methods on the original, resampled, or smoothed series.
+<break time="1s"/>
+
+Select a series, then go to Process
+and choose “Spectral Estimation”,
+with PSD standing for Power Spectral Density.
+<break time="1s"/>
+
+The Periodogram is the most direct estimator
+of the power spectral density.
+It is simple and easy to interpret,
+but it can be noisy.
+<break time="2s"/>
+
+The idea is to quickly explore the impact of different parameters.
+<break time="1s"/>
+
+Press Compute, or simply modify a parameter,
+and the plot updates automatically.
+<break time="1s"/>
+
+You can clean up your tests
+by removing the last spectrum from the stack
+using the “Remove last” option.
+<break time="1s"/>
+
+Welch’s method improves the estimate
+by splitting the signal into overlapping segments
+and averaging their spectra.
+<break time="2s"/>
+
+MTM, for Multi-Taper Method,
+uses several tapers to obtain a more stable spectral estimate.
+<break time="2s"/>
+
+Lomb–Scargle is especially useful
+for unevenly spaced time series.
+<break time="2s"/>
+
+Wavelet analysis, using WWZ,
+explores how periodicities evolve through time.
+<break time="1s"/>
+
+For each method, you can access the corresponding documentation
+through a dedicated link.
+<break time="3s"/>
+
+Each method also has its own prerequisites,
+such as standardization or interpolation.
+<break time="3s"/>
+
+These steps are handled automatically by the interface,
+so there is no need to perform them beforehand.
+<break time="1s"/>
+
+The spectrum is displayed on a logarithmic scale
+and fully supports zooming.
+<break time="1s"/>
+
+Once saved, each computed spectrum appears in the main window
+with its dedicated icon.
+<break time="6s"/>
+
+Using “Display Together” allows you
+to visualize them simultaneously.
+<break time="6s"/>
+
+In practice, we compute and save
+the MTM and wavelet spectra on the resampled record.
+<break time="2s"/>
+
+For advanced spectral analysis, it is recommended to explore Pyleoclim
+in a Python or notebook environment,
+to fine-tune method-specific parameters
+and ensure full reproducibility of the results.
+<break time="2s"/>
+
