@@ -1,0 +1,47 @@
+PyAnalySeries provides a simple and efficient way to smooth time series data.
+<break time="1s"/>
+
+Filtering is applied in the X-domain,
+using a centered moving average based on a convolution with a square window.
+<break time="1s"/>
+
+Each value is replaced by the average of its neighboring points.
+<break time="1s"/>
+
+This reduces high-frequency variability
+while preserving the main trends of the signal.
+<break time="1s"/>
+
+Other X-domain filtering methods could be implemented if needed.
+<break time="1s"/>
+
+Let’s return to our practical example.
+<break time="1s"/>
+
+The “PercAndes” record remains slightly noisy, even after resampling at 0.25 thousand years.
+<break time="1s"/>
+
+We therefore apply a smoothing average to improve readability.
+<break time="1s"/>
+
+Select the record, then go to Process and choose “Define Smoothing Average”.
+<break time="1s"/>
+
+You can test different window sizes depending on the level of smoothing required.
+<break time="1s"/>
+
+Here, we use a 5-point running average.
+Given the 0.25 thousand years sampling, this corresponds to a smoothing window of 1 thousand years.
+<break time="1s"/>
+
+Most of the high-frequency variability is effectively removed,
+while preserving the main trends of the signal.
+<break time="1s"/>
+
+You can then save the filtered series and the filter
+for later reuse on other series.
+<break time="2s"/>
+
+You can also hover over the item ID
+to display its history.
+<break time="3s"/>

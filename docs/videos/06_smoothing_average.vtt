@@ -1,0 +1,85 @@
+WEBVTT
+
+00:00:00.400 --> 00:00:04.420
+PyAnalySeries provides a simple and efficient way to smooth time
+
+00:00:04.420 --> 00:00:05.350
+series data.
+
+00:00:06.540 --> 00:00:10.600
+Filtering is applied in the X-domain, using a centered moving
+
+00:00:10.600 --> 00:00:13.760
+average based on a convolution with a square window.
+
+00:00:14.970 --> 00:00:17.850
+Each value is replaced by the average of its neighboring
+
+00:00:17.850 --> 00:00:18.510
+points.
+
+00:00:19.610 --> 00:00:24.020
+This reduces high-frequency variability while preserving the main trends of
+
+00:00:24.020 --> 00:00:24.750
+the signal.
+
+00:00:26.130 --> 00:00:29.580
+Other X-domain filtering methods could be implemented if needed.
+
+00:00:30.620 --> 00:00:32.900
+Let’s return to our practical example.
+
+00:00:34.070 --> 00:00:37.290
+The “ PercAndes ” record remains slightly noisy, even after
+
+00:00:37.290 --> 00:00:38.420
+resampling at 0.
+
+00:00:38.420 --> 00:00:40.060
+2 5 thousand years.
+
+00:00:41.320 --> 00:00:45.260
+We therefore apply a smoothing average to improve readability.
+
+00:00:46.590 --> 00:00:50.390
+Select the record, then go to Process and choose “
+
+00:00:50.390 --> 00:00:52.290
+Define Smoothing Average ”.
+
+00:00:53.390 --> 00:00:56.330
+You can test different window sizes depending on the level
+
+00:00:56.330 --> 00:00:57.670
+of smoothing required.
+
+00:00:59.070 --> 00:01:02.380
+Here, we use a 5-point running average.
+
+00:01:02.380 --> 00:01:03.190
+Given the 0.
+
+00:01:03.190 --> 00:01:07.100
+2 5 thousand years sampling, this corresponds to a smoothing
+
+00:01:07.100 --> 00:01:08.860
+window of 1 thousand years.
+
+00:01:10.450 --> 00:01:15.230
+Most of the high-frequency variability is effectively removed, while preserving
+
+00:01:15.230 --> 00:01:16.850
+the main trends of the signal.
+
+00:01:18.130 --> 00:01:21.100
+You can then save the filtered series and the filter
+
+00:01:21.100 --> 00:01:23.800
+for later reuse on other series.
+
+00:01:26.080 --> 00:01:28.900
+You can also hover over the item ID to display
+
+00:01:28.900 --> 00:01:29.910
+its history.
