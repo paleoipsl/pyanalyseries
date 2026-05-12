@@ -58,7 +58,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.32'
+version = 'v6.33'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -1040,6 +1040,7 @@ class CustomTreeWidget(QTreeWidget):
         self.custom_tooltip = QLabel(self)
         self.custom_tooltip.setStyleSheet("""
             background-color: lightyellow;
+            color: #000000;
             border: 1px solid lightgray;
             border-radius: 4px;
             padding: 4px;
@@ -1111,7 +1112,8 @@ class CustomTreeWidget(QTreeWidget):
             if item and col == 2:  # Tooltip only for column 1
                 data = item.data(0, Qt.ItemDataRole.UserRole)
                 if isinstance(data, dict):
-                    tooltip_text = '''<style> 
+                    tooltip_text = '''<style>
+                                             body, p, ol, li { color: #000000; }
                                              p,ol { margin: 0px 0px 0px 0px; }
                                              .p1 { margin: 0px 0px 0px 20px; }
                                       </style>''';

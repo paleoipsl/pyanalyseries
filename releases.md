@@ -1,5 +1,7 @@
+ * 6.33
+   * Fix custom tooltip text visibility with dark/inverted color themes
  * 6.32
-   * Increase numerical precision in statistics display from .2f to .6f
+   * Increase numerical precision in statistics display from .2f to .6
  * 6.31
    * Fix angular wrap for true longitudes when computing integrated insolation (support intervals crossing 0°)
    * Fix shortcut 'z' in defineInterpolationWindow
