@@ -89,7 +89,7 @@ class displaySingleSeriesWindow(QWidget):
             self.data_table.item(i, 0).setBackground(background_color)
             self.data_table.item(i, 1).setBackground(background_color)
 
-            if 'XOriginalValues' in self.seriesDict:
+            if ('XOriginalValues' in self.seriesDict and len(self.seriesDict['XOriginalValues']) == len(self.series)):
                 self.data_table.item(i, 2).setBackground(background_color)
 
         self.data_table.resizeColumnsToContents()
