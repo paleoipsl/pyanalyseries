@@ -58,7 +58,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.33'
+version = 'v6.34'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -384,12 +384,15 @@ def load_WorkSheet(fileName):
                 }
 
                 if 'InterpolationMode' in df.columns:
+                    x2coords_idx = df.columns.get_loc('X2Coords')
+                    xoriginal_idx = x2coords_idx + 1
+
                     aDict = aDict | {
                         'InterpolationMode': df['InterpolationMode'][0],
                         'X1Coords': cleanSpaceList(df['X1Coords']),
                         'X2Coords': cleanSpaceList(df['X2Coords']),
-                        'XOriginal': df.columns[11],
-                        'XOriginalValues': addNanList(df.iloc[:,11])
+                        'XOriginal': df.columns[xoriginal_idx],
+                        'XOriginalValues': addNanList(df.iloc[:, xoriginal_idx])
                     }
 
                 itemDict_list.append(aDict)

@@ -904,7 +904,7 @@ class defineInterpolationWindow(QWidget):
             'InterpolationMode': self.interpolationMode,
             'X': self.X1Name,
             'XOriginal': self.X2Name,
-            'XOriginalValues': self.X2.to_list(),
+            'XOriginalValues': series2.index.to_list(),
             'X1Coords': self.X1Coords,
             'X2Coords': self.X2Coords,
             'Color': generate_color(exclude_color=self.series2Dict['Color']),

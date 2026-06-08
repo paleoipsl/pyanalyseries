@@ -49,8 +49,18 @@ class displaySingleSeriesWindow(QWidget):
         data_layout = QVBoxLayout()
         self.data_table = CustomQTableWidget()
         self.data_table.setRowCount(len(self.series))
-        self.data_table.setColumnCount(2)
-        self.data_table.setHorizontalHeaderLabels([self.xName, self.yName])
+
+        if 'XOriginalValues' in self.seriesDict:
+            self.data_table.setColumnCount(3)
+            self.data_table.setHorizontalHeaderLabels(
+                [self.xName, self.yName, self.seriesDict['XOriginal']]
+            )
+        else:
+            self.data_table.setColumnCount(2)
+            self.data_table.setHorizontalHeaderLabels(
+                [self.xName, self.yName]
+            )
+
         replicates = self.series.index.duplicated(keep=False)
         missing_values = self.series.isna().to_numpy()
         self.series = self.series.sort_index()
@@ -58,6 +68,14 @@ class displaySingleSeriesWindow(QWidget):
         for i in range(len(self.series)):
             self.data_table.setItem(i, 0, QTableWidgetItem(str(f'{self.series.index[i]:.6f}')))
             self.data_table.setItem(i, 1, QTableWidgetItem(str(f'{self.series.values[i]:.6f}')))
+
+            if 'XOriginalValues' in self.seriesDict:
+                if i < len(self.seriesDict['XOriginalValues']):
+                    text = f'{float(self.seriesDict["XOriginalValues"][i]):.6f}'
+                else:
+                    text = ""
+                self.data_table.setItem(i, 2, QTableWidgetItem(text))
+
             if missing_values[i]:
                 base = QColor('peachpuff')
                 alt = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
@@ -70,6 +88,10 @@ class displaySingleSeriesWindow(QWidget):
                 background_color = QColor('white') if i % 2 == 0 else QColor('whitesmoke')
             self.data_table.item(i, 0).setBackground(background_color)
             self.data_table.item(i, 1).setBackground(background_color)
+
+            if 'XOriginalValues' in self.seriesDict:
+                self.data_table.item(i, 2).setBackground(background_color)
+
         self.data_table.resizeColumnsToContents()
         self.data_table.set_italic_headers()
         self.data_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)

@@ -1,3 +1,6 @@
+ * 6.34
+   * Fix saving of original-axis values (including replicates) for interpolated series
+   * Add original-axis values column to the Data tab of displaySingleSeriesWindow for interpolated series
  * 6.33
    * Fix custom tooltip text visibility with dark/inverted color themes
  * 6.32
@@ -74,8 +77,8 @@
  * 6.03
    * Keep replicates in interpolation, filter
  * 6.02
-   * Rename replicates formerly referred to as duplicates in displaySingleSerieWindow
-   * Add quantiles and other stats in displaySingleSerieWindow
+   * Rename replicates formerly referred to as duplicates in displaySingleSeriesWindow
+   * Add quantiles and other stats in displaySingleSeriesWindow
    * Fix reading WS with trim trailing NaNs when interpolation
  * 6.01
    * Fix PyQt6 breaking change: update key and modifier enums (Qt.Key.Key_C, Qt.KeyboardModifier.ControlModifier).
@@ -168,7 +171,7 @@
  * 5.15
    * Fix Display Together and Display Stacked to disallow INTERPOLATION
    * Fix test on monotonic increasing and unique when import pointers
-   * Fix colors order (missing, duplicates) with displaySingleSerieWindow
+   * Fix colors order (missing, duplicates) with displaySingleSeriesWindow
  * 5.14
    * Fix style for buttons
    * Allow empty cells in 1st column when importing series
