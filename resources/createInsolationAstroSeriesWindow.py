@@ -26,7 +26,7 @@ DEFAULT_MIN = -5_000_000
 DEFAULT_MAX =  5_000_000
 
 #=========================================================================================
-class defineInsolationAstroSeriesWindow(QWidget):
+class createInsolationAstroSeriesWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def __init__(self, open_insolationAstroSeriesWindow, add_item_tree_widget):
         super().__init__()
@@ -36,7 +36,7 @@ class defineInsolationAstroSeriesWindow(QWidget):
         self.open_insolationAstroSeriesWindow = open_insolationAstroSeriesWindow
         self.add_item_tree_widget = add_item_tree_widget
 
-        title = 'Define Insolation / Astronomical series'
+        title = 'Create Insolation / Astronomical series'
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(1000, 800)
@@ -638,8 +638,8 @@ if __name__ == "__main__":
     Id_insolationAstroSeriesWindow = '1234'
     open_insolationAstroSeriesWindow = {}
 
-    insolationAstroSeriesWindow = defineInsolationAstroSeriesWindow(open_insolationAstroSeriesWindow, handle_item)
-    open_insolationAstroSeriesWindow[Id_insolationAstroSeriesWindow] = defineInsolationAstroSeriesWindow
+    insolationAstroSeriesWindow = createInsolationAstroSeriesWindow(open_insolationAstroSeriesWindow, handle_item)
+    open_insolationAstroSeriesWindow[Id_insolationAstroSeriesWindow] = createInsolationAstroSeriesWindow
     insolationAstroSeriesWindow.show()
 
     sys.exit(app_exec(app))

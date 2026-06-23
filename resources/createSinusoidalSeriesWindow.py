@@ -19,7 +19,7 @@ for key in plt.rcParams.keys():
         plt.rcParams[key] = []
 
 #=========================================================================================
-class defineSinusoidalSeriesWindow(QWidget):
+class createSinusoidalSeriesWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def __init__(self, open_sinusoidalSeriesWindow, add_item_tree_widget):
         super().__init__()
@@ -27,7 +27,7 @@ class defineSinusoidalSeriesWindow(QWidget):
         self.open_sinusoidalSeriesWindow = open_sinusoidalSeriesWindow
         self.add_item_tree_widget = add_item_tree_widget
 
-        self.setWindowTitle('Define Sinusoidal series')
+        self.setWindowTitle('Create Sinusoidal series')
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)
         
@@ -298,8 +298,8 @@ if __name__ == "__main__":
 
     app = QApplication([])
     open_sinusoidalSeriesWindow = {}
-    win = defineSinusoidalSeriesWindow(open_sinusoidalSeriesWindow, handle_item)
-    open_sinusoidalSeriesWindow['sin'] = defineSinusoidalSeriesWindow
+    win = createSinusoidalSeriesWindow(open_sinusoidalSeriesWindow, handle_item)
+    open_sinusoidalSeriesWindow['sin'] = createSinusoidalSeriesWindow
     win.show()
 
     sys.exit(app_exec(app))

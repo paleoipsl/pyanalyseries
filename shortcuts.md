@@ -10,10 +10,10 @@
 
 ### Shortcut on MacOS :
 * Use Automator tool to set a shortcut (choose new application and 'run shell script')
-* Copy the content of the PyAnalySeries.sh file and paste it into the shell with the correct anaconda path
-* From the “Shell:” dropdown menu, select “/bin/bash”.
+* Copy the content of the `PyAnalySeries.sh` file and paste it into the shell with the correct anaconda path
+* From the "Shell:" dropdown menu, select `/bin/bash`.
 * Save as an application in your Desktop directory
-* Set an icon by pressing ⌘ + I on the shorcut created and drag the resources/PyAnalySeries_icon.icns file on the top icon
+* Set an icon by pressing `⌘ + I` on the shorcut created and drag the `resources/PyAnalySeries_icon.icns` file on the top icon
 
 
 ### Shortcut on Windows

@@ -126,7 +126,13 @@ class computeFrequencyFilterWindow(QWidget):
         main_layout.addWidget(groupbox1, stretch=1)
 
         #----------------------------------------------
-        self.interactive_plot = interactivePlot()
+        self.interactive_plot = interactivePlot(
+            allow_back_x_axis_settings=True,
+            allow_back_y_axis_settings=True,
+            allow_back_axis_settings=True,
+            allow_save_axis_settings=False
+        )    
+
         canvas = FigureCanvas(self.interactive_plot.fig)
         main_layout.addWidget(canvas, stretch=3)
 
@@ -635,7 +641,10 @@ class computeFrequencyFilterWindow(QWidget):
                 visible=False
             )
             ax.line_points_pairs.append((line, points))            
-    
+   
+        axis_settings = self.seriesDict.get("AxisSettings")
+        self.interactive_plot.apply_axis_settings(ax, axis_settings)
+
         legend = ax.legend()
         for legend_line, ax_line in zip(legend.get_lines(), ax.get_lines()):
             legend_line.set_picker(5)
@@ -643,8 +652,7 @@ class computeFrequencyFilterWindow(QWidget):
     
         ax.set_xlabel(self.xName)
         ax.set_ylabel(self.yName)
-        ax.autoscale()
-    
+
         self.interactive_plot.fig.canvas.draw()
         self.interactive_plot.fig.canvas.setFocus()
 

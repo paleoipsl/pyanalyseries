@@ -11,6 +11,7 @@ import re
 import copy
 from pathlib import Path
 import platform
+import json
 
 import numpy as np
 import pandas as pd
@@ -39,9 +40,9 @@ from resources.CustomQTableWidget import CustomQTableWidget
 
 from resources.importDataWindow import importDataWindow
 
-from resources.defineRandomSeriesWindow import defineRandomSeriesWindow
-from resources.defineInsolationAstroSeriesWindow import defineInsolationAstroSeriesWindow
-from resources.defineSinusoidalSeriesWindow import defineSinusoidalSeriesWindow
+from resources.createRandomSeriesWindow import createRandomSeriesWindow
+from resources.createInsolationAstroSeriesWindow import createInsolationAstroSeriesWindow
+from resources.createSinusoidalSeriesWindow import createSinusoidalSeriesWindow
 
 from resources.computeAggregateWindow import computeAggregateWindow
 from resources.computeDetrendWindow import computeDetrendWindow
@@ -58,7 +59,7 @@ else:
     filesName = None
 
 #========================================================================================
-version = 'v6.34'
+version = 'v6.35'
 
 open_ws = {}
 open_displayWindows = {} 
@@ -369,6 +370,21 @@ def load_WorkSheet(fileName):
                 n = effective_length_from_index(df.iloc[:, 0])
                 x = addNanList(df.iloc[:, 0], length=n)
                 y = addNanList(df.iloc[:, 1], length=n)
+                
+                axis_settings = {}
+                if 'AxisSettings' in df.columns:
+                    axis_settings_str = df['AxisSettings'][0]
+                    if axis_settings_str:
+                        try:
+                            axis_settings = json.loads(axis_settings_str)
+                        except Exception:
+                            axis_settings = {}
+
+                if not axis_settings and type == "Series PSD":
+                    axis_settings = {
+                        "xaxis": {"type": "log1-2-5", "invert": True},
+                        "yaxis": {"type": "log10", "invert": False}
+                    }
 
                 aDict = {
                     'Id': 'Id-' + sheetName.split('Id-')[1],
@@ -380,13 +396,14 @@ def load_WorkSheet(fileName):
                     'Date': df['Date'][0] if 'Date' in df.columns else '',
                     'Comment': df['Comment'][0],
                     'History': history,
-                    'Series': pd.Series(y, index=x)
+                    'Series': pd.Series(y, index=x),
+                    'AxisSettings': axis_settings
                 }
 
                 if 'InterpolationMode' in df.columns:
                     x2coords_idx = df.columns.get_loc('X2Coords')
                     xoriginal_idx = x2coords_idx + 1
-
+                
                     aDict = aDict | {
                         'InterpolationMode': df['InterpolationMode'][0],
                         'X1Coords': cleanSpaceList(df['X1Coords']),
@@ -596,6 +613,7 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=1, column=6, value='Date')
                 ws.cell(row=1, column=7, value='Comment')
                 ws.cell(row=1, column=8, value='History')
+                ws.cell(row=1, column=9, value='AxisSettings')
 
                 for i, (index, value) in enumerate(itemDict['Series'].sort_index().items(), start=2):            # force sort on index
                     ws.cell(row=i, column=1, value=index)
@@ -606,20 +624,21 @@ def save_WorkSheet(ws_item):
                 ws.cell(row=2, column=6, value=itemDict['Date'])
                 ws.cell(row=2, column=7, value=itemDict['Comment'])
                 ws.cell(row=2, column=8, value=itemDict['History'])
+                ws.cell(row=2, column=9, value=json.dumps(itemDict.get('AxisSettings', {}), separators=(',', ':')))
         
                 if 'InterpolationMode' in itemDict:
-                    ws.cell(row=1, column=9, value='InterpolationMode')
-                    ws.cell(row=1, column=10, value='X1Coords')
-                    ws.cell(row=1, column=11, value='X2Coords')
-                    ws.cell(row=1, column=12, value=itemDict['XOriginal'])
+                    ws.cell(row=1, column=10, value='InterpolationMode')
+                    ws.cell(row=1, column=11, value='X1Coords')
+                    ws.cell(row=1, column=12, value='X2Coords')
+                    ws.cell(row=1, column=13, value=itemDict['XOriginal'])
 
-                    ws.cell(row=2, column=9, value=itemDict['InterpolationMode'])
+                    ws.cell(row=2, column=10, value=itemDict['InterpolationMode'])
                     for i, value in enumerate(itemDict['X1Coords'], start=2):
-                        ws.cell(row=i, column=10, value=value)
-                    for i, value in enumerate(itemDict['X2Coords'], start=2):
                         ws.cell(row=i, column=11, value=value)
-                    for i, value in enumerate(itemDict['XOriginalValues'], start=2):
+                    for i, value in enumerate(itemDict['X2Coords'], start=2):
                         ws.cell(row=i, column=12, value=value)
+                    for i, value in enumerate(itemDict['XOriginalValues'], start=2):
+                        ws.cell(row=i, column=13, value=value)
 
             #-----------------------
             elif itemDict["Type"] in ['FILTER', 'SAMPLE', 'SAMPLING']:
@@ -741,7 +760,7 @@ def import_Data():
         importWindow.show()
 
 #========================================================================================
-def define_insolationAstroSeries():
+def create_insolationAstroSeries():
     global open_insolationAstroSeriesWindow
 
     current_index = tree_widget.currentItem()
@@ -755,12 +774,12 @@ def define_insolationAstroSeries():
         insolationAstroSeriesWindow.raise_()
         insolationAstroSeriesWindow.activateWindow()
     else:
-        insolationAstroSeriesWindow = defineInsolationAstroSeriesWindow(open_insolationAstroSeriesWindow, add_item_tree_widget)
+        insolationAstroSeriesWindow = createInsolationAstroSeriesWindow(open_insolationAstroSeriesWindow, add_item_tree_widget)
         open_insolationAstroSeriesWindow[Id_insolationAstroSeriesWindow] = insolationAstroSeriesWindow
         insolationAstroSeriesWindow.show()
 
 #========================================================================================
-def define_sinusoidalSeries():
+def create_sinusoidalSeries():
     global open_sinusoidalSeriesWindow
 
     current_index = tree_widget.currentItem()
@@ -774,12 +793,12 @@ def define_sinusoidalSeries():
         sinusoidalSeriesWindow.raise_()
         sinusoidalSeriesWindow.activateWindow()
     else:
-        sinusoidalSeriesWindow = defineSinusoidalSeriesWindow(open_sinusoidalSeriesWindow, add_item_tree_widget)
+        sinusoidalSeriesWindow = createSinusoidalSeriesWindow(open_sinusoidalSeriesWindow, add_item_tree_widget)
         open_sinusoidalSeriesWindow[Id_sinusoidalSeriesWindow] = sinusoidalSeriesWindow
         sinusoidalSeriesWindow.show()
 
 #========================================================================================
-def define_randomSeries():
+def create_randomSeries():
     global open_randomSeriesWindow
 
     current_index = tree_widget.currentItem()
@@ -793,7 +812,7 @@ def define_randomSeries():
         randomSeriesWindow.raise_()
         randomSeriesWindow.activateWindow()
     else:
-        randomSeriesWindow = defineRandomSeriesWindow(open_randomSeriesWindow, add_item_tree_widget)
+        randomSeriesWindow = createRandomSeriesWindow(open_randomSeriesWindow, add_item_tree_widget)
         open_randomSeriesWindow[Id_randomSeriesWindow] = randomSeriesWindow
         randomSeriesWindow.show()
 
@@ -1974,11 +1993,11 @@ importData_action.setShortcut('Ctrl+m')
 importData_action.triggered.connect(import_Data)
 
 randomSeries_action = QAction("Random series", main_window)
-randomSeries_action.triggered.connect(define_randomSeries)
+randomSeries_action.triggered.connect(create_randomSeries)
 insolationAstroSeries_action = QAction("Insolation / Astronomical series", main_window)
-insolationAstroSeries_action.triggered.connect(define_insolationAstroSeries)
+insolationAstroSeries_action.triggered.connect(create_insolationAstroSeries)
 sinusoidalSeries_action = QAction("Sinusoidal series", main_window)
-sinusoidalSeries_action.triggered.connect(define_sinusoidalSeries)
+sinusoidalSeries_action.triggered.connect(create_sinusoidalSeries)
 
 create_menu.addAction(importData_action)
 create_menu.addSeparator()

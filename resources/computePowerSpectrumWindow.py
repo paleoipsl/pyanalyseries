@@ -699,6 +699,10 @@ class computePowerSpectrumWindow(QWidget):
             'History': append_to_htmlText(self.seriesDict['History'], history),
             'Comment': '',
             'Series': pd.Series(result['psd'], index=result['period']),
+            'AxisSettings': {
+                "xaxis": {"type": "log1-2-5", "invert": True},
+                "yaxis": {"type": "log10", "invert": False}
+            }
         }
 
         try:

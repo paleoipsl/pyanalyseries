@@ -19,7 +19,7 @@ for key in plt.rcParams.keys():
         plt.rcParams[key] = []
 
 #=========================================================================================
-class defineRandomSeriesWindow(QWidget):
+class createRandomSeriesWindow(QWidget):
     #---------------------------------------------------------------------------------------------
     def __init__(self, open_randomSeriesWindow, add_item_tree_widget):
         super().__init__()
@@ -27,7 +27,7 @@ class defineRandomSeriesWindow(QWidget):
         self.open_randomSeriesWindow = open_randomSeriesWindow
         self.add_item_tree_widget = add_item_tree_widget
 
-        title = 'Define Random series'
+        title = 'Create Random series'
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 1200, 800)
         self.setMinimumSize(800, 600)
@@ -234,8 +234,8 @@ if __name__ == "__main__":
     Id_randomSeriesWindow = '1234'
     open_randomSeriesWindow = {}
 
-    randomSeriesWindow = defineRandomSeriesWindow(open_randomSeriesWindow, handle_item)
-    open_randomSeriesWindow[Id_randomSeriesWindow] = defineRandomSeriesWindow
+    randomSeriesWindow = createRandomSeriesWindow(open_randomSeriesWindow, handle_item)
+    open_randomSeriesWindow[Id_randomSeriesWindow] = createRandomSeriesWindow
     randomSeriesWindow.show()
 
     sys.exit(app_exec(app))

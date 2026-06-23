@@ -22,6 +22,55 @@ for key in plt.rcParams.keys():
 
 #=========================================================================================
 class displaySingleSeriesWindow(QWidget):
+
+    #---------------------------------------------------------------------------------------------
+    def format_limit(self, value):
+        if value is None:
+            return ""
+        #return f"{value:.6g}"
+        return f"{value:.3f}".rstrip('0').rstrip('.')
+
+    #---------------------------------------------------------------------------------------------
+    def _axis_settings_from_widgets(self):
+        def parse_float(widget):
+            text = widget.text().strip()
+            if text == "":
+                return None
+            return float(text)
+    
+        return {
+            "xaxis": {
+                "type": self.xaxis_type_combo.currentText(),
+                "invert": self.xaxis_invert_cb.isChecked(),
+                "lim1": parse_float(self.xlim1_edit),
+                "lim2": parse_float(self.xlim2_edit),
+            },
+            "yaxis": {
+                "type": self.yaxis_type_combo.currentText(),
+                "invert": self.yaxis_invert_cb.isChecked(),
+                "lim1": parse_float(self.ylim1_edit),
+                "lim2": parse_float(self.ylim2_edit),
+            },
+        }
+    
+    #---------------------------------------------------------------------------------------------
+    def _set_axis_widgets_from_settings(self, settings):
+        settings = settings or {}
+    
+        xaxis = settings.get("xaxis", {})
+        yaxis = settings.get("yaxis", {})
+   
+
+        self.xaxis_type_combo.setCurrentText(xaxis.get("type", "linear"))
+        self.xaxis_invert_cb.setChecked(bool(xaxis.get("invert", False)))
+        self.xlim1_edit.setText(self.format_limit(xaxis.get("lim1")))
+        self.xlim2_edit.setText(self.format_limit(xaxis.get("lim2")))
+    
+        self.yaxis_type_combo.setCurrentText(yaxis.get("type", "linear"))
+        self.yaxis_invert_cb.setChecked(bool(yaxis.get("invert", False)))
+        self.ylim1_edit.setText(self.format_limit(yaxis.get("lim1")))
+        self.ylim2_edit.setText(self.format_limit(yaxis.get("lim2")))
+
     #---------------------------------------------------------------------------------------------
     def __init__(self, Id, open_displayWindows, item):
         super().__init__()
@@ -134,13 +183,123 @@ class displaySingleSeriesWindow(QWidget):
         #----------------------------------------------
         plot_tab = QWidget()
         plot_layout = QVBoxLayout()
-   
-        self.interactive_plot = interactivePlot()
+    
+        self.interactive_plot = interactivePlot(
+            allow_back_x_axis_settings=True,
+            allow_back_y_axis_settings=True,
+            allow_back_axis_settings=True,
+            allow_save_axis_settings=True
+        )
         canvas = FigureCanvas(self.interactive_plot.fig)
         plot_layout.addWidget(canvas)
         self.myplot()
-        
+
         plot_tab.setLayout(plot_layout)
+
+        #----------------------------------------------
+        axis_tab = QWidget()
+        axis_layout = QVBoxLayout()
+        
+        #-------------------------------
+        # X axis group
+        x_group = QGroupBox("X axis")
+        x_form = QFormLayout()
+        
+        self.xaxis_type_combo = QComboBox()
+        self.xaxis_type_combo.addItems(["linear", "log10", "log1-2-5"])
+        self.xaxis_type_combo.setMaximumWidth(120)
+        
+        self.xaxis_invert_cb = QCheckBox("Invert X axis")
+       
+        self.xlim1_edit = QLineEdit()
+        self.xlim2_edit = QLineEdit()
+        self.xlim1_edit.setPlaceholderText("auto")
+        self.xlim2_edit.setPlaceholderText("auto")
+        self.xlim1_edit.setMaximumWidth(120)
+        self.xlim2_edit.setMaximumWidth(120)
+        self.axis_read_x_button = QPushButton("Read X view")
+        self.axis_clear_x_button = QPushButton("Clear X limits")
+        
+        x_limits_layout = QHBoxLayout()
+        x_limits_layout.addWidget(QLabel("Limits:"))
+        x_limits_layout.addWidget(self.xlim1_edit)
+        x_limits_layout.addWidget(self.xlim2_edit)
+        x_limits_layout.addWidget(self.axis_read_x_button)
+        x_limits_layout.addWidget(self.axis_clear_x_button)
+        x_limits_layout.addStretch()
+        
+        x_form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
+        x_form.addRow("Scale:", self.xaxis_type_combo)
+        x_form.addRow("", self.xaxis_invert_cb)
+        x_form.addRow(x_limits_layout)
+        
+        x_group.setLayout(x_form)
+       
+        #-------------------------------
+        # Y axis group
+        y_group = QGroupBox("Y axis")
+        y_form = QFormLayout()
+        
+        self.yaxis_type_combo = QComboBox()
+        self.yaxis_type_combo.addItems(["linear", "log10", "log1-2-5"])
+        self.yaxis_type_combo.setMaximumWidth(120)
+        
+        self.yaxis_invert_cb = QCheckBox("Invert Y axis")
+        
+        self.ylim1_edit = QLineEdit()
+        self.ylim2_edit = QLineEdit()
+        self.ylim1_edit.setPlaceholderText("auto")
+        self.ylim2_edit.setPlaceholderText("auto")
+        self.ylim1_edit.setMaximumWidth(120)
+        self.ylim2_edit.setMaximumWidth(120)
+        self.axis_read_y_button = QPushButton("Read Y view")
+        self.axis_clear_y_button = QPushButton("Clear Y limits")
+       
+        y_limits_layout = QHBoxLayout()
+        y_limits_layout.addWidget(QLabel("Limits:"))
+        y_limits_layout.addWidget(self.ylim1_edit)
+        y_limits_layout.addWidget(self.ylim2_edit)
+        y_limits_layout.addWidget(self.axis_read_y_button)
+        y_limits_layout.addWidget(self.axis_clear_y_button)
+        y_limits_layout.addStretch()
+        
+        y_form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
+        y_form.addRow("Scale:", self.yaxis_type_combo)
+        y_form.addRow("", self.yaxis_invert_cb)
+        y_form.addRow(y_limits_layout)
+
+        y_group.setLayout(y_form)
+        
+        #-------------------------------
+        # Buttons
+        button_layout_axis = QHBoxLayout()
+        self.axis_apply_button = QPushButton("Apply")
+        self.axis_read_xy_button = QPushButton("Read XY view")
+        self.axis_clear_xy_button = QPushButton("Clear XY limits")
+        
+        button_layout_axis.addWidget(self.axis_apply_button)
+        button_layout_axis.addSpacing(40)
+        button_layout_axis.addWidget(self.axis_read_xy_button)
+        button_layout_axis.addWidget(self.axis_clear_xy_button)
+        button_layout_axis.addStretch()
+        
+        axis_layout.addWidget(x_group)
+        axis_layout.addWidget(y_group)
+        axis_layout.addSpacing(10)
+        axis_layout.addLayout(button_layout_axis)
+        axis_layout.addStretch()
+        
+        axis_tab.setLayout(axis_layout)
+
+        self.axis_apply_button.clicked.connect(self.apply_axis_settings_from_tab)
+        self.axis_read_x_button.clicked.connect(lambda: self.use_current_axis_view(read_x=True))
+        self.axis_read_y_button.clicked.connect(lambda: self.use_current_axis_view(read_y=True))
+        self.axis_read_xy_button.clicked.connect(lambda: self.use_current_axis_view(read_x=True, read_y=True))
+        self.axis_clear_x_button.clicked.connect(lambda: self.clear_axis_limits(clear_x=True))
+        self.axis_clear_y_button.clicked.connect(lambda: self.clear_axis_limits(clear_y=True))
+        self.axis_clear_xy_button.clicked.connect(lambda: self.clear_axis_limits(clear_x=True, clear_y=True))
+
+        self._set_axis_widgets_from_settings(self.seriesDict.get("AxisSettings"))
 
         #----------------------------------------------
         info_tab = QWidget()
@@ -176,6 +335,7 @@ class displaySingleSeriesWindow(QWidget):
         self.tabs.addTab(data_tab, "Data")
         self.tabs.addTab(stats_tab, "Stats")
         self.tabs.addTab(plot_tab, "Plot")
+        self.tabs.addTab(axis_tab, "Axis settings")
         self.tabs.addTab(info_tab, "Info")
         self.tabs.setCurrentIndex(2)
 
@@ -207,7 +367,104 @@ class displaySingleSeriesWindow(QWidget):
         self.interactive_plot.fig.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
-    def myplot(self, limits=None):
+    def validate_axis_settings(self, settings):
+    
+        for axis_key, axis_label in [("xaxis", "X"), ("yaxis", "Y")]:
+    
+            axis = settings[axis_key]
+    
+            lim1 = axis.get("lim1")
+            lim2 = axis.get("lim2")
+            scale_type = axis.get("type", "linear")
+    
+            if (lim1 is None) != (lim2 is None):
+                QMessageBox.warning(
+                    self,
+                    "Axis settings",
+                    f"{axis_label} limits: both values must be specified."
+                )
+                return False
+    
+            if lim1 is None:
+                continue
+    
+            if lim2 <= lim1:
+                QMessageBox.warning(
+                    self,
+                    "Axis settings",
+                    f"{axis_label} limits: maximum must be greater than minimum."
+                )
+                return False
+    
+            if scale_type in ("log10", "log1-2-5"):
+                if lim1 <= 0 or lim2 <= 0:
+                    QMessageBox.warning(
+                        self,
+                        "Axis settings",
+                        f"{axis_label} limits: logarithmic axes require positive values."
+                    )
+                    return False
+    
+        return True
+
+    #---------------------------------------------------------------------------------------------
+    def apply_axis_settings_from_tab(self):
+    
+        axis_settings = self._axis_settings_from_widgets()
+    
+        if not self.validate_axis_settings(axis_settings):
+            return
+    
+        ax = self.interactive_plot.axs[0]
+    
+        self.interactive_plot.apply_axis_settings(ax, axis_settings)
+    
+        self.seriesDict["AxisSettings"] = axis_settings
+
+    #---------------------------------------------------------------------------------------------
+    def use_current_axis_view(self, read_x=False, read_y=False):
+    
+        ax = self.interactive_plot.axs[0]
+    
+        current_settings = self.interactive_plot.get_axis_settings(ax)
+    
+        if read_x and read_y:
+            axis_settings = current_settings
+        else:
+            axis_settings = self._axis_settings_from_widgets()
+    
+            if read_x:
+                axis_settings["xaxis"] = current_settings["xaxis"]
+    
+            if read_y:
+                axis_settings["yaxis"] = current_settings["yaxis"]
+    
+        self._set_axis_widgets_from_settings(axis_settings)
+    
+        ax.axis_settings = axis_settings
+        self.seriesDict["AxisSettings"] = axis_settings
+
+    #---------------------------------------------------------------------------------------------
+    def clear_axis_limits(self, clear_x=False, clear_y=False):
+    
+        axis_settings = self._axis_settings_from_widgets()
+    
+        if clear_x:
+            axis_settings["xaxis"]["lim1"] = None
+            axis_settings["xaxis"]["lim2"] = None
+    
+        if clear_y:
+            axis_settings["yaxis"]["lim1"] = None
+            axis_settings["yaxis"]["lim2"] = None
+    
+        self._set_axis_widgets_from_settings(axis_settings)
+    
+        ax = self.interactive_plot.axs[0]
+        self.interactive_plot.apply_axis_settings(ax, axis_settings)
+        self.seriesDict["AxisSettings"] = axis_settings
+
+    #---------------------------------------------------------------------------------------------
+    def myplot(self):
        
         self.interactive_plot.reset()
 
@@ -216,7 +473,7 @@ class displaySingleSeriesWindow(QWidget):
         ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
         ax.set_xlabel(self.xName)
         ax.set_ylabel(self.yName)
-        ax.autoscale()
+
         seriesDict = self.item.data(0, Qt.ItemDataRole.UserRole)
         series = seriesDict['Series']
         series = series.groupby(series.index).mean()           # sort on index by default
@@ -240,30 +497,33 @@ class displaySingleSeriesWindow(QWidget):
 
             self.interactive_plot.top_margin = 100
 
-        if limits:
-            ax.set_xlim(limits[0])
-            ax.set_ylim(limits[1])
-
-        if seriesDict['Type'] == 'Series PSD' :
-            ax.set_xscale('log')
-            ax.set_yscale('log')
-            ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
-            ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
-            ax.invert_xaxis()
+        axis_settings = seriesDict.get("AxisSettings")
+        self.interactive_plot.apply_axis_settings(ax, axis_settings)
 
         ax.figure.canvas.draw()
         ax.figure.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
+
         plt.close()
+
         self.seriesDict['Comment'] = self.textComment.toPlainText()
+
+        try:
+            ax = self.interactive_plot.axs[0]
+            if hasattr(ax, "axis_settings") and ax.axis_settings:
+                self.seriesDict["AxisSettings"] = ax.axis_settings
+        except Exception:
+            pass
+
         # if WS has been removed while a Display is active 
         try:
             self.item.setData(0, Qt.ItemDataRole.UserRole, self.seriesDict)
         except:
             #print("item not available to be updated")
             pass 
+
         self.open_displayWindows.pop(self.Id, None)
         event.accept()
 

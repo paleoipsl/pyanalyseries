@@ -151,7 +151,12 @@ class computeAggregateWindow(QWidget):
         agg_layout.addWidget(groupbox1) 
 
         #----------------------------------------------
-        self.interactive_plot = interactivePlot()
+        self.interactive_plot = interactivePlot(
+             allow_back_x_axis_settings=True,
+             allow_back_y_axis_settings=True,
+             allow_back_axis_settings=True,
+             allow_save_axis_settings=False
+         )    
 
         canvas = FigureCanvas(self.interactive_plot.fig)
         agg_layout.addWidget(canvas)
@@ -272,7 +277,6 @@ class computeAggregateWindow(QWidget):
         ax.grid(visible=True, which="major", color="lightgray", linestyle="dashed", linewidth=0.5)
         ax.set_xlabel(self.xName)
         ax.set_ylabel(self.yName)
-        ax.autoscale()
     
         # -----------------------------
         # Get values from UI
@@ -346,11 +350,14 @@ class computeAggregateWindow(QWidget):
         )
         ax.line_points_pairs.append((line2, points2))
     
+        axis_settings = self.seriesDict.get("AxisSettings")
+        self.interactive_plot.apply_axis_settings(ax, axis_settings)
+
         legend = ax.legend()
         for legend_line, ax_line in zip(legend.get_lines(), ax.get_lines()):
             legend_line.set_picker(5)
             ax.map_legend_to_line[legend_line] = ax_line
-    
+   
         if limits:
             ax.set_xlim(limits[0])
             ax.set_ylim(limits[1])

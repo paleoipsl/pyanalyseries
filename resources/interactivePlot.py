@@ -22,9 +22,22 @@ plt.rcParams["toolbar"] = "None"
 class interactivePlot:
 
     #---------------------------------------------------------------------------------------------
-    def __init__(self, rows=1, cols=1):
+    def __init__(
+        self,
+        rows=1,
+        cols=1,
+        allow_back_x_axis_settings=False,
+        allow_back_y_axis_settings=False,
+        allow_back_axis_settings=False,
+        allow_save_axis_settings=False,
+    ):
 
         self.fig, self.axs = plt.subplots(rows, cols)
+
+        self.allow_back_x_axis_settings = allow_back_x_axis_settings
+        self.allow_back_y_axis_settings = allow_back_y_axis_settings
+        self.allow_back_axis_settings = allow_back_axis_settings
+        self.allow_save_axis_settings = allow_save_axis_settings
 
         self.left_margin = 100              # in pixels
         self.right_margin = 50
@@ -42,6 +55,7 @@ class interactivePlot:
             ax.spine_bottom_position = 0
             ax.twins = []
             ax.twins_orientation = None
+            ax.axis_settings = None
 
         # Connect events to methods
         self.fig.canvas.mpl_connect('scroll_event', self.on_scroll)
@@ -79,7 +93,102 @@ class interactivePlot:
         self.tooltip.set_visible(False)
 
     #---------------------------------------------------------------------------------------------
-    def plot(self, n, x, y, label=None):
+    def get_axis_settings(self, ax):
+
+        xlim1, xlim2 = sorted(ax.get_xlim())
+        ylim1, ylim2 = sorted(ax.get_ylim())
+
+        return {
+            "xaxis": {
+                "type": getattr(ax.xaxis, "_scale_type", ax.get_xscale()),
+                "invert": bool(ax.xaxis.get_inverted()),
+                "lim1": xlim1,
+                "lim2": xlim2,
+            },
+            "yaxis": {
+                "type": getattr(ax.yaxis, "_scale_type", ax.get_yscale()),
+                "invert": bool(ax.yaxis.get_inverted()),
+                "lim1": ylim1,
+                "lim2": ylim2,
+            },
+        }
+    
+    #---------------------------------------------------------------------------------------------
+    def apply_axis_settings(self, ax, settings, apply_x=True, apply_y=True):
+
+        ax.axis_settings = settings
+
+        if not settings:
+            ax.autoscale()
+            ax.figure.canvas.draw_idle()
+            return
+    
+        if apply_x:
+            xaxis = settings.get("xaxis", {})
+    
+            self.set_axis_scale(
+                ax,
+                "x",
+                xaxis.get("type", "linear")
+            )
+
+            lim1 = xaxis.get("lim1")
+            lim2 = xaxis.get("lim2")
+
+            if lim1 is not None and lim2 is not None:
+                ax.set_xlim(lim1, lim2)
+            else:
+                ax.autoscale(axis="x")
+    
+            ax.xaxis.set_inverted(bool(xaxis.get("invert", False)))
+    
+        if apply_y:
+            yaxis = settings.get("yaxis", {})
+    
+            self.set_axis_scale(
+                ax,
+                "y",
+                yaxis.get("type", "linear")
+            )
+
+            lim1 = yaxis.get("lim1")
+            lim2 = yaxis.get("lim2")
+
+            if lim1 is not None and lim2 is not None:
+                ax.set_ylim(lim1, lim2)
+            else:
+                ax.autoscale(axis="y")
+    
+            ax.yaxis.set_inverted(bool(yaxis.get("invert", False)))
+    
+        ax.figure.canvas.draw_idle()
+
+    #---------------------------------------------------------------------------------------------
+    def set_axis_scale(self, ax, axis, scale_type):
+        if axis == "x":
+            if scale_type == "linear":
+                ax.set_xscale("linear")
+            elif scale_type == "log10":
+                ax.set_xscale("log")
+            elif scale_type == "log1-2-5":
+                ax.set_xscale("log")
+                ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+                ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+            ax.xaxis._scale_type = scale_type
+    
+        elif axis == "y":
+            if scale_type == "linear":
+                ax.set_yscale("linear")
+            elif scale_type == "log10":
+                ax.set_yscale("log")
+            elif scale_type == "log1-2-5":
+                ax.set_yscale("log")
+                ax.yaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
+                ax.yaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+            ax.yaxis._scale_type = scale_type
+
+    #---------------------------------------------------------------------------------------------
+    def plot(self, n, x, y, label=None, settings=None):
 
         ax = self.axs[n]
 
@@ -92,6 +201,10 @@ class interactivePlot:
             for legend_line, ax_line in zip(legend.get_lines(), ax.get_lines()):
                 legend_line.set_picker(5)
                 ax.map_legend_to_line[legend_line] = ax_line
+
+        if settings is not None:
+            ax.axis_settings = settings
+            self.apply_axis_settings(ax, settings)
 
         ax.figure.canvas.draw()  # Redraw the canvas
 
@@ -285,6 +398,9 @@ class interactivePlot:
                 act_ylog2.setEnabled(False)
 
             if isinstance(artist, XAxis):
+                if self.allow_back_x_axis_settings:
+                    context_menu.addAction("Back to X axis settings")
+                    context_menu.addSeparator()
                 context_menu.addAction("X axis → autoscale local")
                 context_menu.addAction("X axis → autoscale global")
                 context_menu.addSeparator()
@@ -294,6 +410,9 @@ class interactivePlot:
                 context_menu.addAction(act_xlog1)
                 context_menu.addAction(act_xlog2)
             elif isinstance(artist, YAxis):
+                if self.allow_back_y_axis_settings:
+                    context_menu.addAction("Back to Y axis settings")
+                    context_menu.addSeparator()
                 context_menu.addAction("Y axis → autoscale local")
                 context_menu.addAction("Y axis → autoscale global")
                 context_menu.addSeparator()
@@ -303,6 +422,12 @@ class interactivePlot:
                 context_menu.addAction(act_ylog1)
                 context_menu.addAction(act_ylog2)
             else:
+                if self.allow_back_axis_settings:
+                    context_menu.addAction("Back to axis settings")
+                if self.allow_save_axis_settings:
+                    context_menu.addAction("Save axis settings")
+                if self.allow_back_axis_settings or self.allow_save_axis_settings:
+                    context_menu.addSeparator()
                 context_menu.addAction("Autoscale global")
                 context_menu.addSeparator()
                 context_menu.addAction("Save plot as PNG or PDF")
@@ -315,7 +440,10 @@ class interactivePlot:
                 self.fig.canvas.callbacks.process('key_release_event', ev)
                 return
 
-            if action.text() == "X axis → autoscale local":
+            if action.text() == "Back to X axis settings":
+                if ax.axis_settings:
+                    self.apply_axis_settings(ax, ax.axis_settings, apply_y=False)
+            elif action.text() == "X axis → autoscale local":
                 ev = KeyEvent('key_press_event', self.fig.canvas, 'a', event.x, event.y)
                 self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "X axis → autoscale global":
@@ -325,20 +453,23 @@ class interactivePlot:
                 invert_status = ax.xaxis.get_inverted()
                 ax.xaxis.set_inverted(not invert_status)
             elif action.text() == "X axis → log (10ⁿ)":
-                ax.set_xscale("log")
+                self.set_axis_scale(ax, "x", "log10")
                 ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
                 self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "X axis → log (1-2-5)":
-                ax.set_xscale("log")
+                self.set_axis_scale(ax, "x", "log1-2-5")
                 ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
                 ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
                 ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
                 self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "X axis → linear":
-                ax.set_xscale("linear")
+                self.set_axis_scale(ax, "x", "linear")
                 ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
                 self.fig.canvas.callbacks.process('key_press_event', ev)
 
+            elif action.text() == "Back to Y axis settings":
+                if ax.axis_settings:
+                    self.apply_axis_settings(ax, ax.axis_settings, apply_x=False)
             elif action.text() == "Y axis → autoscale local":
                 ev = KeyEvent('key_press_event', self.fig.canvas, 'a', event.x, event.y)
                 self.fig.canvas.callbacks.process('key_press_event', ev)
@@ -348,23 +479,26 @@ class interactivePlot:
             elif action.text() == "Y axis → invert":
                 invert_status = ax.yaxis.get_inverted()
                 ax.yaxis.set_inverted(not invert_status)
-                ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
-                self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "Y axis → log (10ⁿ)":
-                ax.set_yscale("log")
+                self.set_axis_scale(ax, "y", "log10")
                 ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
                 self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "Y axis → log (1-2-5)":
-                ax.set_yscale("log")
+                self.set_axis_scale(ax, "y", "log1-2-5")
                 ax.yaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
                 ax.yaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
                 ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
                 self.fig.canvas.callbacks.process('key_press_event', ev)
             elif action.text() == "Y axis → linear":
-                ax.set_yscale("linear")
+                self.set_axis_scale(ax, "y", "linear")
                 ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
                 self.fig.canvas.callbacks.process('key_press_event', ev)
 
+            elif action.text() == "Back to axis settings":
+                if ax.axis_settings:
+                    self.apply_axis_settings(ax, ax.axis_settings)
+            elif action.text() == "Save axis settings":
+                ax.axis_settings = self.get_axis_settings(ax)
             elif action.text() == "Autoscale global":
                 ev = KeyEvent('key_press_event', self.fig.canvas, 'A', event.x, event.y)
                 self.fig.canvas.callbacks.process('key_press_event', ev)
@@ -801,9 +935,18 @@ if __name__ == "__main__":
 
     interactive_plot = interactivePlot(rows=2, cols=1)
 
+    settings = {
+        "xaxis": {
+            "type": "log1-2-5",
+            "invert": False,
+        },
+        "yaxis": {
+            "type": "linear",
+            "invert": True,
+        },
+    }
     interactive_plot.plot(0, x1, y1, label='sin')
-
-    interactive_plot.plot(0, x2, y2, label='cos')
+    interactive_plot.plot(0, x2, y2, label='cos', settings=settings)
 
     interactive_plot.plot(1, x2, y2, label='cos')
    

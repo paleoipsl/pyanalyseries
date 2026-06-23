@@ -79,6 +79,26 @@ class displayTogetherSeriesWindow(QWidget):
         self.interactive_plot.fig.canvas.setFocus()
 
     #---------------------------------------------------------------------------------------------
+    def configure_axis_settings_actions(self, mode):
+        self.interactive_plot.allow_back_x_axis_settings = True
+        self.interactive_plot.allow_back_y_axis_settings = True
+        self.interactive_plot.allow_back_axis_settings = True
+        self.interactive_plot.allow_save_axis_settings = False
+    
+        if mode == "vertical":
+            self.interactive_plot.allow_back_x_axis_settings = False
+            self.interactive_plot.allow_back_axis_settings = False
+    
+        elif mode == "horizontal":
+            self.interactive_plot.allow_back_y_axis_settings = False
+            self.interactive_plot.allow_back_axis_settings = False
+    
+        elif mode == "none":
+            self.interactive_plot.allow_back_x_axis_settings = False
+            self.interactive_plot.allow_back_y_axis_settings = False
+            self.interactive_plot.allow_back_axis_settings = False
+
+    #---------------------------------------------------------------------------------------------
     def combo_axis_change(self):
        
         for ax in self.interactive_plot.axs[:]:
@@ -98,7 +118,7 @@ class displayTogetherSeriesWindow(QWidget):
 
     #---------------------------------------------------------------------------------------------
     def myplot(self):
-
+        self.configure_axis_settings_actions("none")
         self.interactive_plot.reset()
         self.interactive_plot.left_margin = 100 
         self.interactive_plot.bottom_margin = 50 
@@ -108,7 +128,6 @@ class displayTogetherSeriesWindow(QWidget):
         ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
         ax.set_xlabel(self.xName)
         ax.set_ylabel('')
-        ax.autoscale()
 
         for item in self.items:
             seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
@@ -126,18 +145,9 @@ class displayTogetherSeriesWindow(QWidget):
             ax.map_legend_to_line[legend_line] = ax_line
 
         #---------------------------------
-        all_psd = True
-        for item in self.items:
-            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
-            if seriesDict['Type'] != 'Series PSD':
-                all_psd = False
-                break
-        if all_psd:
-            ax.set_xscale('log')
-            ax.set_yscale('log')
-            ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
-            ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
-            ax.invert_xaxis()
+        seriesDict = self.items[0].data(0, Qt.ItemDataRole.UserRole)
+        axis_settings = seriesDict.get("AxisSettings")
+        self.interactive_plot.apply_axis_settings(ax, axis_settings)
 
         #---------------------------------
         self.interactive_plot.on_resize(None)
@@ -149,6 +159,7 @@ class displayTogetherSeriesWindow(QWidget):
 
         fig_width, fig_height = self.interactive_plot.fig.canvas.get_width_height()
 
+        self.configure_axis_settings_actions("vertical")
         self.interactive_plot.reset()
         offset = 80
         self.interactive_plot.left_margin = len(self.items) * offset 
@@ -165,7 +176,6 @@ class displayTogetherSeriesWindow(QWidget):
 
         ax = self.interactive_plot.axs[0]
         ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
-        ax.autoscale()
         ax.patch.set_visible(False)
         ax.twins = []
         ax.twins_orientation = 'vertical'
@@ -178,19 +188,8 @@ class displayTogetherSeriesWindow(QWidget):
         ax.set_xlabel(self.xName)
         ax.set_ylabel(seriesDict['Y'], color=seriesColor)
 
-        #---------------------------------
-        all_psd = True
-        for item in self.items:
-            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
-            if seriesDict['Type'] != 'Series PSD':
-                all_psd = False
-                break
-        if all_psd:
-            ax.set_xscale('log')
-            ax.set_yscale('log')
-            ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
-            ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
-            ax.invert_xaxis()
+        axis_settings = seriesDict.get("AxisSettings")
+        self.interactive_plot.apply_axis_settings(ax, axis_settings)
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
@@ -217,10 +216,8 @@ class displayTogetherSeriesWindow(QWidget):
             twin.line_points_pairs.append((line, points))
             self.interactive_plot.axs.append(twin)
 
-            if all_psd:
-                twin.set_yscale('log')
-                twin.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
-                twin.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
+            axis_settings = seriesDict.get("AxisSettings")
+            self.interactive_plot.apply_axis_settings(twin, axis_settings, apply_x=False)
 
             ax.twins.append(twin)
 
@@ -242,6 +239,7 @@ class displayTogetherSeriesWindow(QWidget):
 
         fig_width, fig_height = self.interactive_plot.fig.canvas.get_width_height()
 
+        self.configure_axis_settings_actions("horizontal")
         self.interactive_plot.reset()
         offset = 80
         self.interactive_plot.left_margin = 100
@@ -258,7 +256,6 @@ class displayTogetherSeriesWindow(QWidget):
 
         ax = self.interactive_plot.axs[0]
         ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
-        ax.autoscale()
         ax.patch.set_visible(False)
         ax.twins = []
         ax.twins_orientation = 'horizontal'
@@ -271,19 +268,8 @@ class displayTogetherSeriesWindow(QWidget):
         ax.set_xlabel(self.xName, color=seriesColor)
         ax.set_ylabel('')
 
-        #---------------------------------
-        all_psd = True
-        for item in self.items:
-            seriesDict = item.data(0, Qt.ItemDataRole.UserRole)
-            if seriesDict['Type'] != 'Series PSD':
-                all_psd = False
-                break
-        if all_psd:
-            ax.set_xscale('log')
-            ax.set_yscale('log')
-            ax.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
-            ax.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
-            ax.invert_xaxis()
+        axis_settings = seriesDict.get("AxisSettings")
+        self.interactive_plot.apply_axis_settings(ax, axis_settings)
 
         #---------------------------------
         for n,item in enumerate(self.items[1:]):
@@ -310,11 +296,8 @@ class displayTogetherSeriesWindow(QWidget):
             twin.line_points_pairs.append((line, points))
             self.interactive_plot.axs.append(twin)
 
-            if all_psd:
-                twin.set_xscale('log')
-                twin.xaxis.set_major_locator(LogLocator(base=10, subs=[1, 2, 5]))
-                twin.xaxis.set_major_formatter(FuncFormatter(lambda val, pos: f"{val:g}"))
-                twin.invert_xaxis()
+            axis_settings = seriesDict.get("AxisSettings")
+            self.interactive_plot.apply_axis_settings(twin, axis_settings, apply_y=False)
 
             ax.twins.append(twin)
 

@@ -1,3 +1,7 @@
+ * 6.35
+   * Add persistent axis settings (scale type and inversion state) saved in worksheets
+   * Add per-feature configuration of interactivePlot context menu actions depending on display window type and shared-axis configuration
+   * Change define to create for createInsolationAstroSeriesWindow, createSinusoidalSeriesWindow, createRandomSeriesWindow.
  * 6.34
    * Fix saving of original-axis values (including replicates) for interpolated series
    * Add original-axis values column to the Data tab of displaySingleSeriesWindow for interpolated series
@@ -129,8 +133,8 @@
  * 5.29
    * Fix import data when number of columns is not consistent.
  * 5.28
-   * Add 'Create / Sinusoidal Serie' with the defineSinusoidalSerieWindow class
-   * Change some parameters input as float in defineInsolationAstroSerieWindow
+   * Add 'Create / Sinusoidal Serie' with the defineSinusoidalSeriesWindow class
+   * Change some parameters input as float in defineInsolationAstroSeriesWindow
  * 5.27
    * Fix saved status when items are modified
  * 5.26
@@ -151,7 +155,7 @@
    * Fix save WS when paste an item. 
    * Fix multiple drop items. Not allowed.
  * 5.22
-   * Add 'Astronomical solution' in History in defineInsolationAstroSerieWindow 
+   * Add 'Astronomical solution' in History in defineInsolationAstroSeriesWindow 
  * 5.21
    * Issue #10 change to handle the order in the choosen series in Define Samping
    * Issue #9 Fix on zoom behaviour
@@ -159,7 +163,7 @@
    * Issue #7 Add on Wiki a paragraph to detail exporting plots and possible use of Inkscape
  * 5.20
    * inso as standalone module to be installed by a `pip install inso`
-   * Add a Shuffle button in defineRandomSerieWindow
+   * Add a Shuffle button in defineRandomSeriesWindow
  * 5.19
    * Fix omission of Precession parameter when Import serie
  * 5.18

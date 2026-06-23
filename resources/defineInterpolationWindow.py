@@ -97,7 +97,14 @@ class defineInterpolationWindow(QWidget):
         plots_tab = QWidget()
         plots_layout = QVBoxLayout()
 
-        self.interactive_plot = interactivePlot(rows=2, cols=1)
+        self.interactive_plot = interactivePlot(
+            rows=2, 
+            cols=1,
+            allow_back_x_axis_settings=True,
+            allow_back_y_axis_settings=True,
+            allow_back_axis_settings=True,
+            allow_save_axis_settings=False
+        )
         self.interactive_plot.top_margin = 100
         self.interactive_plot.right_margin = 150
         self.axs = self.interactive_plot.axs
@@ -475,6 +482,9 @@ class defineInterpolationWindow(QWidget):
 
         self.linecursor1 = self.axs[0].axvline(color='k', alpha=0.25, linewidth=1)
 
+        axis_settings = self.series1Dict.get("AxisSettings")
+        self.interactive_plot.apply_axis_settings(self.axs[0], axis_settings)
+
         #----------------------------------------------------
         self.itemDist = self.items[self.selectSeriesDist_combo.currentIndex()]
 
@@ -499,6 +509,9 @@ class defineInterpolationWindow(QWidget):
         self.axs[1].line_points_pairs.append((self.line2, self.points2))
 
         self.linecursor2 = self.axs[1].axvline(color='k', alpha=0.25, linewidth=1)
+
+        axis_settings = self.series2Dict.get("AxisSettings")
+        self.interactive_plot.apply_axis_settings(self.axs[1], axis_settings)
 
         #----------------------------------------------------
         self.interactive_plot.fig.canvas.mpl_connect('key_press_event', self.on_key_press)

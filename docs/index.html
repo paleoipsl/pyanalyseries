@@ -22,17 +22,17 @@ body {
 
 .canvas {
   position: relative;
+  display: inline-block;
   width: 100%;
-  height: 100%;
   max-width: 900px;
-  margin: auto;
-  aspect-ratio: 16 / 9;
 }
 
-.canvas img {
+.base-image {
+  display: block;
   width: 100%;
   height: auto;
-  display: block;
+  position: absolute;
+  top: 40px;
 }
 
 .bg-layer {
@@ -42,6 +42,7 @@ body {
 }
 
 .node {
+  z-index: 10;
   position: absolute;
   width: 36px;
   height: 36px;
@@ -107,23 +108,23 @@ body {
                 <div class="bg-layer"></div>
 
 		<!-- image principale -->
-	        <img src="captures/capture_01.png" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain;">
+	        <img src="captures/capture_01.png" class="base-image">
 	
 	        <!-- overlay -->
 	        <img src="captures/c1.png" style="position:absolute; top:32%; left:12%; width:80%; pointer-events:none;">
 	
 	        <!-- nodes -->
-	        <div class="node" style="top:101%; left:23.7%;" data-step="0">1</div>
-	        <div class="node" style="top:61.2%; left:27%;" data-step="1">2</div>
-	        <div class="node" style="top: 80%;left: 31.7%;" data-step="2">3</div>
-	        <div class="node" style="top: 90%;left: 38%;" data-step="3">4</div>
-	        <div class="node" style="top: 77%;left:45%;" data-step="4">5</div>
-	        <div class="node" style="top: 91%;left: 51%;" data-step="5">6</div>
-	        <div class="node" style="top: 77%;left: 57%;" data-step="6">7</div>
-	        <div class="node" style="top: 103%;left: 64%;" data-step="7">8</div>
-	        <div class="node" style="top: 70%;left: 69%;" data-step="8">9</div>
-	        <div class="node active" style="top: 84%;left: 76%;" data-step="9">10</div>
-	        <div class="node" style="top: 70%;left: 81.5%;" data-step="10">11</div>
+	        <div class="node" style="top:76%; left:23.7%;" data-step="0">1</div>
+	        <div class="node" style="top:51%; left:27%;" data-step="1">2</div>
+	        <div class="node" style="top: 69%;left: 31.7%;" data-step="2">3</div>
+	        <div class="node" style="top: 61%;left: 38%;" data-step="3">4</div>
+	        <div class="node" style="top: 57%;left:45%;" data-step="4">5</div>
+	        <div class="node" style="top: 69%;left: 51%;" data-step="5">6</div>
+	        <div class="node" style="top: 61%;left: 57%;" data-step="6">7</div>
+	        <div class="node" style="top: 76%;left: 64%;" data-step="7">8</div>
+	        <div class="node" style="top: 58%;left: 69%;" data-step="8">9</div>
+	        <div class="node active" style="top: 67%;left: 76%;" data-step="9">10</div>
+	        <div class="node" style="top: 58%;left: 81.5%;" data-step="10">11</div>
 
 	</div>
 

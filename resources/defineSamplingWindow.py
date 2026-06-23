@@ -170,7 +170,12 @@ class defineSamplingWindow(QWidget):
         self.series_combo.currentIndexChanged.connect(self.series_change)
 
         #----------------------------------------------
-        self.interactive_plot = interactivePlot()
+        self.interactive_plot = interactivePlot(
+            allow_back_x_axis_settings=True,
+            allow_back_y_axis_settings=True,
+            allow_back_axis_settings=True,
+            allow_save_axis_settings=False
+        )        
         self.myplot()
 
         canvas = FigureCanvas(self.interactive_plot.fig)
@@ -288,7 +293,6 @@ class defineSamplingWindow(QWidget):
         ax.grid(visible=True, which='major', color='lightgray', linestyle='dashed', linewidth=0.5)
         ax.set_xlabel(self.xName)
         ax.set_ylabel(self.yName)
-        ax.autoscale()
 
         seriesSampled = self.sampling(self.series, self.sampling_index, self.kind, integrated=self.integrated, ax=ax)
         seriesColor = self.seriesDict['Color']
@@ -306,6 +310,9 @@ class defineSamplingWindow(QWidget):
         for legend_line, ax_line in zip(legend.get_lines(), data_lines):
             legend_line.set_picker(5)
             ax.map_legend_to_line[legend_line] = ax_line
+
+        axis_settings = self.seriesDict.get("AxisSettings")
+        self.interactive_plot.apply_axis_settings(ax, axis_settings)
 
         if limits:
             ax.set_xlim(limits[0])
